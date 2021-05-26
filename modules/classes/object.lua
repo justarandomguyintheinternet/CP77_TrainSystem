@@ -1,0 +1,84 @@
+local utils = require("modules/utils/utils")
+local Cron = require("modules/utils/Cron")
+
+object = {}
+
+function object:new(level)
+	local o = {}
+
+    o.spawned = false
+    o.entID = nil
+    o.entity = nil
+    o.level = level
+
+    o.frozen = true
+    o.invincible = true
+    o.pos = Vector4.new(0, 0, 0, 0)
+    o.rot = Quaternion.new(0.001, 0, 0, 0)
+    o.name = ""
+    o.app = ""
+
+    o.id = math.random(1, 100000) -- Id for imgui child
+
+	self.__index = self
+   	return setmetatable(o, self)
+end
+
+function object:spawn()
+    local transform = Game.GetPlayer():GetWorldTransform()
+    transform:SetPosition(transform, self.pos)
+    transform:SetOrientation(transform, self.rot)
+    self.entID = Game.GetPreventionSpawnSystem():RequestSpawn(TweakDBID.new(self.name), self.level, transform)
+
+    Cron.Every(0.25, {tick = 0}, function(timer)
+        self.entity = Game.FindEntityByID(self.entID)
+        if self.entity ~= nil then
+			timer:Halt()
+            self.spawned = true
+            if self.app ~= "" then
+                self.entity:PrefetchAppearanceChange(self.app)
+                self.entity:ScheduleAppearanceChange(self.app)
+            end
+		end
+	end)
+end
+
+function object:update()
+    if self.spawned then
+        if self.frozen then
+            Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.rot))
+        end
+        if self.invincible then
+
+        end
+    end
+end
+
+function object:despawn()
+    Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.level)
+    self.spawned = false
+end
+
+function object:load(data)
+    self.frozen = data.frozen
+    self.invincible = data.invincible
+    self.name = data.name
+    self.app = data.app
+    self.pos = utils.getVector(data.pos)
+    self.rot = utils.getQuaternion(data.rot)
+end
+
+function object:getData()
+    local data = {}
+
+    data.frozen = self.frozen
+    data.invincible = self.invincible
+    data.name = self.name
+    data.app = self.app
+    data.pos = utils.fromVector(self.pos)
+    data.rot = utils.fromQuaternion(self.rot)
+
+    return data
+end
+
+return object

@@ -1,0 +1,7 @@
+
+*.json
+*.md
+*.csv
+*.txt
+*.sqlite3
+*.log
