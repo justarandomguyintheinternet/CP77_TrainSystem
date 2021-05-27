@@ -1,5 +1,5 @@
 loadedUI = {
-    boxSize = {entry = {x = 530, y = 85}, station = {x = 530, y = 100}, track = {x = 530, y = 135}},
+    boxSize = {entry = {x = 530, y = 85}, station = {x = 530, y = 100}, track = {x = 530, y = 154}},
 	colors = {entry = {0, 50, 255}, station = {0, 255, 0}, track = {255, 0, 0}},
     entries = {},
     stations = {},
@@ -103,7 +103,8 @@ end
 function loadedUI.track(data)
     ImGui.Text("ID: " .. data.id)
     ImGui.Text("Num points: " .. #data.points)
-    ImGui.Text("Connected tracks: next=" .. data.connectedID.next .. " | last=" .. data.connectedID.last)
+    ImGui.Text("Connected tracks (FIRST): next=" .. data.connectedID.first.next .. " | last=" .. data.connectedID.first.last)
+    ImGui.Text("Connected tracks (SECOND): next=" .. data.connectedID.second.next .. " | last=" .. data.connectedID.second.last)
     ImGui.Text("Connected station: next=" .. data.hasStation.next .. " | last=" .. data.hasStation.last)
 end
 

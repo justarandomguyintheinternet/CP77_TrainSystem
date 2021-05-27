@@ -6,7 +6,7 @@ fileUI = {
     entries = {},
     stations = {},
     tracks = {},
-    boxSize = {entries = {x = 530, y = 75}, stations = {x = 530, y = 90}, tracks = {x = 530, y = 130}},
+    boxSize = {entries = {x = 530, y = 75}, stations = {x = 530, y = 90}, tracks = {x = 530, y = 145}},
 	colors = {entries = {0, 50, 255}, stations = {0, 255, 0}, tracks = {255, 0, 0}},
     filter = ""
 }
@@ -74,7 +74,8 @@ end
 function fileUI.track(data)
     ImGui.Text("ID: " .. data.id)
     ImGui.Text("Num points: " .. #data.points)
-    ImGui.Text("Connected tracks: next=" .. data.connectedID.next .. " | last=" .. data.connectedID.last)
+    ImGui.Text("Connected tracks (FIRST): next=" .. data.connectedID.first.next .. " | last=" .. data.connectedID.first.last)
+    ImGui.Text("Connected tracks (SECOND): next=" .. data.connectedID.second.next .. " | last=" .. data.connectedID.second.last)
     ImGui.Text("Connected station: next=" .. data.hasStation.next .. " | last=" .. data.hasStation.last)
 end
 

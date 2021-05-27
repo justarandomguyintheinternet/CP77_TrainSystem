@@ -24,6 +24,8 @@ function ts:new()
     registerForEvent("onInit", function()
         ts.entrySys = require("modules/entrySystem"):new(ts)
         ts.stationSys = require("modules/stationSystem"):new(ts)
+        ts.trackSys = require("modules/trackSystem"):new(ts)
+        ts.trackSys:load()
         ts.entrySys:load()
         ts.stationSys:load()
 

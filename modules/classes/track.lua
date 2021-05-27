@@ -9,7 +9,7 @@ function track:new()
 
     o.points = {}
     o.id = 0
-    o.connectedID = {next = -1, last = -1}
+    o.connectedID = {first = {next = -1, last = -1}, second = {next = -1, last = -1}}
     o.hasStation = {next = -1, last = -1}
 
 	self.__index = self

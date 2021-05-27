@@ -303,6 +303,9 @@ function editUI.drawTrack()
         track.trainObj = object:new(1999)
         track.trainObj.name = "Vehicle.av_public_train_b"
     end
+-- ID
+    track.id = ImGui.InputInt("ID", track.id)
+    ImGui.Separator()
 -- Timeline
     track.currentPointID, changed = ImGui.SliderInt("Current Point ID", track.currentPointID, 1, #track.points)
 
@@ -321,11 +324,18 @@ function editUI.drawTrack()
     local state = ImGui.CollapsingHeader("Connected Settings")
     if state then
         ImGui.Text("Connected IDs: (-1 is not connected / false)")
-        ImGui.PushID("connectedID")
-        track.connectedID.last = ImGui.InputInt('LAST', track.connectedID.last)
-        track.connectedID.next = ImGui.InputInt('NEXT', track.connectedID.next)
+        ImGui.PushID("connectedIDFIRST")
+        ImGui.Text("FIRST:")
+        track.connectedID.first.last = ImGui.InputInt('LAST', track.connectedID.first.last)
+        track.connectedID.first.next = ImGui.InputInt('NEXT', track.connectedID.first.next)
+        ImGui.Separator()
+        ImGui.Text("SECOND:")
         ImGui.PopID()
-
+        ImGui.PushID("connectedIDSECOND")
+        track.connectedID.second.last = ImGui.InputInt('LAST', track.connectedID.second.last)
+        track.connectedID.second.next = ImGui.InputInt('NEXT', track.connectedID.second.next)
+        ImGui.Separator()
+        ImGui.PopID()
         ImGui.Text("Has Station: ")
         track.hasStation.last = ImGui.InputInt('LAST', track.hasStation.last)
         track.hasStation.next = ImGui.InputInt('NEXT', track.hasStation.next)

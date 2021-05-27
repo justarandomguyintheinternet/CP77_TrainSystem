@@ -49,6 +49,8 @@ function stationSys:enter(id)
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
 	Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
 	Game.ChangeZoneIndicatorSafe()
+
+	self.ts.trackSys:requestTrainToStation(self.currentStation)
 end
 
 function stationSys:leave()
@@ -58,6 +60,9 @@ end
 function stationSys:update()
 	if self.currentStation then
 		self.currentStation:update()
+		if not self.currentStation:inStation() then
+			self.currentStation:tpTo(self.currentStation.portalPoint)
+		end
 		if self.currentStation:nearExit() then
 			self.ts.hud.drawExit()
 			if self.ts.input.interactKey then
@@ -66,9 +71,6 @@ function stationSys:update()
                 self.currentStation:exitToGround(self.ts)
 				self.currentStation = nil
             end
-		end
-		if not self.currentStation:inStation() then
-			self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 	end
 end

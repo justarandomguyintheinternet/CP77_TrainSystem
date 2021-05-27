@@ -27,28 +27,30 @@ end
 
 function entrySys:update()
     local closest = self:getClosestEntry()
-    local dist = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), closest.center)
-    if dist < closest.radius then
-        self.ts.observers.noFastTravel = true
-        if self:looksAtEntry() then
-            self.ts.hud.drawEntry(self.ts.stationSys.stations[closest.stationID])
-            if self.ts.input.interactKey then
-                self.ts.input.interactKey = false
-                if self.ts.stationSys.currentStation == nil then
-                    self.ts.stationSys:enter(closest.stationID)
+    if closest then
+        local dist = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), closest.center)
+        if dist < closest.radius then
+            self.ts.observers.noFastTravel = true
+            if self:looksAtEntry(closest) then
+                self.ts.hud.drawEntry(self.ts.stationSys.stations[closest.stationID])
+                if self.ts.input.interactKey then
+                    self.ts.input.interactKey = false
+                    if self.ts.stationSys.currentStation == nil then
+                        self.ts.stationSys:enter(closest.stationID)
+                    end
                 end
             end
+        else
+            self.ts.observers.noFastTravel = false
         end
-    else
-        self.ts.observers.noFastTravel = false
     end
 end
 
-function entrySys:looksAtEntry()
+function entrySys:looksAtEntry(closest)
     local looksAt = false
     local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
     if target then
-        if target:GetClassName().value == "DataTerm" then
+        if target:GetClassName().value == "DataTerm" or (target:GetClassName().value == "FakeDoor" and closest.useDoors) then
             if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < self.maxDistToEntry then
                 looksAt = true
             end
