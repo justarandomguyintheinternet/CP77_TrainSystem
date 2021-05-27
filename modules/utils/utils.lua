@@ -148,4 +148,13 @@ function miscUtils.switchCarCam(perspectiveEnum)
     Game.GetPlayer():QueueEvent(event)
 end
 
+function miscUtils.reversePoint(point)
+    local rot = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
+    rot.roll = rot.roll * -1
+    rot.pitch = rot.pitch * -1
+    rot.yaw = rot.yaw + 180
+    point.rot = GetSingleton('EulerAngles'):ToQuat(rot)
+    return point
+end
+
 return miscUtils
