@@ -43,14 +43,25 @@ function object:spawn()
 	end)
 end
 
+function object:godMode()
+    if self.invincible then
+        local vComp = self.entity:GetVehicleComponent()
+        self.entity:DestructionResetGrid()
+        self.entity:DestructionResetGlass()
+        vComp:RepairVehicle()
+        Game.GetGodModeSystem():AddGodMode(self.entity:GetEntityID(), 0, "")
+    else
+        Game.GetGodModeSystem():RemoveGodMode(self.entity:GetEntityID(), 0, "")
+    end
+end
+
 function object:update()
     if self.spawned then
         if self.frozen then
             Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.rot))
         end
-        if self.invincible then
-
-        end
+        self:godMode()
+        self.entity:GetVehicleComponent():DestroyMappin()
     end
 end
 

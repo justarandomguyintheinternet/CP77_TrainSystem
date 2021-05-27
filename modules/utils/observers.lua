@@ -1,5 +1,6 @@
 observers = {
     noFastTravel = false,
+    activatedGate = false,
     noSave = false,
     Cron = require("modules/utils/Cron")
 }
@@ -9,6 +10,7 @@ function observers.start()
     Observe("MenuScenario_HubMenu", "GetMenusState", function(self)
         if self:IsA("MenuScenario_FastTravel") then
             if observers.noFastTravel then
+                observers.activatedGate = true
                 observers.Cron.After(0.25, function ()
                     self:GotoIdleState()
                 end)
