@@ -62,7 +62,7 @@ end
 
 function station:nearExit()
 	local near = false
-	if utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.portalPoint.pos) < 1.5 then
+	if utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.portalPoint.pos) < 1 then
 		near = true
 	end
 	if utils.looksAtDoor(3.2) and self.useDoors then

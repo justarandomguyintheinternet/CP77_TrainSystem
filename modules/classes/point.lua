@@ -9,6 +9,7 @@ function point:new()
     o.rot = Quaternion.new(0, 0, 0, 0)
     o.loadStation = {next = false, last = false}
     o.unloadStation = {next = false, last = false}
+    o.dir = ""
 
 	self.__index = self
    	return setmetatable(o, self)
