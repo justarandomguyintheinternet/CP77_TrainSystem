@@ -149,12 +149,34 @@ function miscUtils.switchCarCam(perspectiveEnum)
 end
 
 function miscUtils.reversePoint(point)
+    local p = require("modules/classes/point") -- Clone the point, dont wanna change the original points rot
+    local newPoint = p:new()
+    newPoint.dir = point.dir
+    newPoint.unloadStation = point.unloadStation
+    newPoint.loadStation = point.loadStation
+    newPoint.pos = point.pos
+
     local rot = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
     rot.roll = rot.roll * -1
     rot.pitch = rot.pitch * -1
     rot.yaw = rot.yaw + 180
-    point.rot = GetSingleton('EulerAngles'):ToQuat(rot)
-    return point
+    newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
+    return newPoint
+end
+
+function miscUtils.reversePointPitch(point)
+    local p = require("modules/classes/point") -- Clone the point, dont wanna change the original points rot
+    local newPoint = p:new()
+    newPoint.dir = point.dir
+    newPoint.unloadStation = point.unloadStation
+    newPoint.loadStation = point.loadStation
+    newPoint.pos = point.pos
+
+    local rot = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
+    rot.roll = rot.roll * -1
+    rot.pitch = rot.pitch * -1
+    newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
+    return newPoint
 end
 
 function miscUtils.addVector(v1, v2)

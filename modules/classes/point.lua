@@ -19,7 +19,7 @@ function point:load(data)
     self.pos = utils.getVector(data.pos)
     self.rot = utils.getQuaternion(data.rot)
     self.loadStation = data.loadStation
-    self.unloadPreviousStation = data.unloadPreviousStation
+    self.unloadStation = data.unloadStation
 end
 
 function point:getData()

@@ -101,7 +101,7 @@ function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
 		if not self.currentStation:inStation() then
-			self.currentStation:tpTo(self.currentStation.portalPoint)
+			--self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then
 			self.ts.hud.drawExit()

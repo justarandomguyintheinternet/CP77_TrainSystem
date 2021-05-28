@@ -171,7 +171,7 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 			data.targetID = path[1].hasStation.last
 			self:setTrackDir(path[1])
 			for i = #path[1].points, 1, -1 do
-				table.insert(data.points, utils.reversePoint(path[1].points[i]))
+				table.insert(data.points, utils.reversePointPitch(path[1].points[i]))
 			end
 		end
 	else
@@ -245,7 +245,7 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				print("found next at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
-					table.insert(gen, utils.reversePoint(path.points[i]))
+					table.insert(gen, utils.reversePointPitch(path.points[i]))
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)
@@ -257,7 +257,7 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				print("found last at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
-					table.insert(gen, utils.reversePoint(path.points[i]))
+					table.insert(gen, utils.reversePointPitch(path.points[i]))
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)
@@ -320,6 +320,7 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 		self:calcDirs(path, station)
 		local data = self:unpackPath(path, station)
 		table.insert(self.pathsData, data)
+		print("Inserted new exitPath lenght ", #data.points)
 	end
 
 	self:generateArrivePaths(station)
@@ -327,20 +328,22 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 	for _, path in pairs(self.pathsData) do -- Pack all data into one table
 		if path.dir == "next" then
 			local data = {exitPath = {}, arrivalPath = {}, dir = path.dir, targetID = path.targetID}
-			data.exitPath = path
+			data.exitPath = path.points
 			data.arrivalPath = self.arrivePath.last
 			if self.arrivePath.last == nil then
 				data.arrivalPath = self.arrivePath.next
 			end
 			table.insert(self.combinedData, data)
+			print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
 		elseif path.dir == "last" then
 			local data = {exitPath = {}, arrivalPath = {}, dir = path.dir, targetID = path.targetID}
-			data.exitPath = path
+			data.exitPath = path.points
 			data.arrivalPath = self.arrivePath.next
 			if self.arrivePath.next == nil then
 				data.arrivalPath = self.arrivePath.last
 			end
 			table.insert(self.combinedData, data)
+			print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
 		end
 	end
 

@@ -67,7 +67,12 @@ function train:loadRoute(route)
 	self.pointIndex = 1
 	self.arrivalPath = route.arrivalPath
 	self.exitPath = route.exitPath
-	print(#self.exitPath, #self.arrivalPath)
+	for k, p in pairs(self.exitPath) do
+		print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
+	end
+	for k, p in pairs(self.arrivalPath) do
+		print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "arrivalPath")
+	end
 end
 
 function train:startDrive(route)
