@@ -55,7 +55,7 @@ function object:godMode()
     end
 end
 
-function object:update()
+function object:update() -- Required to run each frame for frozen and invincible to work
     if self.spawned then
         if self.frozen then
             Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.rot))
@@ -68,6 +68,18 @@ end
 function object:despawn()
     Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.level)
     self.spawned = false
+end
+
+function object:respawn()
+    self:despawn()
+    Cron.Every(0.01, {tick = 0}, function(timer)
+        self.entity = Game.FindEntityByID(self.entID)
+        if self.entity == nil then
+			timer:Halt()
+            self:spawn()
+            print("new spawned")
+		end
+	end)
 end
 
 function object:load(data)

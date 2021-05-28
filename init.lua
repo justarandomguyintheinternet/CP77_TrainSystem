@@ -53,8 +53,9 @@ function ts:new()
     registerForEvent("onUpdate", function(deltaTime)
         if not ts.runtimeData.inMenu then
             debug.run(ts)
+            ts.trackSys:update()
             ts.entrySys:update()
-            ts.stationSys:update()
+            ts.stationSys:update(deltaTime)
         end
         ts.Cron.Update(deltaTime)
     end)

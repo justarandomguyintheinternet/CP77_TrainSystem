@@ -157,4 +157,28 @@ function miscUtils.reversePoint(point)
     return point
 end
 
+function miscUtils.addVector(v1, v2)
+    return Vector4.new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w)
+end
+
+function miscUtils.subVector(v1, v2)
+    return Vector4.new(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z, v1.w - v2.w)
+end
+
+function miscUtils.multVector(v1, factor)
+    return Vector4.new(v1.x * factor, v1.y * factor, v1.z * factor, v1.w * factor)
+end
+
+function miscUtils.addEuler(e1, e2)
+    return EulerAngles.new(e1.roll + e2.roll, e1.pitch + e2.pitch, e1.yaw + e2.yaw)
+end
+
+function miscUtils.subEuler(e1, e2)
+    return EulerAngles.new(e1.roll - e2.roll, e1.pitch - e2.pitch, e1.yaw - e2.yaw)
+end
+
+function miscUtils.multEuler(e1, factor)
+    return EulerAngles.new(e1.roll * factor, e1.pitch * factor, e1.yaw * factor)
+end
+
 return miscUtils

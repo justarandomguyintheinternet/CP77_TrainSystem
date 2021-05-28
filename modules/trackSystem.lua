@@ -1,5 +1,6 @@
 local track = require("modules/classes/track")
 local utils = require("modules/utils/utils")
+local train = require("modules/classes/train")
 
 trackSys = {}
 
@@ -9,9 +10,12 @@ function trackSys:new(ts)
 	o.ts = ts
 	o.tracks = {}
 
-	self.paths = {} -- Raw paths made of tracks, not useable
-	self.pathsData = {} -- Tables with all points and meta info (See unpackPath function)
-	self.arrivePath = {next = {}, last = {}} -- Arrive Path for both directions (If available)
+	o.paths = {} -- Raw paths made of tracks, not useable
+	o.pathsData = {} -- Tables with all points and meta info (See unpackPath function)
+	o.arrivePath = {next = {}, last = {}} -- Arrive Path for both directions (If available)
+	o.combinedData = {} -- Holds pairs of paths with arrivePaths
+
+	self.trains = {}
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -306,8 +310,9 @@ function trackSys:insertPath(path) -- Add path so far as independent field to th
 	table.insert(self.paths, todo)
 end
 
-function trackSys:mainGeneratePathData(station) -- Main function to call to calculate all the paths and arrive paths for the given station
+function trackSys:mainGeneratePathData(station) -- Main function to call to calculate all the paths and arrive paths for the given station and put them into one final table
 	self.pathsData = {}
+	self.combinedData = {}
 	local connectedTrack = self:getStationTrack(station)
 	self:generatePaths(connectedTrack, station)
 
@@ -315,17 +320,37 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 		self:calcDirs(path, station)
 		local data = self:unpackPath(path, station)
 		table.insert(self.pathsData, data)
-		-- print("PATH NR ".. k)
-		-- for _, t in pairs(path) do
-		-- 	print("- Track NR".. t.id .. " DIR: " .. t.dir)
-		-- end
 	end
 
 	self:generateArrivePaths(station)
+
+	for _, path in pairs(self.pathsData) do -- Pack all data into one table
+		if path.dir == "next" then
+			local data = {exitPath = {}, arrivalPath = {}, dir = path.dir, targetID = path.targetID}
+			data.exitPath = path
+			data.arrivalPath = self.arrivePath.last
+			if self.arrivePath.last == nil then
+				data.arrivalPath = self.arrivePath.next
+			end
+			table.insert(self.combinedData, data)
+		elseif path.dir == "last" then
+			local data = {exitPath = {}, arrivalPath = {}, dir = path.dir, targetID = path.targetID}
+			data.exitPath = path
+			data.arrivalPath = self.arrivePath.next
+			if self.arrivePath.next == nil then
+				data.arrivalPath = self.arrivePath.last
+			end
+			table.insert(self.combinedData, data)
+		end
+	end
+
+	return self.combinedData
 end
 
-function trackSys:requestTrainToStation(station)
-	self:mainGeneratePathData(station)
+function trackSys:update(deltaTime)
+	for _, t in pairs(self.trains) do
+		t:update()
+	end
 end
 
 return trackSys
