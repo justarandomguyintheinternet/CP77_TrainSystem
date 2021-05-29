@@ -12,14 +12,19 @@ function stationSys:new(ts)
 	o.stations = {}
 	o.onStation = false
 	o.currentStation = nil
+	o.mountLocked = false
 
-	o.holdTime = 4
+	o.holdTime = 5
 	o.activeTrain = nil
 	o.trainInStation = false
 
 	o.pathsData = {}
 	o.currentPathsIndex = 0
 	o.totalPaths = nil
+
+	o.previousStationID = nil
+
+	o.cronStopID = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -46,7 +51,7 @@ function stationSys:enter(id) -- Enter station from ground level
 		self.currentStation:spawn() -- Spawn AFTER start of tp, or it crashes when getting a loading screen, but only little bit after to make sure stuff spawns even if there is no loading screen
 	end)
 
-	if #self.currentStation.objects ~= 0 then
+	--if #self.currentStation.objects ~= 0 then
 		local cam = Game.GetPlayer():GetFPPCameraComponent()
 		cam.pitchMin = 100
 
@@ -54,7 +59,7 @@ function stationSys:enter(id) -- Enter station from ground level
 			local cam = Game.GetPlayer():GetFPPCameraComponent()
 			cam:ResetPitch()
 		end)
-	end
+	--end
 
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
 	Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
@@ -68,7 +73,7 @@ function stationSys:activateArrival()
 	self.currentPathsIndex = 0
 	self.totalPaths = #self.pathsData
 	if self.activeTrain == nil then
-		self.activeTrain = train:new()
+		self.activeTrain = train:new(self)
 		self.currentPathsIndex = self.currentPathsIndex + 1
 		if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
 		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
@@ -78,12 +83,10 @@ function stationSys:activateArrival()
 end
 
 function stationSys:requestNewTrain()
-	self.activeTrain = train:new()
-
 	self.currentPathsIndex = self.currentPathsIndex + 1
 	if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
-
 	self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+	self.activeTrain:startDrive("arrive")
 end
 
 function stationSys:leave() -- Leave to ground level
@@ -97,16 +100,50 @@ function stationSys:leave() -- Leave to ground level
 	end
 end
 
+function stationSys:nearTrain()
+	local near = false
+	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
+	if target then
+		if target:GetClassName().value == "vehicleAVBaseObject"then
+			if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < 5 then
+				near = true
+			end
+		end
+	end
+	return near
+end
+
+function stationSys:handleExitTrain()
+	if self.ts.input.interactKey then
+		if self.activeTrain.playerMounted and self.trainInStation then
+			self.mountLocked = true
+			self.activeTrain:unmount()
+			utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+			Cron.After(0.25, function ()
+				self.mountLocked = false
+			end)
+			self.currentStation:tpTo(self.currentStation.trainExit)
+		elseif self.activeTrain.playerMounted and not self.trainInStation then
+			Game.GetPlayer():SetWarningMessage("Cant do that now")
+		end
+	end
+end
+
 function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
-		if not self.currentStation:inStation() then
+		if not self.currentStation:inStation() and not (self.activeTrain.playerMounted and not self.trainInStation) then
 			--self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then
 			self.ts.hud.drawExit()
 			if self.ts.input.interactKey then
                 self.ts.input.interactKey = false
+				for _, timer in pairs(Cron.timers) do
+					if timer.id == self.cronStopID then
+						Cron.Halt(timer.id)
+					end
+				end
 				self:leave()
             end
 		end
@@ -118,19 +155,54 @@ function stationSys:update(deltaTime)
 
 	if self.activeTrain ~= nil then
 		self.activeTrain:update(deltaTime)
-
 		if self.activeTrain.justArrived then
 			self.activeTrain.justArrived = false
-			print("train here, will depart soon")
-			Cron.After(self.holdTime, function ()
+			self.trainInStation = true
+
+			print("previous station id", self.previousStationID, " curren one is ", self.currentStation.id)
+
+			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
+				self.onStation = true
+				print("previous station id was", self.previousStationID, "new curren one is ", self.currentStation.id)
+				self.previousStationID = self.currentStation.id
+				self.pathsData = self.ts.trackSys:mainGeneratePathData(self.currentStation)
+				self.currentPathsIndex = 0
+				self.totalPaths = #self.pathsData
+				self.currentPathsIndex = self.currentPathsIndex + 1
+				if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
+				self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+			end
+
+			self.cronStopID = Cron.After(self.holdTime, function ()
+				self.trainInStation = false
 				self.activeTrain:startDrive("exit")
+				if self.activeTrain.playerMounted then
+					self.onStation = false
+				end
 			end)
 		end
+
+		if self.activeTrain.playerMounted and not self.trainInStation then
+			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
+		else
+			local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
+			rmStatus(Game.GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+		end
+
+		self:handleExitTrain()
 	end
 
 	if self.trainInStation then
-		-- handle entering / leaving
+		if self:nearTrain() then
+			self.ts.hud.drawExit()
+			if self.ts.input.interactKey and not self.mountLocked then
+				self.ts.input.interactKey = false
+				self.activeTrain:mount()
+				utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+			end
+		end
 	end
+
 end
 
 return stationSys

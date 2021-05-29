@@ -4,18 +4,20 @@ local Cron = require("modules/utils/Cron")
 
 train = {}
 
-function train:new()
+function train:new(stationSys)
 	local o = {}
 
 	o.arrivalPath = {}
 	o.exitPath = {}
 	o.activePath = {}
+	o.targetID = nil
 	o.driving = false
-	o.speed = 20
+	o.speed = 45
 	o.pointIndex = 1
 
 	o.carName = "Vehicle.cs_savable_makigai_maimai"
-	o.carOffset = Vector4.new(0, 0, 1, 0)
+	o.carApp = "makigai_maimai_basic_burnt_01"
+	o.carOffset = Vector4.new(0, 0, 1.5, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
 	o.carObject = nil
@@ -27,7 +29,7 @@ function train:new()
 	o.pos = Vector4.new(0, 0, 0, 0)
 	o.rot = Quaternion.new(0.1, 0, 0, 0)
 
-	o.trainObj2 = nil
+	o.stationSys = stationSys
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -37,6 +39,7 @@ function train:spawn()
 	local point = self.arrivalPath[#self.arrivalPath]
 	self.carObject = object:new(self.carLayer)
 	self.carObject.name = self.carName
+	self.carObject.app = self.carApp
 
 	self.carObject.pos = point.pos
 	self.carObject.rot = point.rot
@@ -67,6 +70,7 @@ function train:loadRoute(route)
 	self.pointIndex = 1
 	self.arrivalPath = route.arrivalPath
 	self.exitPath = route.exitPath
+	self.targetID = route.targetID
 	for k, p in pairs(self.exitPath) do
 		print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
 	end
@@ -84,13 +88,15 @@ function train:startDrive(route)
 		self.activePath = self.exitPath
 		self.driving = true
 	end
+	self.pos = self.activePath[1].pos
+	self.rot = self.activePath[1].rot
 end
 
 function train:update(deltaTime)
 	if self.driving then
-		print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
+		--print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
 		if utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) > self.speed * deltaTime then
-			print("below next point")
+			--print("below next point")
 			local todo = self.speed * deltaTime -- How much i want to do
 			local dist = utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) -- How much the total would been
 			local factor = todo / dist -- How much percent of the dist should be done
@@ -102,9 +108,9 @@ function train:update(deltaTime)
 		else
 			local todo = self.speed * deltaTime
 			while todo > 0 do
-				print("todo bigger 0" , todo)
+				--print("todo bigger 0" , todo)
 				if utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) < todo then
-					print("would get over to next one, current point index", self.pointIndex)
+					--print("would get over to next one, current point index", self.pointIndex)
 					todo = todo - utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
 					self.pos = self.activePath[self.pointIndex + 1].pos
 					self.rot = self.activePath[self.pointIndex + 1].rot
@@ -114,7 +120,7 @@ function train:update(deltaTime)
 						self.justArrived = true
 						self.driving = false
 					end
-					print("got over, new todo ", todo, "new p index ", self.pointIndex)
+					--print("got over, new todo ", todo, "new p index ", self.pointIndex)
 				else
 					local dist = utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) -- How much the total would been
 					local factor = todo / dist -- How much percent of the dist should be done
@@ -137,6 +143,8 @@ function train:update(deltaTime)
 		self:updateLocation("train")
 		self.trainObject:update()
 	end
+
+	self:updateCam()
 end
 
 function train:updateLocation(obj)
@@ -150,15 +158,46 @@ function train:updateLocation(obj)
 end
 
 function train:handlePoint(point)
-	-- detect load / unload triggers
+	print(point.pos, point.loadStation.next, point.loadStation.last, point.unloadStation.next, point.unloadStation.last, point.dir)
+	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- Unload previous
+		if self.playerMounted then
+			print("despawned previous station")
+			self.stationSys.currentStation:despawn()
+		else
+			print("no player, back to arriving")
+			self.driving = false
+			self.stationSys:requestNewTrain()
+		end
+	end
+	if point.dir == "next" and point.loadStation.next or point.dir == "last" and point.loadStation.last then -- Load next
+		self.stationSys.previousStationID = self.stationSys.currentStation.id
+		self.stationSys.currentStation = self.stationSys.stations[self.targetID]
+		self.stationSys.currentStation:spawn()
+		print("loading new station with id ", self.stationSys.currentStation.id)
+	end
+end
+
+function train:updateCam()
+	if self.playerMounted then
+		Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-22,0,0))
+		utils.switchCarCam("FPP")
+		Game.GetPlayer():GetFPPCameraComponent().pitchMax = 80
+		Game.GetPlayer():GetFPPCameraComponent().pitchMin = -80
+		Game.GetPlayer():GetFPPCameraComponent().yawMaxRight = -360
+		Game.GetPlayer():GetFPPCameraComponent().yawMaxLeft = 360
+	end
 end
 
 function train:mount()
-
+	self.playerMounted = true
+	utils.mount(self.carObject.entID)
+	utils.switchCarCam("FPP")
 end
 
 function train:unmount()
-
+	self.playerMounted = false
+	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
+	utils.unmount()
 end
 
 return train

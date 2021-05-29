@@ -98,7 +98,7 @@ function miscUtils.togglePin(data, name, state, pos, variant)
         local mappinData = NewObject('gamemappinsMappinData')
         mappinData.mappinType = TweakDBID.new('Mappins.DefaultStaticMappin')
         mappinData.variant = Enum.new('gamedataMappinVariant', variant)
-        mappinData.visibleThroughWalls = true
+        mappinData.visibleThroughWalls = false
         local id = Game.GetMappinSystem():RegisterMappin(mappinData, pos)
         data.pinIDs[name] = id
         data.pins[name] = false

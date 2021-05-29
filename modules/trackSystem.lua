@@ -171,7 +171,7 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 			data.targetID = path[1].hasStation.last
 			self:setTrackDir(path[1])
 			for i = #path[1].points, 1, -1 do
-				table.insert(data.points, utils.reversePointPitch(path[1].points[i]))
+				table.insert(data.points, path[1].points[i])
 			end
 		end
 	else

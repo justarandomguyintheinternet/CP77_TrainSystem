@@ -51,7 +51,7 @@ function ts:new()
     end)
 
     registerForEvent("onUpdate", function(deltaTime)
-        if not ts.runtimeData.inMenu then
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             debug.run(ts)
             ts.trackSys:update()
             ts.entrySys:update()
