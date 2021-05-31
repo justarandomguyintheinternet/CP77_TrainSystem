@@ -26,8 +26,8 @@ end
 
 function object:spawn()
     local transform = Game.GetPlayer():GetWorldTransform()
-    transform:SetPosition(transform, self.pos)
-    transform:SetOrientation(transform, self.rot)
+    transform.SetPosition(transform, self.pos) --transform.SetPosition(transform, self.pos) for next cet
+    transform.SetOrientation(transform, self.rot) --transform.SetOrientation(transform, self.rot)
     self.entID = Game.GetPreventionSpawnSystem():RequestSpawn(TweakDBID.new(self.name), self.level, transform)
 
     Cron.Every(0.25, {tick = 0}, function(timer)
@@ -56,6 +56,9 @@ function object:godMode()
 end
 
 function object:update() -- Required to run each frame for frozen and invincible to work
+    local ent = Game.FindEntityByID(self.entID)
+    if ent == nil then self.spawned = false end
+
     if self.spawned then
         if self.frozen then
             Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.rot))

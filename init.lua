@@ -56,8 +56,8 @@ function ts:new()
             ts.trackSys:update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
+            ts.Cron.Update(deltaTime)
         end
-        ts.Cron.Update(deltaTime)
     end)
 
     registerForEvent("onDraw", function()

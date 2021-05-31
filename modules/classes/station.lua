@@ -44,6 +44,7 @@ function station:spawn()
 end
 
 function station:despawn()
+	print("despawn station id ", self.id)
 	for _, obj in pairs(self.objects) do
 		obj:despawn()
 	end

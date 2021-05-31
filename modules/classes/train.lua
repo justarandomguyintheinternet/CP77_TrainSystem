@@ -30,6 +30,7 @@ function train:new(stationSys)
 	o.rot = Quaternion.new(0.1, 0, 0, 0)
 
 	o.stationSys = stationSys
+	o.spawnStationID = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -161,25 +162,47 @@ function train:handlePoint(point)
 	print(point.pos, point.loadStation.next, point.loadStation.last, point.unloadStation.next, point.unloadStation.last, point.dir)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- Unload previous
 		if self.playerMounted then
+			if (self.stationSys.previousStationID ~= self.stationSys.currentStation.id) and (self.stationSys.previousStationID ~= nil) then
+				self.stationSys.stations[self.stationSys.previousStationID]:despawn()
+			else
+				self.stationSys.currentStation:despawn()
+				if self.stationSys.backUpTrain ~= nil then
+					self.stationSys.backUpTrain:despawn()
+					self.stationSys.backUpTrain = nil
+				end
+			end
 			print("despawned previous station")
-			self.stationSys.currentStation:despawn()
 		else
 			print("no player, back to arriving")
 			self.driving = false
 			self.stationSys:requestNewTrain()
 		end
 	end
-	if point.dir == "next" and point.loadStation.next or point.dir == "last" and point.loadStation.last then -- Load next
+	if ((point.dir == "next" and point.loadStation.next) or (point.dir == "last" and point.loadStation.last)) and self.playerMounted then -- Load next
 		self.stationSys.previousStationID = self.stationSys.currentStation.id
 		self.stationSys.currentStation = self.stationSys.stations[self.targetID]
 		self.stationSys.currentStation:spawn()
 		print("loading new station with id ", self.stationSys.currentStation.id)
+		if self.spawnStationID ~= self.stationSys.currentStation.id then
+			self.stationSys.backUpTrain = object:new(2021)
+			self.stationSys.backUpTrain.name = "Vehicle.av_public_train_b"
+			self.stationSys.backUpTrain.pos = self.activePath[#self.activePath].pos
+			self.stationSys.backUpTrain.rot = self.activePath[#self.activePath].rot
+			self.stationSys.backUpTrain:spawn()
+			Cron.Every(0.01, {tick = 0}, function(timer)
+				if self.stationSys.backUpTrain.spawned then
+					self.stationSys.backUpTrain.pos = utils.addVector(self.activePath[#self.activePath].pos, Vector4.new(0, 0, -50, 0))
+					self.stationSys.backUpTrain:update()
+					timer:Halt()
+				end
+			end)
+			print("loaded backup train")
+		end
 	end
 end
 
 function train:updateCam()
 	if self.playerMounted then
-		Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-22,0,0))
 		utils.switchCarCam("FPP")
 		Game.GetPlayer():GetFPPCameraComponent().pitchMax = 80
 		Game.GetPlayer():GetFPPCameraComponent().pitchMin = -80
@@ -192,6 +215,7 @@ function train:mount()
 	self.playerMounted = true
 	utils.mount(self.carObject.entID)
 	utils.switchCarCam("FPP")
+	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-22,0,0))
 end
 
 function train:unmount()

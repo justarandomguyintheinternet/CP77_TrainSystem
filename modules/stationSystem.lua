@@ -23,6 +23,7 @@ function stationSys:new(ts)
 	o.totalPaths = nil
 
 	o.previousStationID = nil
+	o.backUpTrain = nil
 
 	o.cronStopID = nil
 
@@ -74,6 +75,7 @@ function stationSys:activateArrival()
 	self.totalPaths = #self.pathsData
 	if self.activeTrain == nil then
 		self.activeTrain = train:new(self)
+		self.activeTrain.spawnStationID = self.currentStation.id
 		self.currentPathsIndex = self.currentPathsIndex + 1
 		if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
 		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
@@ -98,14 +100,18 @@ function stationSys:leave() -- Leave to ground level
 		self.activeTrain:despawn()
 		self.activeTrain = nil
 	end
+	if self.backUpTrain ~= nil then
+		self.backUpTrain:despawn()
+		self.backUpTrain = nil
+	end
 end
 
 function stationSys:nearTrain()
 	local near = false
 	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
 	if target then
-		if target:GetClassName().value == "vehicleAVBaseObject"then
-			if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < 5 then
+		if target:GetClassName().value == "vehicleAVBaseObject" or target:GetClassName().value == "vehicleCarBaseObject" then
+			if utils.distanceVector(self.activeTrain.pos, Game.GetPlayer():GetWorldPosition()) < 7.5 then
 				near = true
 			end
 		end
