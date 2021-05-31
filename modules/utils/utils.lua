@@ -160,7 +160,9 @@ function miscUtils.reversePoint(point)
     rot.roll = rot.roll * -1
     rot.pitch = rot.pitch * -1
     rot.yaw = rot.yaw + 180
+
     newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
+    print("reverse point: ", GetSingleton('Quaternion'):ToEulerAngles(point.rot), rot)
     return newPoint
 end
 
@@ -176,6 +178,7 @@ function miscUtils.reversePointPitch(point)
     rot.roll = rot.roll * -1
     rot.pitch = rot.pitch * -1
     newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
+    print("reverse point pitch: ", GetSingleton('Quaternion'):ToEulerAngles(point.rot), rot)
     return newPoint
 end
 

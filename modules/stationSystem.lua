@@ -198,9 +198,9 @@ function stationSys:update(deltaTime)
 		self:handleExitTrain()
 	end
 
-	if self.trainInStation then
-		if self:nearTrain() then
-			self.ts.hud.drawExit()
+	if self.trainInStation and self.activeTrain ~= nil then
+		if self:nearTrain() and not self.activeTrain.playerMounted then
+			self.ts.hud.enterTrain()
 			if self.ts.input.interactKey and not self.mountLocked then
 				self.ts.input.interactKey = false
 				self.activeTrain:mount()

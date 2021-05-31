@@ -16,7 +16,7 @@ function train:new(stationSys)
 	o.pointIndex = 1
 
 	o.carName = "Vehicle.cs_savable_makigai_maimai"
-	o.carApp = "makigai_maimai_basic_burnt_01"
+	o.carApp = "makigai_maimai__basic_burnt_01"
 	o.carOffset = Vector4.new(0, 0, 1.5, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
@@ -88,6 +88,7 @@ function train:startDrive(route)
 	else
 		self.activePath = self.exitPath
 		self.driving = true
+		self:handlePoint(self.activePath[1])
 	end
 	self.pos = self.activePath[1].pos
 	self.rot = self.activePath[1].rot
@@ -120,6 +121,11 @@ function train:update(deltaTime)
 					if self.pointIndex == #self.activePath then
 						self.justArrived = true
 						self.driving = false
+					else
+						print(math.abs(GetSingleton('Quaternion'):ToEulerAngles(self.rot).yaw - GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot).yaw), "diff yaw")
+						if math.abs(GetSingleton('Quaternion'):ToEulerAngles(self.rot).yaw - GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot).yaw) > 300 then
+							self.rot = self.activePath[self.pointIndex + 1].rot
+						end
 					end
 					--print("got over, new todo ", todo, "new p index ", self.pointIndex)
 				else
