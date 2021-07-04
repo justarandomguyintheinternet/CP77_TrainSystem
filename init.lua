@@ -32,7 +32,7 @@ function ts:new()
         ts.observers.start()
         ts.input.startInputObserver()
 
-        Observe('RadialWheelController', 'OnIsInMenuChanged', function(isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
+        Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             ts.runtimeData.inMenu = isInMenu
         end)
 
@@ -56,8 +56,8 @@ function ts:new()
             ts.trackSys:update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
-            ts.Cron.Update(deltaTime)
         end
+        ts.Cron.Update(deltaTime)
     end)
 
     registerForEvent("onDraw", function()

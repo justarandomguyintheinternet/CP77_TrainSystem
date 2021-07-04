@@ -1,8 +1,9 @@
+Cron = require("modules/utils/Cron")
+
 observers = {
     noFastTravel = false,
     activatedGate = false,
     noSave = false,
-    Cron = require("modules/utils/Cron")
 }
 
 
@@ -11,18 +12,19 @@ function observers.start()
         if self:IsA("MenuScenario_FastTravel") then
             if observers.noFastTravel then
                 observers.activatedGate = true
-                observers.Cron.After(0.25, function ()
+                Cron.After(0.5, function ()
+                    print("toidele")
                     self:GotoIdleState()
                 end)
             end
         end
     end)
 
-    Override("gameScriptableSystem", "IsSavingLocked", function()
+    Override("gameScriptableSystem", "IsSavingLocked", function(_)
         return observers.noSave
     end)
 
-    Override("OpenWorldMapDeviceAction", "GetTweakDBChoiceRecord", function()
+    Override("OpenWorldMapDeviceAction", "GetTweakDBChoiceRecord", function(_)
         if observers.noFastTravel then
             return "Enter"
         else

@@ -148,17 +148,20 @@ function trackSys:setTrackDir(track) -- Changes a tracks points load/unload data
 	for _, point in pairs(track.points) do
 		if track.dir == "last" then
 			point.dir = "last"
-			print(point, "is now" , point.dir)
+			--print(point, "is now" , point.dir)
 		end
 		if track.dir == "next" then
 			point.dir = "next"
-			print(point, "is now" , point.dir)
+			--print(point, "is now" , point.dir)
 		end
 	end
 end
 
 function trackSys:unpackPath(path, station) -- Take a path and generate a table with its total direction, target stationID and a table of all points to the targetID in the right order
 	local data = {dir = path[1].dir, targetID = station.id, points = {}}
+	for _, track in pairs(path) do
+		print(track.dir)
+	end
 
 	if #path == 1 then -- Only one track aka station on that track
 		if path[1].dir == "next" then
@@ -204,7 +207,7 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 						end
 					end
 				else
-					if track.dir == "next" then -- Always ad the one point the station is on tho, depending on direction last or first point
+					if track.dir == "next" then -- Always add the one point the station is on tho, depending on direction last or first point
 						table.insert(data.points, track.points[1])
 					else
 						table.insert(data.points, utils.reversePoint(track.points[#track.points]))
@@ -221,6 +224,15 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 					for i = #track.points, 1, -1 do
 						table.insert(data.points, utils.reversePoint(track.points[i]))
 					end
+				end
+			elseif key == 1 then
+				self:setTrackDir(track)
+				if (track.dir == "next" and track.hasStation.next ~= -1) then
+					local point = track.points[#track.points]
+					table.insert(data.points, point)
+				elseif (track.dir == "last" and track.hasStation.last ~= -1) then
+					table.insert(data.points, utils.reversePoint(track.points[1]))
+					print('WOULD ADD SINGLE STATION TRACK POINT LAST')
 				end
 			end
 		end
@@ -246,6 +258,7 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				local gen = {}
 				for i = key, 1, -1 do
 					table.insert(gen, utils.reversePointPitch(path.points[i]))
+					print(i)
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)
@@ -258,6 +271,7 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				local gen = {}
 				for i = key, 1, -1 do
 					table.insert(gen, utils.reversePointPitch(path.points[i]))
+					print(i)
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)

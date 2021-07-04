@@ -1,24 +1,27 @@
 local CPS = require("CPStyling")
-local wWidth, wHeight = GetDisplayResolution()
 local theme = CPS.theme
 
 hud = {}
 
 function hud.drawEntry(station)
-    -- CPS:setThemeBegin()
-    -- CPS.styleBegin("WindowBorderSize", 0)
-    -- CPS.colorBegin("WindowBg", {0,0,0,0})
-    -- ImGui.Begin("ts_hud_entry", bit32.bor(ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoTitleBar))
+    local wWidth, wHeight = GetDisplayResolution()
 
-    -- ImGui.Text("Enter " .. station.displayName .. " Metro Station")
-
-    -- ImGui.End()
-    -- CPS.colorEnd(1)
-    -- CPS.styleEnd(1)
-    -- CPS:setThemeEnd()
+    CPS:setThemeBegin()
+    CPS.styleBegin("WindowBorderSize", 0)
+    CPS.colorBegin("WindowBg", {0,0,0,0})
+    ImGui.Begin("enterStation", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
+    ImGui.SetWindowFontScale(1.5)
+    ImGui.SetWindowPos((wWidth / 2) - 5, wHeight * 0.84)
+    ImGui.TextColored(1, 0.76, 0.23, 1, "[15 E$]")
+    ImGui.End()
+    CPS.colorEnd(1)
+    CPS.styleEnd(1)
+    CPS:setThemeEnd()
 end
 
 function hud.drawExit()
+    local wWidth, wHeight = GetDisplayResolution()
+
     CPS:setThemeBegin()
     CPS.styleBegin("WindowBorderSize", 0)
     CPS.colorBegin("WindowBg", {0,0,0,0})
@@ -38,6 +41,8 @@ function hud.drawExit()
 end
 
 function hud.enterTrain()
+    local wWidth, wHeight = GetDisplayResolution()
+
     CPS:setThemeBegin()
     CPS.styleBegin("WindowBorderSize", 0)
     CPS.colorBegin("WindowBg", {0,0,0,0})
@@ -57,6 +62,8 @@ function hud.enterTrain()
 end
 
 function hud.drawDestinations(sys)
+    local wWidth, wHeight = GetDisplayResolution()
+
     CPS:setThemeBegin()
     CPS.styleBegin("WindowBorderSize", 0)
     CPS.colorBegin("WindowBg", {0,0,0,0})

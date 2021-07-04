@@ -206,4 +206,43 @@ function miscUtils.multEuler(e1, factor)
     return EulerAngles.new(e1.roll * factor, e1.pitch * factor, e1.yaw * factor)
 end
 
+function miscUtils.calcDeltaEuler(eul1, eul2)
+    local delta = EulerAngles.new(0, 0, 0)
+
+    local deltaRoll = eul1.roll - eul2.roll
+    local altDeltaRoll = (180 - math.abs(eul1.roll)) + (180 - math.abs(eul2.roll))
+    if eul1.roll > eul2.roll then
+        altDeltaRoll = - altDeltaRoll
+    end
+    if math.abs(deltaRoll) < math.abs(altDeltaRoll) then
+        delta.roll = deltaRoll
+    else
+        delta.roll = altDeltaRoll
+    end
+
+    local deltaPitch = eul1.pitch - eul2.pitch
+    local altDeltaPitch = (180 - math.abs(eul1.pitch)) + (180 - math.abs(eul2.pitch))
+    if eul1.pitch > eul2.pitch then
+        altDeltaPitch = - altDeltaPitch
+    end
+    if math.abs(deltaPitch) < math.abs(altDeltaPitch) then
+        delta.pitch = deltaPitch
+    else
+        delta.pitch = altDeltaPitch
+    end
+
+    local deltaYaw = eul1.yaw - eul2.yaw
+    local altDeltaYaw = (180 - math.abs(eul1.yaw)) + (180 - math.abs(eul2.yaw))
+    if eul1.yaw > eul2.yaw then
+        altDeltaYaw = - altDeltaYaw
+    end
+    if math.abs(deltaYaw) < math.abs(altDeltaYaw) then
+        delta.yaw = deltaYaw
+    else
+        delta.yaw = altDeltaYaw
+    end
+
+    return delta
+end
+
 return miscUtils

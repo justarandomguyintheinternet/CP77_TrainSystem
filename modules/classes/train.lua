@@ -12,11 +12,12 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.speed = 45
+	o.originalSpeed = 45
+	o.speed = 0
 	o.pointIndex = 1
 
-	o.carName = "Vehicle.cs_savable_makigai_maimai"
-	o.carApp = "makigai_maimai__basic_burnt_01"
+	o.carName =  "Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
+	o.carApp = "makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
 	o.carOffset = Vector4.new(0, 0, 1.5, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
@@ -85,18 +86,46 @@ function train:startDrive(route)
 	if route == "arrive" then
 		self.activePath = self.arrivalPath
 		self.driving = true
+		self.speed = self.originalSpeed
 	else
 		self.activePath = self.exitPath
 		self.driving = true
 		self:handlePoint(self.activePath[1])
+		self.speed = 0
 	end
 	self.pos = self.activePath[1].pos
 	self.rot = self.activePath[1].rot
 end
 
+function train:getRemainingLength()
+	local length = 0
+	length = length + utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
+	for i = self.pointIndex + 2, #self.activePath, 1 do
+		length = length + utils.distanceVector(self.activePath[i].pos, self.activePath[i - 1].pos)
+	end
+	return length
+end
+
+function train:getDoneLength()
+	local length = 0
+	length = length + utils.distanceVector(self.pos, self.activePath[self.pointIndex].pos)
+	for i = self.pointIndex, 2, -1 do
+		length = length + utils.distanceVector(self.activePath[i].pos, self.activePath[i - 1].pos)
+	end
+	return length
+end
+
 function train:update(deltaTime)
 	if self.driving then
 		--print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
+		if self:getDoneLength() < 25 then
+			self.speed = self:getDoneLength() * 3 + 0.1--self.originalSpeed * ((self:getDoneLength() + 0.01 / 25))
+			self.speed = math.min(self.speed, self.originalSpeed)
+		end
+		if self:getRemainingLength() < 25 then
+			self.speed = self.originalSpeed * (self:getRemainingLength() / 25)
+			self.speed = math.max(0.75, self.speed)
+		end
 		if utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) > self.speed * deltaTime then
 			--print("below next point")
 			local todo = self.speed * deltaTime -- How much i want to do
@@ -105,7 +134,7 @@ function train:update(deltaTime)
 			local dirVector = utils.subVector(self.activePath[self.pointIndex + 1].pos, self.pos)
 			self.pos = utils.addVector(utils.multVector(dirVector, factor), self.pos)
 
-			local newEuler = utils.subEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
+			local newEuler = utils.calcDeltaEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
 			self.rot = GetSingleton('EulerAngles'):ToQuat(utils.addEuler(utils.multEuler(newEuler, factor), GetSingleton('Quaternion'):ToEulerAngles(self.rot)))
 		else
 			local todo = self.speed * deltaTime
@@ -134,7 +163,7 @@ function train:update(deltaTime)
 					local dirVector = utils.subVector(self.activePath[self.pointIndex + 1].pos, self.pos)
 					self.pos = utils.addVector(utils.multVector(dirVector, factor), self.pos)
 
-					local newEuler = utils.subEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
+					local newEuler = utils.calcDeltaEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
 					self.rot = GetSingleton('EulerAngles'):ToQuat(utils.addEuler(utils.multEuler(newEuler, factor), GetSingleton('Quaternion'):ToEulerAngles(self.rot)))
 					todo = 0
 				end

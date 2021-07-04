@@ -14,7 +14,7 @@ function stationSys:new(ts)
 	o.currentStation = nil
 	o.mountLocked = false
 
-	o.holdTime = 5
+	o.holdTime = 7.5
 	o.activeTrain = nil
 	o.trainInStation = false
 
@@ -120,7 +120,7 @@ function stationSys:nearTrain()
 end
 
 function stationSys:handleExitTrain()
-	if self.ts.input.interactKey then
+	if self.ts.input.exit then
 		if self.activeTrain.playerMounted and self.trainInStation then
 			self.mountLocked = true
 			self.activeTrain:unmount()
