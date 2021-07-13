@@ -12,7 +12,7 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.originalSpeed = 45
+	o.originalSpeed = 75
 	o.speed = 0
 	o.pointIndex = 1
 
@@ -248,7 +248,7 @@ end
 
 function train:mount()
 	self.playerMounted = true
-	utils.mount(self.carObject.entID)
+	utils.mount(self.carObject.entID, "seat_front_left")
 	utils.switchCarCam("FPP")
 	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-22,0,0))
 end

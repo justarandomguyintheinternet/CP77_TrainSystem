@@ -4,7 +4,8 @@ ts = {
     runtimeData = {
         cetOpen = false,
         inMenu = false,
-        inGame = false
+        inGame = false,
+        noTrains = false
     },
 
     defaultSettings = {
@@ -25,11 +26,12 @@ function ts:new()
         ts.entrySys = require("modules/entrySystem"):new(ts)
         ts.stationSys = require("modules/stationSystem"):new(ts)
         ts.trackSys = require("modules/trackSystem"):new(ts)
+
         ts.trackSys:load()
         ts.entrySys:load()
         ts.stationSys:load()
 
-        ts.observers.start()
+        ts.observers.start(ts)
         ts.input.startInputObserver()
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
@@ -53,7 +55,7 @@ function ts:new()
     registerForEvent("onUpdate", function(deltaTime)
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             debug.run(ts)
-            ts.trackSys:update()
+            ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
         end

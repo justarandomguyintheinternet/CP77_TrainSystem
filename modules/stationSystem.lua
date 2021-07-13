@@ -45,6 +45,8 @@ function stationSys:enter(id) -- Enter station from ground level
 	self.onStation = true
 	self.currentStation = self.stations[id]
 	self.ts.observers.noSave = true
+	self.ts.runtimeData.noTrains = true
+
 	Cron.After(0.3, function ()
 		self.currentStation:tpTo(self.currentStation.portalPoint)
 	end)

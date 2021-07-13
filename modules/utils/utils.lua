@@ -108,17 +108,17 @@ function miscUtils.togglePin(data, name, state, pos, variant)
     end
 end
 
-function miscUtils.mount(entID)
+function miscUtils.mount(entID, seat)
     local player = Game.GetPlayer()
 
     local data = NewObject('handle:gameMountEventData')
     data.isInstant = true
-    data.slotName = "seat_front_left"
+    data.slotName = seat
     data.mountParentEntityId = entID
     data.entryAnimName = "forcedTransition"
 
     local slotID = NewObject('gamemountingMountingSlotId')
-    slotID.id = "seat_front_left"
+    slotID.id = seat
 
     local mountingInfo = NewObject('gamemountingMountingInfo')
     mountingInfo.childId = player:GetEntityID()

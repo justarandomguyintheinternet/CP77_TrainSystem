@@ -1,6 +1,5 @@
 local track = require("modules/classes/track")
 local utils = require("modules/utils/utils")
-local train = require("modules/classes/train")
 
 trackSys = {}
 
@@ -14,8 +13,6 @@ function trackSys:new(ts)
 	o.pathsData = {} -- Tables with all points and meta info (See unpackPath function)
 	o.arrivePath = {next = {}, last = {}} -- Arrive Path for both directions (If available)
 	o.combinedData = {} -- Holds pairs of paths with arrivePaths
-
-	self.trains = {}
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -60,20 +57,19 @@ function trackSys:generatePaths(track, station) -- Main function to fill the sel
 		table.insert(path, track)
 		if track.connectedID.second.last ~= -1 then self:DFS(self.tracks[track.connectedID.second.last], track, path) end
 	else -- Same but there is no other station on the same track, wont insert the single origin track as possible path
-		if track.hasStation.last ~= -1 and track.hasStation.last == station.id then
-			table.insert(path, track)
-			if track.connectedID.first.next ~= -1 then self:DFS(self.tracks[track.connectedID.first.next], track, path) end
-			path = {}
-			table.insert(path, track)
-			if track.connectedID.second.next ~= -1 then self:DFS(self.tracks[track.connectedID.second.next], track, path) end
-		end
-		if track.hasStation.next ~= -1 and track.hasStation.next == station.id then -- Handle both directions (last/next) and both possible connected tracks
-			table.insert(path, track)
-			if track.connectedID.first.last ~= -1 then self:DFS(self.tracks[track.connectedID.first.last], track, path) end
-			path = {}
-			table.insert(path, track)
-			if track.connectedID.second.last ~= -1 then self:DFS(self.tracks[track.connectedID.second.last], track, path) end
-		end
+		path = {}
+		table.insert(path, track)
+		if track.connectedID.first.next ~= -1 then self:DFS(self.tracks[track.connectedID.first.next], track, path) end
+		path = {}
+		table.insert(path, track)
+		if track.connectedID.second.next ~= -1 then self:DFS(self.tracks[track.connectedID.second.next], track, path) end
+
+		path = {}
+		table.insert(path, track)
+		if track.connectedID.first.last ~= -1 then self:DFS(self.tracks[track.connectedID.first.last], track, path) end
+		path = {}
+		table.insert(path, track)
+		if track.connectedID.second.last ~= -1 then self:DFS(self.tracks[track.connectedID.second.last], track, path) end
 	end
 end
 
@@ -174,7 +170,7 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 			data.targetID = path[1].hasStation.last
 			self:setTrackDir(path[1])
 			for i = #path[1].points, 1, -1 do
-				table.insert(data.points, path[1].points[i])
+				table.insert(data.points, utils.reversePoint(path[1].points[i]))
 			end
 		end
 	else
@@ -226,7 +222,6 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 					end
 				end
 			elseif key == 1 then
-				self:setTrackDir(track)
 				if (track.dir == "next" and track.hasStation.next ~= -1) then
 					local point = track.points[#track.points]
 					table.insert(data.points, point)
@@ -246,9 +241,28 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 	return data
 end
 
+function trackSys:getPathsDataDir() --Check if all paths from self.pathsData go in the same direction
+	local nexts = 0
+	local lasts = 0
+	for _, p in pairs(self.pathsData) do
+		if p.dir == "next" then
+			nexts = nexts + 1
+		else
+			lasts = lasts + 1
+		end
+	end
+	print("lasts and nexts for arrive: ", lasts, nexts)
+	if nexts == 0 or lasts == 0 then
+		return false
+	else
+		return true
+	end
+end
+
 function trackSys:generateArrivePaths(station) -- Uses the pathsData to create an arrival path from both directions, using the points load/unload triggers
 	local nexts = {}
 	local lasts = {}
+	local shouldReversePoints = self:getPathsDataDir()
 
 	for _, path in pairs(self.pathsData) do
 		for key, point in pairs(path.points) do
@@ -257,7 +271,11 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				print("found next at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
-					table.insert(gen, utils.reversePointPitch(path.points[i]))
+					local point = path.points[i]
+					if shouldReversePoints then
+						point = utils.reversePoint(path.points[i])
+					end
+					table.insert(gen, point)
 					print(i)
 				end
 				if path.dir == "next" then
@@ -270,7 +288,11 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 				print("found last at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
-					table.insert(gen, utils.reversePointPitch(path.points[i]))
+					local point = path.points[i]
+					if shouldReversePoints then
+						point = utils.reversePoint(path.points[i])
+					end
+					table.insert(gen, point)
 					print(i)
 				end
 				if path.dir == "next" then
@@ -362,12 +384,6 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 	end
 
 	return self.combinedData
-end
-
-function trackSys:update(deltaTime)
-	for _, t in pairs(self.trains) do
-		t:update()
-	end
 end
 
 return trackSys
