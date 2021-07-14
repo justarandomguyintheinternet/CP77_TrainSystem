@@ -14,7 +14,7 @@ function stationSys:new(ts)
 	o.currentStation = nil
 	o.mountLocked = false
 
-	o.holdTime = 7.5
+	o.holdTime = 10
 	o.activeTrain = nil
 	o.trainInStation = false
 
@@ -71,10 +71,60 @@ function stationSys:enter(id) -- Enter station from ground level
 	self:activateArrival()
 end
 
-function stationSys:activateArrival()
+function stationSys:requestPaths()
 	self.pathsData = self.ts.trackSys:mainGeneratePathData(self.currentStation)
 	self.currentPathsIndex = 0
 	self.totalPaths = #self.pathsData
+
+	local last = {}
+	local next = {}
+	local ordered = {}
+	for _, v in pairs(self.pathsData) do
+		if v.dir == "next" then
+			table.insert(next, v)
+		else
+			table.insert(last, v)
+		end
+	end
+
+	if self.previousStationID == nil then
+		local num = math.max(#next, #last)
+		for i = 1, num do
+			if #next >= i then table.insert(ordered, next[i]) end
+			if #last >= i then table.insert(ordered, last[i]) end
+		end
+		self.pathsData = ordered
+	else
+		local prevPath = nil
+		for _, v in pairs(self.pathsData) do
+			print(v.targetID, self.previousStationID)
+			if v.targetID == self.previousStationID then
+				prevPath = v
+			end
+		end
+		if prevPath.dir == "next" then
+			for _, p in pairs(last) do
+				table.insert(ordered, p)
+			end
+			for _, p in pairs(next) do
+				if p ~= prevPath then table.insert(ordered, p) end
+			end
+			table.insert(ordered, prevPath)
+		else
+			for _, p in pairs(next) do
+				table.insert(ordered, p)
+			end
+			for _, p in pairs(last) do
+				if p ~= prevPath then table.insert(ordered, p) end
+			end
+			table.insert(ordered, prevPath)
+		end
+		self.pathsData = ordered
+	end
+end
+
+function stationSys:activateArrival()
+	self:requestPaths()
 	if self.activeTrain == nil then
 		self.activeTrain = train:new(self)
 		self.activeTrain.spawnStationID = self.currentStation.id
@@ -98,6 +148,7 @@ function stationSys:leave() -- Leave to ground level
 	self.currentStation:exitToGround(self.ts)
 	self.currentStation = nil
 	self.onStation = false
+	self.previousStationID = nil
 	if self.activeTrain ~= nil then
 		self.activeTrain:despawn()
 		self.activeTrain = nil
@@ -172,10 +223,8 @@ function stationSys:update(deltaTime)
 			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
 				self.onStation = true
 				print("previous station id was", self.previousStationID, "new curren one is ", self.currentStation.id)
+				self:requestPaths()
 				self.previousStationID = self.currentStation.id
-				self.pathsData = self.ts.trackSys:mainGeneratePathData(self.currentStation)
-				self.currentPathsIndex = 0
-				self.totalPaths = #self.pathsData
 				self.currentPathsIndex = self.currentPathsIndex + 1
 				if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
 				self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])

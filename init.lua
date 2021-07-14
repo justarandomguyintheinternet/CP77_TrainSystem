@@ -9,7 +9,9 @@ ts = {
     },
 
     defaultSettings = {
-        fallProtection = true
+        fallProtection = true,
+        camDist = 20,
+        defaultSeat = "seat_front_right"
     },
 
     settings = {},

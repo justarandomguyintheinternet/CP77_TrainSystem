@@ -32,6 +32,7 @@ function object:spawn()
 
     Cron.Every(0.25, {tick = 0}, function(timer)
         self.entity = Game.FindEntityByID(self.entID)
+        print("try spawn")
         if self.entity ~= nil then
 			timer:Halt()
             self.spawned = true
@@ -70,7 +71,7 @@ end
 
 function object:despawn()
     Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.level)
-    self.spawned = false
+    --self.spawned = false
 end
 
 function object:respawn()
