@@ -28,17 +28,15 @@ function input.startInputObserver()
             elseif actionType == 'BUTTON_RELEASED' then
                 input.toggleCam = false
             end
-        elseif actionName == 'UI_MoveDown' then
+        elseif actionName == 'NextWeapon' then
             if actionType == 'BUTTON_PRESSED' then
+                print("next")
                 input.down = true
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.down = false
             end
-        elseif actionName == 'UI_MoveUp' then
+        elseif actionName == 'PreviousWeapon' then
             if actionType == 'BUTTON_PRESSED' then
+                print("last")
                 input.up = true
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.up = false
             end
         end
     end)

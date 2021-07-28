@@ -11,7 +11,8 @@ ts = {
     defaultSettings = {
         fallProtection = true,
         camDist = 20,
-        defaultSeat = "seat_front_right"
+        defaultSeat = 1,
+        defaultStation = 1
     },
 
     settings = {},
@@ -19,6 +20,7 @@ ts = {
     input = require("modules/utils/input"),
     observers = require("modules/utils/observers"),
     hud = require("modules/ui/hud"),
+    settingsUI = require("modules/ui/settingsUI"),
     Cron = require("modules/utils/Cron"),
     GameUI = require("modules/utils/GameUI")
 }
@@ -65,7 +67,9 @@ function ts:new()
     end)
 
     registerForEvent("onDraw", function()
-
+        if ts.runtimeData.cetOpen then
+            ts.settingsUI.draw(ts)
+        end
     end)
 
     registerForEvent("onOverlayOpen", function()

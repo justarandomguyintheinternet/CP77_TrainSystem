@@ -29,6 +29,7 @@ end
 function station:exitToGround(ts)
 	ts.observers.noSave = false
 	ts.runtimeData.noTrains = false
+	ts.observers.noKnockdown = false
 	local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
     rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
 	Game.ChangeZoneIndicatorPublic()

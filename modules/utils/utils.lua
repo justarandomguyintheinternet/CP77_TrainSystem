@@ -182,6 +182,16 @@ function miscUtils.reversePointPitch(point)
     return newPoint
 end
 
+function miscUtils.setRadioStation(vehicle, stationID) -- -1 means off
+    if stationID ~= -1 then
+        vehicle:ToggleRadioReceiver(false)
+        -- vehicle:ToggleRadioReceiver(true)
+        -- vehicle:SetRadioReceiverStation(stationID)
+    else
+        vehicle:ToggleRadioReceiver(false)
+    end
+end
+
 function miscUtils.addVector(v1, v2)
     return Vector4.new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w)
 end

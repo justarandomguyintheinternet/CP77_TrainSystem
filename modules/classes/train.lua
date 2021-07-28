@@ -12,12 +12,12 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.originalSpeed = 45
+	o.originalSpeed = 30
 	o.speed = 0
 	o.pointIndex = 1
 
-	o.carName =  "Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
-	o.carApp = "makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
+	o.carName =  "Vehicle.v_sportbike3_brennan_apollo" --Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
+	o.carApp = ""--"makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
 	o.carOffset = Vector4.new(0, 0, 1.5, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
@@ -28,6 +28,8 @@ function train:new(stationSys)
 	o.camDist = stationSys.ts.settings.camDist
 	o.allowSwitching = true
 	o.currentSeat = stationSys.ts.settings.defaultSeat
+	o.seats = {"seat_front_right", "seat_back_right", "seat_back_left", "seat_front_left"}
+	o.radioStation = stationSys.ts.settings.defaultStation
 
 	o.busObject = object:new(0)
 	o.busOffset = Vector4.new(0, 0, 0.5, 0)
@@ -53,6 +55,7 @@ function train:spawn()
 	self.carObject = object:new(self.carLayer)
 	self.carObject.name = self.carName
 	self.carObject.app = self.carApp
+	self.carObject.radioStation = self.radioStation
 
 	self.carObject.pos = point.pos
 	self.carObject.rot = point.rot
@@ -73,6 +76,7 @@ end
 function train:spawnBus()
 	self.busObject = object:new(self.busLayer)
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
+	self.busObject.radioStation = self.radioStation
 	local pos = Game.GetPlayer():GetWorldPosition()
 	pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist + 5
 	pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist + 5
@@ -198,16 +202,45 @@ function train:update(deltaTime)
 			self.ts.input.toggleCam = false
 			if self.perspective == "tpp" and self.busObject.spawned then
 				utils.unmount()
-				utils.mount(self.busObject.entID, self.currentSeat)
+				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
 				self.perspective = "fpp"
 				Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
+				self.ts.input.down = false
+				self.ts.input.up = false
 			else
-				utils.unmount()
-				utils.mount(self.carObject.entID, "seat_front_left")
-				self.perspective = "tpp"
-				Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
+				if self.currentSeat ~= 4 then
+					utils.unmount()
+					utils.mount(self.carObject.entID, "seat_front_left")
+					self.perspective = "tpp"
+					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
+				else
+					Game.GetPlayer():SetWarningMessage("Cant switch when in this seat")
+				end
 			end
+			-- Cron.After(0.2, function ()
+			-- 	utils.setRadioStation(self.busObject.entity, self.radioStation)
+			-- 	utils.setRadioStation(self.carObject.entity, self.radioStation)
+			-- end)
 			print("Now switched to ", self.perspective)
+		end
+
+		if self.perspective == "fpp" then
+			if self.ts.input.down then
+				self.ts.input.down = false
+				self.currentSeat = self.currentSeat + 1
+				if self.currentSeat > 4 then self.currentSeat = 1 end
+				print("down", self.currentSeat)
+				utils.unmount()
+				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
+			end
+			if self.ts.input.up then
+				self.ts.input.up = false
+				self.currentSeat = self.currentSeat - 1
+				if self.currentSeat < 1 then self.currentSeat = 4 end
+				print("up", self.currentSeat)
+				utils.unmount()
+				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
+			end
 		end
 	end
 
@@ -223,7 +256,7 @@ function train:update(deltaTime)
 		self:updateLocation("bus")
 		self.busObject:update()
 	end
-	print(self.busObject.spawned)
+
 	if not self.playerMounted then Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.busLayer) end
 	self:updateCam()
 end
@@ -235,9 +268,9 @@ function train:updateLocation(obj)
 			self.carObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 2
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 2
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 2
 			self.carObject.pos = pos
 		end
 	elseif obj == "train" then
@@ -246,17 +279,17 @@ function train:updateLocation(obj)
 			self.trainObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 2
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 2
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 2
 			self.trainObject.pos = pos
 		end
 	else
 		if self.perspective == "tpp" then
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist + 5
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist + 5
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist + 5
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.camDist + 10)
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.camDist + 10)
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.camDist + 10)
 			self.busObject.pos = pos
 		else
 			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
@@ -324,6 +357,9 @@ end
 
 function train:mount()
 	self.perspective = "tpp"
+	self.currentSeat = self.ts.settings.defaultSeat
+	self.ts.input.down = false
+	self.ts.input.up = false
 	Cron.After(0.5, function ()
 		self:spawnBus()
 	end)

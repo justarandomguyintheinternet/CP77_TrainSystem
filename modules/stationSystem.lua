@@ -45,6 +45,7 @@ function stationSys:enter(id) -- Enter station from ground level
 	self.onStation = true
 	self.currentStation = self.stations[id]
 	self.ts.observers.noSave = true
+	self.ts.observers.noKnockdown = true
 	self.ts.runtimeData.noTrains = true
 
 	Cron.After(0.3, function ()
@@ -192,7 +193,7 @@ function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
 		if not self.currentStation:inStation() and not (self.activeTrain.playerMounted and not self.trainInStation) then
-			--self.currentStation:tpTo(self.currentStation.portalPoint)
+			self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then
 			self.ts.hud.drawExit()

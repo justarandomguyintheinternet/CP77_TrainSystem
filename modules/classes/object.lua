@@ -3,7 +3,7 @@ local Cron = require("modules/utils/Cron")
 
 object = {}
 
-function object:new(level)
+function object:new(level, station)
 	local o = {}
 
     o.spawned = false
@@ -17,6 +17,7 @@ function object:new(level)
     o.rot = Quaternion.new(0.001, 0, 0, 0)
     o.name = ""
     o.app = ""
+    o.radioStation = station or 0
 
     o.id = math.random(1, 100000) -- Id for imgui child
 
@@ -40,6 +41,7 @@ function object:spawn()
                 self.entity:PrefetchAppearanceChange(self.app)
                 self.entity:ScheduleAppearanceChange(self.app)
             end
+            utils.setRadioStation(self.entity, self.radioStation)
 		end
 	end)
 end
