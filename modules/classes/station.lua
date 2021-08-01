@@ -14,7 +14,14 @@ function station:new(ts)
 	o.trainExit = {pos = Vector4.new(0, 0, 0, 0), rot = Quaternion.new(0, 0, 0, 0)}
 	o.portalPoint = {pos = Vector4.new(0, 0, 0, 0), rot = Quaternion.new(0, 0, 0, 0)}
 	o.groundPoint = {pos = Vector4.new(0, 0, 0, 0), rot = Quaternion.new(0, 0, 0, 0)}
+
+	o.objectFileName = ""
 	o.objects = {}
+	o.objectIDS = {}
+
+	o.exitDoorPosition = Vector4.new(0, 0, 0, 0)
+	o.exitDoorSealed = true
+
 	o.radius = 0
 	o.useDoors = true
 	o.loaded = false
@@ -51,24 +58,23 @@ function station:exitToGround(ts)
 end
 
 function station:spawn()
-	for _, obj in pairs(self.objects) do
-		obj:spawn()
+	for _, o in pairs(self.objects) do
+		local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat())
+        table.insert(self.objectIDS, id)
 	end
 	self.loaded = true
 end
 
 function station:despawn()
-	print("despawn station id ", self.id)
-	for _, obj in pairs(self.objects) do
-		obj:despawn()
+	for _, id in pairs(self.objectIDS) do
+		if Game.FindEntityByID(id) ~= nil then
+			Game.FindEntityByID(id):GetEntity():Destroy()
+		end
 	end
 	self.loaded = false
 end
 
 function station:update()
-	for _, obj in pairs(self.objects) do
-		obj:update()
-	end
 end
 
 function station:inStation() -- Is player in station
@@ -76,14 +82,44 @@ function station:inStation() -- Is player in station
 end
 
 function station:nearExit()
+	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
 	local near = false
-	if utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.portalPoint.pos) < 1 then
-		near = true
+
+	if target then
+		if utils.isVector(target:GetWorldPosition(), self.exitDoorPosition) then
+			if self.exitDoorSealed then
+				local targetPS = target:GetDevicePS()
+				if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+			end
+			if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
+				near = true
+			end
+		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.5 then
+			self:handleFakeDoor(target)
+		end
 	end
-	if utils.looksAtDoor(3.2) and self.useDoors then
-		near = true
-	end
+
 	return near
+end
+
+function station:handleFakeDoor(target)
+	local player = Game.GetPlayer()
+
+	if target:GetClassName().value == "FakeDoor" then
+		self.ts.hud.drawDoor()
+		if self.ts.input.interactKey then
+			self.ts.input.interactKey = false
+
+			local pos1 = utils.addVector(target:GetWorldPosition(), target:GetWorldForward())
+			local pos2 = utils.subVector(target:GetWorldPosition(), target:GetWorldForward())
+
+			if Vector4.Distance(player:GetWorldPosition(), pos1) > Vector4.Distance(player:GetWorldPosition(), pos2) then
+				Game.GetTeleportationFacility():Teleport(player, pos1, player:GetWorldOrientation():ToEulerAngles())
+			else
+				Game.GetTeleportationFacility():Teleport(player, pos2,  player:GetWorldOrientation():ToEulerAngles())
+			end
+		end
+	end
 end
 
 function station:load(path)
@@ -97,10 +133,12 @@ function station:load(path)
 	self.trainExit = {pos = utils.getVector(data.trainExit.pos), rot = utils.getQuaternion(data.trainExit.rot)}
 	self.portalPoint = {pos = utils.getVector(data.portalPoint.pos), rot = utils.getQuaternion(data.portalPoint.rot)}
 	self.groundPoint = {pos = utils.getVector(data.groundPoint.pos), rot = utils.getQuaternion(data.groundPoint.rot)}
-	for _, v in pairs(data.objects) do
-		local obj = object:new(2001)
-		obj:load(v)
-		table.insert(self.objects, obj)
+
+	self.objectFileName = data.objectFileName
+	self.exitDoorPosition = utils.getVector(data.exitDoorPosition)
+	self.exitDoorSealed = data.exitDoorSealed
+	if self.objectFileName ~= "" then
+		self.objects = config.loadFile("data/objects/stations/" .. self.objectFileName)
 	end
 end
 
@@ -114,11 +152,10 @@ function station:save(path)
 	data.id = self.id
 	data.useDoors = self.useDoors
 	data.radius = self.radius
-	data.objects = {}
-	for _, v in pairs(self.objects) do
-		local obj = v:getData()
-		table.insert(data.objects, obj)
-	end
+
+	data.objectFileName = self.objectFileName
+	data.exitDoorPosition = utils.fromVector(self.exitDoorPosition)
+	data.exitDoorSealed = self.exitDoorSealed
 
     config.saveFile(path, data)
 end

@@ -120,10 +120,11 @@ end
 
 function entrySys:despawnElevators()
     for _, id in pairs(self.elevatorIDS) do
-        if id then
+        if id and Game.FindEntityByID(id) ~= nil then
             Game.FindEntityByID(id):GetEntity():Destroy()
         end
     end
+    self.elevatorIDS = {}
 end
 
 return entrySys

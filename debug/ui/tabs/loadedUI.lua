@@ -8,11 +8,6 @@ loadedUI = {
 }
 
 function loadedUI.update()
-    for _, s in pairs(loadedUI.stations) do
-        for _, obj in pairs(s.objects) do
-            obj:update()
-        end
-    end
 end
 
 function loadedUI.draw(debug)

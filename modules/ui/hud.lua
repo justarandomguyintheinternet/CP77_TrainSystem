@@ -40,6 +40,26 @@ function hud.drawExit()
     CPS:setThemeEnd()
 end
 
+function hud.drawDoor()
+    local wWidth, wHeight = GetDisplayResolution()
+
+    CPS:setThemeBegin()
+    CPS.styleBegin("WindowBorderSize", 0)
+    CPS.colorBegin("WindowBg", {0,0,0,0})
+    ImGui.Begin("useDoor", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
+    ImGui.SetWindowFontScale(1.5)
+    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.79)
+    CPS.colorBegin("Text", theme.CPButtonText)
+    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
+    ImGui.SameLine()
+    ImGui.Text("Use Door")
+    CPS.colorEnd()
+    ImGui.End()
+    CPS.colorEnd(1)
+    CPS.styleEnd(1)
+    CPS:setThemeEnd()
+end
+
 function hud.enterTrain()
     local wWidth, wHeight = GetDisplayResolution()
 

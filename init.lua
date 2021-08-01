@@ -49,6 +49,8 @@ function ts:new()
 
         ts.GameUI.OnSessionEnd(function()
             ts.runtimeData.inGame = false
+            ts.entrySys:despawnElevators()
+            ts.objectSys.despawnAll()
         end)
 
         ts.runtimeData.inGame = not ts.GameUI.IsDetached() -- Required to check if ingame after reloading all mods

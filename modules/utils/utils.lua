@@ -106,7 +106,7 @@ function miscUtils.togglePin(data, name, state, pos, variant)
         local mappinData = NewObject('gamemappinsMappinData')
         mappinData.mappinType = TweakDBID.new('Mappins.DefaultStaticMappin')
         mappinData.variant = Enum.new('gamedataMappinVariant', variant)
-        mappinData.visibleThroughWalls = false
+        mappinData.visibleThroughWalls = true
         local id = Game.GetMappinSystem():RegisterMappin(mappinData, pos)
         data.pinIDs[name] = id
         data.pins[name] = false
@@ -223,6 +223,10 @@ end
 
 function miscUtils.multEuler(e1, factor)
     return EulerAngles.new(e1.roll * factor, e1.pitch * factor, e1.yaw * factor)
+end
+
+function miscUtils.isVector(v1, v2) -- Returns if two vectors are the same
+    return (v1.x == v2.x) and (v1.y == v2.y) and (v1.z == v2.z)
 end
 
 function miscUtils.calcDeltaEuler(eul1, eul2)

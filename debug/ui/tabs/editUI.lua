@@ -155,30 +155,20 @@ function editUI.drawStation()
     if ImGui.Button("TP to ground") then
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(station.groundPoint.rot))
     end
--- All objects
-    if ImGui.Button("Spawn all objects") then
-        for _, obj in pairs(station.objects) do
-            obj:spawn()
-        end
-    end
-    ImGui.SameLine()
-    if ImGui.Button("Despawn all objects") then
-        for _, obj in pairs(station.objects) do
-            obj:despawn()
-        end
-    end
 -- Objects
     ImGui.Separator()
-    if ImGui.Button("Add object") then
-        local obj = object:new(2002)
-        table.insert(station.objects, obj)
+    station.objectFileName = ImGui.InputTextWithHint("Objects File Name", "Name...", station.objectFileName, 100)
+    if ImGui.Button("Set Exit Door") then
+        station.exitDoorPosition = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true):GetWorldPosition()
     end
+    station.exitDoorSealed = ImGui.Checkbox("Exit Door Sealed", station.exitDoorSealed)
 
-    for _, obj in pairs(station.objects) do
-        state = ImGui.CollapsingHeader("Object_" .. tostring(obj.id))
-        if state then
-            editUI.drawStationObject(obj, station)
-        end
+    if ImGui.Button("Spawn") then
+        station:spawn()
+    end
+    ImGui.SameLine()
+    if ImGui.Button("Despawn") then
+        station:despawn()
     end
 end
 
@@ -585,11 +575,11 @@ function editUI.deleteAllPins(data)
 end
 
 function editUI.deleteAllObjects(data)
-    if data.objects ~= nil then
-        for _, obj in pairs(data.objects) do
-            obj:despawn()
-        end
-    end
+    -- if data.objects ~= nil then
+    --     for _, obj in pairs(data.objects) do
+    --         obj:despawn()
+    --     end
+    -- end
 end
 
 function editUI.update()

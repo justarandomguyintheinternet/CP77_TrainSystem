@@ -115,8 +115,8 @@ function train:startDrive(route)
 	else
 		self.activePath = self.exitPath
 		self.driving = true
-		self:handlePoint(self.activePath[1])
 		self.speed = 0
+		self:handlePoint(self.activePath[1])
 	end
 	self.pos = self.activePath[1].pos
 	self.rot = self.activePath[1].rot
@@ -141,6 +141,10 @@ function train:getDoneLength()
 end
 
 function train:update(deltaTime)
+	if self.justArrived and self.playerMounted then -- Once new station is reached, despawn the previous one
+		self.stationSys.stations[self.stationSys.previousStationID]:despawn()
+	end
+
 	if self.driving then
 		--print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
 		if self:getDoneLength() < 25 then
@@ -262,9 +266,9 @@ function train:updateLocation(obj)
 			self.carObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 2
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 2
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 2
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
 			self.carObject.pos = pos
 		end
 	elseif obj == "train" then
@@ -273,9 +277,9 @@ function train:updateLocation(obj)
 			self.trainObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 2
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 2
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 2
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
 			self.trainObject.pos = pos
 		end
 	else
@@ -293,31 +297,18 @@ function train:updateLocation(obj)
 end
 
 function train:handlePoint(point)
-	print(point.pos, point.loadStation.next, point.loadStation.last, point.unloadStation.next, point.unloadStation.last, point.dir)
-	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- Unload previous
-		if self.playerMounted then
-			if (self.stationSys.previousStationID ~= self.stationSys.currentStation.id) and (self.stationSys.previousStationID ~= nil) then
-				self.stationSys.stations[self.stationSys.previousStationID]:despawn()
-			else
-				self.stationSys.currentStation:despawn()
-				if self.stationSys.backUpTrain ~= nil then
-					self.stationSys.backUpTrain:despawn()
-					self.stationSys.backUpTrain = nil
-				end
-			end
-			print("despawned previous station")
-		else
+	if self.pointIndex == 1 and self.playerMounted and self.speed == 0 then -- Spawn next station when the driving starts with player mounted, speed not 0 makes sure it only gets called once
+		self.stationSys.previousStationID = self.stationSys.currentStation.id
+		self.stationSys.currentStation = self.stationSys.stations[self.targetID]
+		self.stationSys.currentStation:spawn()
+	end
+
+	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
+		if not self.playerMounted then
 			print("no player, back to arriving")
 			self.driving = false
 			self.stationSys:requestNewTrain()
 		end
-	end
-	if ((point.dir == "next" and point.loadStation.next) or (point.dir == "last" and point.loadStation.last)) and self.playerMounted then -- Load next
-		self.stationSys.previousStationID = self.stationSys.currentStation.id
-		self.stationSys.currentStation = self.stationSys.stations[self.targetID]
-		self.stationSys.currentStation:spawn()
-		print("loading new station with id ", self.stationSys.currentStation.id)
-		self.requestBackupTrain = true
 	end
 end
 
@@ -369,10 +360,6 @@ function train:unmount()
 	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
 	utils.unmount()
 	self.busObject:despawn()
-	if self.requestBackupTrain then -- Only spawn after unmount
-		self.requestBackupTrain = false
-		self:spawnBackupTrain()
-	end
 end
 
 return train
