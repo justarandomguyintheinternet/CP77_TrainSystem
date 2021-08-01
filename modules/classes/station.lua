@@ -1,10 +1,11 @@
 local object = require("modules/classes/object")
 local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
+local Cron = require("modules/utils/Cron")
 
 station = {}
 
-function station:new()
+function station:new(ts)
 	local o = {}
 
     o.id = 0
@@ -17,25 +18,36 @@ function station:new()
 	o.radius = 0
 	o.useDoors = true
 	o.loaded = false
+	o.ts = ts
 
 	self.__index = self
    	return setmetatable(o, self)
 end
 
 function station:tpTo(point)
-	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), point.pos,  GetSingleton('Quaternion'):ToEulerAngles(point.rot))
+	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), point.pos,  point.rot:ToEulerAngles()) -- Fuck this shit and its stoopid rotation / fuck unmount
+	Cron.After(0.25, function ()
+		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), point.pos,  point.rot:ToEulerAngles())
+	end)
 end
 
 function station:exitToGround(ts)
-	ts.observers.noSave = false
-	ts.runtimeData.noTrains = false
-	ts.observers.noKnockdown = false
-	local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
-    rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
-	Game.ChangeZoneIndicatorPublic()
+	local entry = ts.entrySys:findEntryByID(self.id)
+
+	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
 	self.loaded = false
 	self:despawn()
-	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
+
+    Cron.After(entry.elevatorTime, function ()
+        ts.observers.noSave = false
+		ts.runtimeData.noTrains = false
+		ts.observers.noKnockdown = false
+		local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
+		rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
+
+		Game.ChangeZoneIndicatorPublic()
+		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
+    end)
 end
 
 function station:spawn()

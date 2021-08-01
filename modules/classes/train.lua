@@ -17,7 +17,7 @@ function train:new(stationSys)
 	o.pointIndex = 1
 
 	o.carName =  "Vehicle.v_sportbike3_brennan_apollo" --Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
-	o.carApp = ""--"makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
+	o.carApp = "brennan_apollo_basic_burnt_v_2"--"makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
 	o.carOffset = Vector4.new(0, 0, 1.5, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
@@ -55,14 +55,13 @@ function train:spawn()
 	self.carObject = object:new(self.carLayer)
 	self.carObject.name = self.carName
 	self.carObject.app = self.carApp
-	self.carObject.radioStation = self.radioStation
 
-	self.carObject.pos = point.pos
+	self.carObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, 25, 0))
 	self.carObject.rot = point.rot
 
 	self.trainObject = object:new(self.trainLayer)
 	self.trainObject.name = "Vehicle.av_public_train_b"
-	self.trainObject.pos = point.pos
+	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, 25, 0)) -- Prevention system seems to spawn more likely the bigger the angle between the player view dir and the object
 	self.trainObject.rot = point.rot
 
 	point = self.arrivalPath[1]
@@ -76,11 +75,11 @@ end
 function train:spawnBus()
 	self.busObject = object:new(self.busLayer)
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
-	self.busObject.radioStation = self.radioStation
 	local pos = Game.GetPlayer():GetWorldPosition()
 	pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist + 5
 	pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist + 5
 	pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist + 5
+	self.busObject.rot = Game.GetCameraSystem():GetActiveCameraForward():ToRotation():ToQuat()
 	self.busObject.pos = pos
 	self.busObject:spawn()
 end
@@ -217,11 +216,6 @@ function train:update(deltaTime)
 					Game.GetPlayer():SetWarningMessage("Cant switch when in this seat")
 				end
 			end
-			-- Cron.After(0.2, function ()
-			-- 	utils.setRadioStation(self.busObject.entity, self.radioStation)
-			-- 	utils.setRadioStation(self.carObject.entity, self.radioStation)
-			-- end)
-			print("Now switched to ", self.perspective)
 		end
 
 		if self.perspective == "fpp" then

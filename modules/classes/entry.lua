@@ -12,6 +12,11 @@ function entry:new()
     o.useDoors = false
     o.stationID = 0
 
+    o.elevatorPath = "base\\gameplay\\devices\\elevators\\appearances\\elevator_kitsch_a_jt_1_entrance_tv.ent"
+    o.elevatorTime = 5
+    o.elevatorPosition = Vector4.new(0, 0, 0, 0)
+    o.elevatorPlayerRotation = EulerAngles.new(0, 0, 0)
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -24,6 +29,11 @@ function entry:load(path)
     self.waypointPosition = utils.getVector(data.waypointPosition)
     self.useDoors = data.useDoors
     self.stationID = data.stationID
+
+    self.elevatorPath = data.elevatorPath
+    self.elevatorTime = data.elevatorTime
+    self.elevatorPosition = utils.getVector(data.elevatorPosition)
+    self.elevatorPlayerRotation = utils.getEuler(data.elevatorPlayerRotation)
 end
 
 function entry:save(path)
@@ -34,6 +44,10 @@ function entry:save(path)
     data.useDoors = self.useDoors
     data.radius = self.radius
     data.stationID = self.stationID
+    data.elevatorPath = self.elevatorPath
+    data.elevatorTime = self.elevatorTime
+    data.elevatorPosition = utils.fromVector(self.elevatorPosition)
+    data.elevatorPlayerRotation = utils.fromEuler(self.elevatorPlayerRotation)
 
     config.saveFile(path, data)
 end

@@ -34,41 +34,22 @@ end
 function stationSys:load()
 	for _, file in pairs(dir("data/stations")) do
         if file.name:match("^.+(%..+)$") == ".json" then
-            local s = station:new()
+            local s = station:new(self.ts)
             s:load("data/stations/" .. file.name)
             self.stations[s.id] = s
         end
     end
 end
 
-function stationSys:enter(id) -- Enter station from ground level
+function stationSys:enter() -- TP to station, toggle pin
+	self.currentStation:tpTo(self.currentStation.portalPoint)
 	self.onStation = true
-	self.currentStation = self.stations[id]
-	self.ts.observers.noSave = true
-	self.ts.observers.noKnockdown = true
-	self.ts.runtimeData.noTrains = true
-
-	Cron.After(0.3, function ()
-		self.currentStation:tpTo(self.currentStation.portalPoint)
-	end)
-	Cron.After(0.32, function ()
-		self.currentStation:spawn() -- Spawn AFTER start of tp, or it crashes when getting a loading screen, but only little bit after to make sure stuff spawns even if there is no loading screen
-	end)
-
-	--if #self.currentStation.objects ~= 0 then
-		local cam = Game.GetPlayer():GetFPPCameraComponent()
-		cam.pitchMin = 100
-
-		Cron.After(0.5, function ()
-			local cam = Game.GetPlayer():GetFPPCameraComponent()
-			cam:ResetPitch()
-		end)
-	--end
-
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-	Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
-	Game.ChangeZoneIndicatorSafe()
+end
 
+function stationSys:loadStation(id) -- Load station objects, start train spawning
+	self.currentStation = self.stations[id]
+	self.currentStation:spawn()
 	self:activateArrival()
 end
 
@@ -164,7 +145,7 @@ function stationSys:nearTrain()
 	local near = false
 	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
 	if target then
-		if target:GetClassName().value == "vehicleAVBaseObject" or target:GetClassName().value == "vehicleCarBaseObject" then
+		if target:GetClassName().value == "vehicleAVBaseObject" or target:GetClassName().value == "vehicleBikeBaseObject" then
 			if utils.distanceVector(self.activeTrain.pos, Game.GetPlayer():GetWorldPosition()) < 7.5 then
 				near = true
 			end
@@ -192,7 +173,7 @@ end
 function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
-		if not self.currentStation:inStation() and not (self.activeTrain.playerMounted and not self.trainInStation) then
+		if not self.currentStation:inStation() and not self.activeTrain.playerMounted and self.onStation then
 			self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then

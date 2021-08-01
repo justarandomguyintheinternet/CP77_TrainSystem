@@ -35,6 +35,7 @@ end
 
 function editUI.drawEntry()
     local entry = editUI.currentData
+
     entry.stationID = ImGui.InputInt('StationID', entry.stationID)
 
     entry.useDoors = ImGui.Checkbox("Use doors", entry.useDoors)
@@ -63,6 +64,28 @@ function editUI.drawEntry()
 
     if ImGui.Button("TP to center") then
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.waypointPosition, EulerAngles.new(0, 0, 0))
+    end
+
+    entry.elevatorPath = ImGui.InputTextWithHint("Elevator Path", "Path...", entry.elevatorPath, 100)
+    entry.elevatorTime = ImGui.InputFloat('Elevator Time', entry.elevatorTime, 0, 100, "%.1f")
+    if ImGui.Button("Set Elevator Position") then
+        entry.elevatorPosition = Game.GetPlayer():GetWorldPosition()
+    end
+    ImGui.SameLine()
+    if ImGui.Button("Set Elevator Player Rotation") then
+        entry.elevatorPlayerRotation = Game.GetPlayer():GetWorldOrientation():ToEulerAngles()
+    end
+    ImGui.SameLine()
+    if ImGui.Button("TP to") then
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition,  entry.elevatorPlayerRotation)
+    end
+
+    if ImGui.Button("Spawn") then
+        entry.elevatorID = utils.spawnObject(entry.elevatorPath, entry.elevatorPosition, EulerAngles.new(0, 0, 0):ToQuat())
+    end
+    ImGui.SameLine()
+    if ImGui.Button("Despawn") then
+        if entry.elevatorID ~= nil then Game.FindEntityByID(entry.elevatorID):GetEntity():Destroy() end
     end
 end
 

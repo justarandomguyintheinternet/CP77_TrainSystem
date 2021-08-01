@@ -19,6 +19,7 @@ ts = {
 	CPS = require("CPStyling"),
     input = require("modules/utils/input"),
     observers = require("modules/utils/observers"),
+    objectSys = require("modules/objectSystem"),
     hud = require("modules/ui/hud"),
     settingsUI = require("modules/ui/settingsUI"),
     Cron = require("modules/utils/Cron"),
@@ -62,8 +63,14 @@ function ts:new()
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
+            ts.objectSys.run()
         end
         ts.Cron.Update(deltaTime)
+    end)
+
+    registerForEvent("onShutdown", function ()
+        ts.entrySys:despawnElevators()
+        ts.objectSys.despawnAll()
     end)
 
     registerForEvent("onDraw", function()

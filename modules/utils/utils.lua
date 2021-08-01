@@ -27,6 +27,14 @@ function miscUtils.fromQuaternion(quat) -- Returns table with i j k r from given
     return {i = quat.i, j = quat.j, k = quat.k, r = quat.r}
 end
 
+function miscUtils.fromEuler(eul) -- Returns table with roll pitch yaw from given EulerAngles
+    return {roll = eul.roll, pitch = eul.pitch, yaw = eul.yaw}
+end
+
+function miscUtils.getEuler(eul) -- Returns EulerAngles object from given table containing roll pitch yaw
+    return(EulerAngles.new(eul.roll, eul.pitch, eul.yaw))
+end
+
 function miscUtils.getVector(tab) -- Returns Vector4 object from given table containing x y z w
     return(Vector4.new(tab.x, tab.y, tab.z, tab.w))
 end
@@ -133,12 +141,13 @@ function miscUtils.mount(entID, seat)
 end
 
 function miscUtils.unmount()
-    local event = NewObject("handle:gamemountingUnmountingRequest")
-    local info = NewObject('gamemountingMountingInfo')
+    local event = gamemountingUnmountingRequest.new()
+    local info = gamemountingMountingInfo.new()
     info.childId = Game.GetPlayer():GetEntityID()
     event.lowLevelMountingInfo = info
-    event.mountData = NewObject('handle:gameMountEventData')
+    event.mountData = gameMountEventData.new()
     event.mountData.isInstant = true
+    event.mountData.removePitchRollRotationOnDismount = true
     Game.GetMountingFacility():Unmount(event)
 end
 
@@ -253,6 +262,14 @@ function miscUtils.calcDeltaEuler(eul1, eul2)
     end
 
     return delta
+end
+
+function miscUtils.spawnObject(path, pos, rot)
+    local transform = Game.GetPlayer():GetWorldTransform()
+    transform:SetOrientation(rot)
+    transform:SetPosition(pos)
+    local entityID = WorldFunctionalTests.SpawnEntity(path, transform, '')
+    return entityID
 end
 
 return miscUtils
