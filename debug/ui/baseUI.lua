@@ -4,6 +4,7 @@ baseUI = {
     loadedUI = require("debug/ui/tabs/loadedUI"),
     fileUI = require("debug/ui/tabs/fileUI"),
     editUI = require("debug/ui/tabs/editUI"),
+    rmUI = require("debug/ui/tabs/removalUI"),
     utilUI = require("debug/ui/tabs/utilUI"),
     switchToEdit = false,
     switchToLoaded = false
@@ -45,6 +46,11 @@ function baseUI.draw(debug)
 
         if ImGui.BeginTabItem("Files") then
             baseUI.fileUI.draw(debug)
+            ImGui.EndTabItem()
+        end
+
+        if ImGui.BeginTabItem("Removal") then
+            baseUI.rmUI.draw()
             ImGui.EndTabItem()
         end
 

@@ -1,19 +1,18 @@
--- Module for loading object files, mainly for entries and tracks
+-- Module for loading object files, mainly for entries and tracks, also for removing
 
 local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
+local Cron = require("modules/utils/Cron")
 
 objects = {
-    initialized = false,
-    entries = {}
+    entries = {},
+    removalData = {},
+    rmToDo = {}
 }
 
 function objects.run()
-    if not objects.initialized then
-        objects.initialized = true
-        objects.initialize()
-    end
     objects.handleEntries()
+    objects.updateRemoval()
 end
 
 function objects.initialize()
@@ -21,6 +20,11 @@ function objects.initialize()
         if file.name:match("^.+(%..+)$") == ".json" then
             table.insert(objects.entries, config.loadFile("data/objects/entries/" .. file.name))
         end
+    end
+
+    local file = config.loadFile("data/objects/removal.json")
+    for _, p in pairs(file) do
+        table.insert(objects.removalData, utils.getVector(p))
     end
 end
 
@@ -38,6 +42,24 @@ function objects.handleEntries()
                 Game.FindEntityByID(id):GetEntity():Destroy()
             end
             entry.ids = {}
+        end
+    end
+end
+
+function objects.updateRemoval()
+    for _, id in pairs(objects.rmToDo) do
+        if Game.FindEntityByID(id) ~= nil then
+            Game.FindEntityByID(id):Dispose()
+        else
+            utils.removeItem(objects.rmToDo, id)
+        end
+    end
+end
+
+function objects.handleNewObject(obj)
+    for _, p in pairs(objects.removalData) do
+        if utils.isVector(p, obj:GetWorldPosition()) then
+            table.insert(objects.rmToDo, obj:GetEntityID())
         end
     end
 end

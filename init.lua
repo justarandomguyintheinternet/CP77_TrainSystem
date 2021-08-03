@@ -35,6 +35,7 @@ function ts:new()
         ts.trackSys:load()
         ts.entrySys:load()
         ts.stationSys:load()
+        ts.objectSys.initialize()
 
         ts.observers.start(ts)
         ts.input.startInputObserver()
@@ -61,13 +62,12 @@ function ts:new()
 
     registerForEvent("onUpdate", function(deltaTime)
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
-            debug.run(ts)
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
         end
-        ts.Cron.Update(deltaTime)
+        ts.Cron.Update(deltaTime) --??????
     end)
 
     registerForEvent("onShutdown", function ()
@@ -78,6 +78,10 @@ function ts:new()
     registerForEvent("onDraw", function()
         if ts.runtimeData.cetOpen then
             ts.settingsUI.draw(ts)
+            debug.run(ts)
+        end
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
+            ts.hud.draw(ts)
         end
     end)
 

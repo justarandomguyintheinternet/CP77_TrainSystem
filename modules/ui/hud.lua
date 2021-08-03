@@ -1,7 +1,36 @@
 local CPS = require("CPStyling")
 local theme = CPS.theme
 
-hud = {}
+hud = {
+    entryVisible = false,
+    exitVisible = false,
+    doorVisible = false,
+    trainVisible = false,
+    destVisible = false
+}
+
+function hud.draw(ts)
+    if hud.entryVisible then
+        hud.drawEntry()
+        hud.entryVisible = false
+    end
+    if hud.exitVisible then
+        hud.drawExit()
+        hud.exitVisible = false
+    end
+    if hud.doorVisible then
+        hud.drawDoor()
+        hud.doorVisible = false
+    end
+    if hud.trainVisible then
+        hud.enterTrain()
+        hud.trainVisible = false
+    end
+    if hud.destVisible then
+        hud.drawDestinations(ts.stationSys)
+        hud.destVisible = false
+    end
+end
 
 function hud.drawEntry(station)
     local wWidth, wHeight = GetDisplayResolution()

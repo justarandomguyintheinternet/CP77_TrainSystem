@@ -99,6 +99,8 @@ function editUI.drawStation()
     station.radius = ImGui.InputFloat('Radius', station.radius, 0, 100, "%.2f")
     local dist = utils.distanceVector(station.center, Game.GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to center: " .. tonumber(string.format("%.2f", dist)))
+
+    station.spawnOffset = ImGui.InputFloat('Train Spawn Offset', station.spawnOffset, -100, 100, "%.1f")
 -- Doors
     station.useDoors = ImGui.Checkbox("Use doors", station.useDoors)
 -- Center

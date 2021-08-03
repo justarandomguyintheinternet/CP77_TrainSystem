@@ -22,6 +22,8 @@ function station:new(ts)
 	o.exitDoorPosition = Vector4.new(0, 0, 0, 0)
 	o.exitDoorSealed = true
 
+	o.spawnOffset = -10
+
 	o.radius = 0
 	o.useDoors = true
 	o.loaded = false
@@ -96,6 +98,9 @@ function station:nearExit()
 			end
 		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.5 then
 			self:handleFakeDoor(target)
+		elseif target:GetClassName().value == "Door" then
+			local targetPS = target:GetDevicePS()
+			if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
 		end
 	end
 
@@ -106,7 +111,7 @@ function station:handleFakeDoor(target)
 	local player = Game.GetPlayer()
 
 	if target:GetClassName().value == "FakeDoor" then
-		self.ts.hud.drawDoor()
+		self.ts.hud.doorVisible = true
 		if self.ts.input.interactKey then
 			self.ts.input.interactKey = false
 
@@ -130,6 +135,7 @@ function station:load(path)
     self.useDoors = data.useDoors
 	self.id = data.id
 	self.radius = data.radius
+	self.spawnOffset = data.spawnOffset
 	self.trainExit = {pos = utils.getVector(data.trainExit.pos), rot = utils.getQuaternion(data.trainExit.rot)}
 	self.portalPoint = {pos = utils.getVector(data.portalPoint.pos), rot = utils.getQuaternion(data.portalPoint.rot)}
 	self.groundPoint = {pos = utils.getVector(data.groundPoint.pos), rot = utils.getQuaternion(data.groundPoint.rot)}
@@ -152,6 +158,7 @@ function station:save(path)
 	data.id = self.id
 	data.useDoors = self.useDoors
 	data.radius = self.radius
+	data.spawnOffset = self.spawnOffset
 
 	data.objectFileName = self.objectFileName
 	data.exitDoorPosition = utils.fromVector(self.exitDoorPosition)

@@ -177,7 +177,7 @@ function stationSys:update(deltaTime)
 			self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then
-			self.ts.hud.drawExit()
+			self.ts.hud.exitVisible = true
 			if self.ts.input.interactKey then
                 self.ts.input.interactKey = false
 				for _, timer in pairs(Cron.timers) do
@@ -191,7 +191,7 @@ function stationSys:update(deltaTime)
 	end
 
 	if self.onStation then
-		self.ts.hud.drawDestinations(self)
+		self.ts.hud.destVisible = true
 	end
 
 	if self.activeTrain ~= nil then
@@ -233,7 +233,7 @@ function stationSys:update(deltaTime)
 
 	if self.trainInStation and self.activeTrain ~= nil then
 		if self:nearTrain() and not self.activeTrain.playerMounted then
-			self.ts.hud.enterTrain()
+			self.ts.hud.trainVisible = true
 			if self.ts.input.interactKey and not self.mountLocked then
 				self.ts.input.interactKey = false
 				self.activeTrain:mount()

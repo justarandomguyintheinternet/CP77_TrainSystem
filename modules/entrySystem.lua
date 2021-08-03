@@ -19,7 +19,6 @@ end
 function entrySys:load()
     for _, file in pairs(dir("data/entries")) do
         if file.name:match("^.+(%..+)$") == ".json" then
-            print(file.name)
             local e = entry:new()
             e:load("data/entries/" .. file.name)
             table.insert(self.entries, e)
@@ -43,7 +42,7 @@ function entrySys:update()
                 self.ts.observers.noFastTravel = true
             end
             if self:looksAtEntry(closest) then
-                self.ts.hud.drawEntry(self.ts.stationSys.stations[closest.stationID])
+                self.ts.hud.entryVisible = true
                 if self.ts.input.interactKey then
                     self.ts.input.interactKey = false
                     if self.ts.stationSys.currentStation == nil then

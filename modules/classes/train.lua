@@ -12,7 +12,7 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.originalSpeed = 30
+	o.originalSpeed = 35 --30
 	o.speed = 0
 	o.pointIndex = 1
 
@@ -56,12 +56,12 @@ function train:spawn()
 	self.carObject.name = self.carName
 	self.carObject.app = self.carApp
 
-	self.carObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, 25, 0))
+	self.carObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0))
 	self.carObject.rot = point.rot
 
 	self.trainObject = object:new(self.trainLayer)
 	self.trainObject.name = "Vehicle.av_public_train_b"
-	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, 25, 0)) -- Prevention system seems to spawn more likely the bigger the angle between the player view dir and the object
+	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0)) -- Prevention system seems to spawn more likely the bigger the angle between the player view dir and the object
 	self.trainObject.rot = point.rot
 
 	point = self.arrivalPath[1]

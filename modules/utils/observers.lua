@@ -19,7 +19,6 @@ function observers.start(ts)
             if observers.noFastTravel then
                 observers.activatedGate = true
                 Cron.After(0.5, function ()
-                    print("toidele")
                     self:GotoIdleState()
                 end)
             end
@@ -91,6 +90,12 @@ function observers.start(ts)
                 stateContext:SetPermanentVectorParameter(StatusEffectHelper.GetForcedKnockdownImpulseKey(), this.exitForce.value, true)
             end
             this:PlaySound("v_mbike_dst_crash_fall", scriptInterface)
+        end
+    end)
+
+    Observe("FakeDoor", "OnGameAttached", function(self)
+        if self:GetClassName().value == "FakeDoor" then
+            ts.objectSys.handleNewObject(self)
         end
     end)
 end
