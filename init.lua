@@ -1,4 +1,6 @@
 local debug = require("debug/logic/debug")
+local config = require("modules/utils/config")
+local utils = require("modules/utils/utils")
 
 ts = {
     runtimeData = {
@@ -9,10 +11,11 @@ ts = {
     },
 
     defaultSettings = {
-        fallProtection = true,
         camDist = 20,
+        trainSpeed = 35,
         defaultSeat = 1,
-        defaultStation = 1
+        moneyPerStation = 2,
+        holdMult = 1
     },
 
     settings = {},
@@ -28,6 +31,9 @@ ts = {
 
 function ts:new()
     registerForEvent("onInit", function()
+        config.tryCreateConfig("data/config.json", ts.defaultSettings)
+        ts.settings = config.loadFile("data/config.json")
+
         ts.entrySys = require("modules/entrySystem"):new(ts)
         ts.stationSys = require("modules/stationSystem"):new(ts)
         ts.trackSys = require("modules/trackSystem"):new(ts)
@@ -39,6 +45,7 @@ function ts:new()
 
         ts.observers.start(ts)
         ts.input.startInputObserver()
+        ts.input.startListeners(Game.GetPlayer())
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             ts.runtimeData.inMenu = isInMenu
@@ -55,9 +62,6 @@ function ts:new()
         end)
 
         ts.runtimeData.inGame = not ts.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
-
-        config.tryCreateConfig("data/config.json", ts.defaultSettings)
-        ts.settings = config.loadFile("data/config.json")
     end)
 
     registerForEvent("onUpdate", function(deltaTime)
@@ -66,13 +70,14 @@ function ts:new()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
+            ts.Cron.Update(deltaTime) --??????
         end
-        ts.Cron.Update(deltaTime) --??????
     end)
 
     registerForEvent("onShutdown", function ()
         ts.entrySys:despawnElevators()
         ts.objectSys.despawnAll()
+        utils.removeTPPTweaks()
     end)
 
     registerForEvent("onDraw", function()

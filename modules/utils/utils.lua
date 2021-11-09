@@ -254,7 +254,7 @@ function miscUtils.calcDeltaEuler(eul1, eul2)
         delta.pitch = altDeltaPitch
     end
 
-    local deltaYaw = eul1.yaw - eul2.yaw
+    local deltaYaw = eul1.yaw - eul2.yaw -- -178, 178 => - 4
     local altDeltaYaw = (180 - math.abs(eul1.yaw)) + (180 - math.abs(eul2.yaw))
     if eul1.yaw > eul2.yaw then
         altDeltaYaw = - altDeltaYaw
@@ -272,8 +272,65 @@ function miscUtils.spawnObject(path, pos, rot)
     local transform = Game.GetPlayer():GetWorldTransform()
     transform:SetOrientation(rot)
     transform:SetPosition(pos)
-    local entityID = WorldFunctionalTests.SpawnEntity(path, transform, '')
+    local entityID = exEntitySpawner.Spawn(path, transform)
     return entityID
+end
+
+-- All this code has been created by psiberx
+function miscUtils.createInteractionChoice(action, title)
+    local choiceData =  InteractionChoiceData.new()
+    choiceData.localizedName = title
+    choiceData.inputAction = action
+
+    local choiceType = ChoiceTypeWrapper.new()
+    choiceType:SetType(gameinteractionsChoiceType.Blueline)
+    choiceData.type = choiceType
+
+    return choiceData
+end
+
+function miscUtils.prepareVisualizersInfo(hub)
+    local visualizersInfo = VisualizersInfo.new()
+    visualizersInfo.activeVisId = hub.id
+    visualizersInfo.visIds = { hub.id }
+
+    return visualizersInfo
+end
+
+function miscUtils.createInteractionHub(titel, action, active)
+    local choiceHubData =  InteractionChoiceHubData.new()
+    choiceHubData.id = -1001
+    choiceHubData.active = active
+    choiceHubData.flags = EVisualizerDefinitionFlags.Undefined
+    choiceHubData.title = titel
+
+    local choices = {}
+    table.insert(choices, miscUtils.createInteractionChoice(action, titel))
+    choiceHubData.choices = choices
+
+    local visualizersInfo = miscUtils.prepareVisualizersInfo(choiceHubData)
+
+    local blackboardDefs = Game.GetAllBlackboardDefs()
+    local interactionBB = Game.GetBlackboardSystem():Get(blackboardDefs.UIInteractions)
+    interactionBB:SetVariant(blackboardDefs.UIInteractions.InteractionChoiceHub, ToVariant(choiceHubData), true)
+    interactionBB:SetVariant(blackboardDefs.UIInteractions.VisualizersInfo, ToVariant(visualizersInfo), true)
+end
+-- ^^^^ All this code has been created by psiberx ^^^^
+
+function miscUtils.setupTPPCam(dist)
+    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_High_Far.boomLength", dist)
+    TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", dist)
+    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", dist)
+    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 150000)
+    print("set ", dist)
+end
+
+function miscUtils.removeTPPTweaks()
+    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_High_Far.boomLength", 4.500000)
+    TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", 4.500000)
+    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", 4.500000)
+    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
+    print("removed")
 end
 
 return miscUtils

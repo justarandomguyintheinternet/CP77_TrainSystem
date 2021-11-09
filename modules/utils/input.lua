@@ -7,6 +7,10 @@ input = {
 }
 
 function input.startInputObserver()
+    Observe('PlayerPuppet', 'OnGameAttached', function(this)
+        input.startListeners(this)
+    end)
+
     Observe('PlayerPuppet', 'OnAction', function(_, action)
         local actionName = Game.NameToString(action:GetName(action))
         local actionType = action:GetType(action).value
@@ -41,5 +45,14 @@ function input.startInputObserver()
         end
     end)
 end
+
+function input.startListeners(player)
+    player:RegisterInputListener(player, 'Choice1_Release')
+    player:RegisterInputListener(player, 'Exit')
+    player:RegisterInputListener(player, 'ToggleVehCamera')
+    player:RegisterInputListener(player, 'NextWeapon')
+    player:RegisterInputListener(player, 'PreviousWeapon')
+end
+
 
 return input

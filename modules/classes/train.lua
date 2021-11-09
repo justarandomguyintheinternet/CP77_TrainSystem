@@ -12,7 +12,7 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.originalSpeed = 35 --30
+	o.originalSpeed = stationSys.ts.settings.trainSpeed--35 --30
 	o.speed = 0
 	o.pointIndex = 1
 
@@ -25,7 +25,6 @@ function train:new(stationSys)
 	o.trainObject = nil
 
 	o.perspective = "tpp"
-	o.camDist = stationSys.ts.settings.camDist
 	o.allowSwitching = true
 	o.currentSeat = stationSys.ts.settings.defaultSeat
 	o.seats = {"seat_front_right", "seat_back_right", "seat_back_left", "seat_front_left"}
@@ -76,9 +75,9 @@ function train:spawnBus()
 	self.busObject = object:new(self.busLayer)
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
 	local pos = Game.GetPlayer():GetWorldPosition()
-	pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist + 5
-	pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist + 5
-	pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist + 5
+	pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist + 5
+	pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist + 5
+	pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist + 5
 	self.busObject.rot = Game.GetCameraSystem():GetActiveCameraForward():ToRotation():ToQuat()
 	self.busObject.pos = pos
 	self.busObject:spawn()
@@ -112,7 +111,7 @@ function train:startDrive(route)
 		self.activePath = self.arrivalPath
 		self.driving = true
 		self.speed = self.originalSpeed
-	else
+	elseif route == "exit" then
 		self.activePath = self.exitPath
 		self.driving = true
 		self.speed = 0
@@ -127,6 +126,19 @@ function train:getRemainingLength()
 	length = length + utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
 	for i = self.pointIndex + 2, #self.activePath, 1 do
 		length = length + utils.distanceVector(self.activePath[i].pos, self.activePath[i - 1].pos)
+	end
+	return length
+end
+
+function train:getRemainingExitLength()
+	local length = 0
+	length = length + utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
+	for i = self.pointIndex + 2, #self.activePath, 1 do
+		if not (self.activePath[i].dir == "next" and self.activePath[i].unloadStation.next or self.activePath[i].dir == "last" and self.activePath[i].unloadStation.last) then
+			length = length + utils.distanceVector(self.activePath[i].pos, self.activePath[i - 1].pos)
+		else
+			break
+		end
 	end
 	return length
 end
@@ -155,6 +167,7 @@ function train:update(deltaTime)
 			self.speed = self.originalSpeed * (self:getRemainingLength() / 25)
 			self.speed = math.max(0.75, self.speed)
 		end
+
 		if utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) > self.speed * deltaTime then
 			--print("below next point")
 			local todo = self.speed * deltaTime -- How much i want to do
@@ -163,8 +176,8 @@ function train:update(deltaTime)
 			local dirVector = utils.subVector(self.activePath[self.pointIndex + 1].pos, self.pos)
 			self.pos = utils.addVector(utils.multVector(dirVector, factor), self.pos)
 
-			local newEuler = utils.calcDeltaEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
-			self.rot = GetSingleton('EulerAngles'):ToQuat(utils.addEuler(utils.multEuler(newEuler, factor), GetSingleton('Quaternion'):ToEulerAngles(self.rot)))
+			local newEuler = utils.calcDeltaEuler(self.activePath[self.pointIndex + 1].rot:ToEulerAngles(), self.rot:ToEulerAngles())
+			self.rot = (utils.addEuler(utils.multEuler(newEuler, factor), self.rot:ToEulerAngles())):ToQuat()
 		else
 			local todo = self.speed * deltaTime
 			while todo > 0 do
@@ -180,9 +193,9 @@ function train:update(deltaTime)
 						self.justArrived = true
 						self.driving = false
 					else
-						print(math.abs(GetSingleton('Quaternion'):ToEulerAngles(self.rot).yaw - GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot).yaw), "diff yaw")
-						if math.abs(GetSingleton('Quaternion'):ToEulerAngles(self.rot).yaw - GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot).yaw) > 300 then
-							self.rot = self.activePath[self.pointIndex + 1].rot
+						--print(math.abs(GetSingleton('Quaternion'):ToEulerAngles(self.rot).yaw - GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot).yaw), "diff yaw")
+						if math.abs(self.rot:ToEulerAngles().yaw - self.activePath[self.pointIndex + 1].rot:ToEulerAngles().yaw) > 300 then
+							self.rot = self.activePath[self.pointIndex].rot
 						end
 					end
 					--print("got over, new todo ", todo, "new p index ", self.pointIndex)
@@ -192,12 +205,13 @@ function train:update(deltaTime)
 					local dirVector = utils.subVector(self.activePath[self.pointIndex + 1].pos, self.pos)
 					self.pos = utils.addVector(utils.multVector(dirVector, factor), self.pos)
 
-					local newEuler = utils.calcDeltaEuler(GetSingleton('Quaternion'):ToEulerAngles(self.activePath[self.pointIndex + 1].rot), GetSingleton('Quaternion'):ToEulerAngles(self.rot))
-					self.rot = GetSingleton('EulerAngles'):ToQuat(utils.addEuler(utils.multEuler(newEuler, factor), GetSingleton('Quaternion'):ToEulerAngles(self.rot)))
+					local newEuler = utils.calcDeltaEuler(self.activePath[self.pointIndex + 1].rot:ToEulerAngles(), self.rot:ToEulerAngles())
+					self.rot = (utils.addEuler(utils.multEuler(newEuler, factor), self.rot:ToEulerAngles())):ToQuat()
 					todo = 0
 				end
 			end
 		end
+		--print(self.activePath[self.pointIndex].rot:ToEulerAngles(), self.rot:ToEulerAngles())
 	end
 
 	if self.playerMounted then
@@ -215,7 +229,7 @@ function train:update(deltaTime)
 					utils.unmount()
 					utils.mount(self.carObject.entID, "seat_front_left")
 					self.perspective = "tpp"
-					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
+					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
 				else
 					Game.GetPlayer():SetWarningMessage("Cant switch when in this seat")
 				end
@@ -227,7 +241,6 @@ function train:update(deltaTime)
 				self.ts.input.down = false
 				self.currentSeat = self.currentSeat + 1
 				if self.currentSeat > 4 then self.currentSeat = 1 end
-				print("down", self.currentSeat)
 				utils.unmount()
 				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
 			end
@@ -235,7 +248,6 @@ function train:update(deltaTime)
 				self.ts.input.up = false
 				self.currentSeat = self.currentSeat - 1
 				if self.currentSeat < 1 then self.currentSeat = 4 end
-				print("up", self.currentSeat)
 				utils.unmount()
 				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
 			end
@@ -266,9 +278,9 @@ function train:updateLocation(obj)
 			self.carObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 3
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 3
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 3
 			self.carObject.pos = pos
 		end
 	elseif obj == "train" then
@@ -277,17 +289,17 @@ function train:updateLocation(obj)
 			self.trainObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.camDist / 3
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 3
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 3
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 3
 			self.trainObject.pos = pos
 		end
 	else
 		if self.perspective == "tpp" then
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.camDist + 10)
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.camDist + 10)
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.camDist + 10)
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.stationSys.ts.settings.camDist + 10)
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.stationSys.ts.settings.camDist + 10)
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.stationSys.ts.settings.camDist + 10)
 			self.busObject.pos = pos
 		else
 			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
@@ -323,7 +335,7 @@ function train:spawnBackupTrain()
 			if self.stationSys.backUpTrain.spawned then
 				self.stationSys.backUpTrain.pos = utils.addVector(self.activePath[#self.activePath].pos, Vector4.new(0, 0, -50, 0))
 				self.stationSys.backUpTrain:update()
-				timer:Halt()
+				timer:halt()
 			end
 		end)
 		print("loaded backup train")
@@ -332,11 +344,18 @@ end
 
 function train:updateCam()
 	if self.playerMounted then
-		utils.switchCarCam("FPP")
+
 		Game.GetPlayer():GetFPPCameraComponent().pitchMax = 80
 		Game.GetPlayer():GetFPPCameraComponent().pitchMin = -80
 		Game.GetPlayer():GetFPPCameraComponent().yawMaxRight = -360
 		Game.GetPlayer():GetFPPCameraComponent().yawMaxLeft = 360
+
+		if self.perspective == "tpp" then
+			utils.switchCarCam("TPPFar")
+			Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
+		else
+			utils.switchCarCam("FPP")
+		end
 	end
 end
 
@@ -350,8 +369,8 @@ function train:mount()
 	end)
 	self.playerMounted = true
 	utils.mount(self.carObject.entID, "seat_front_left")
-	utils.switchCarCam("FPP")
-	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
+	utils.switchCarCam("TPPFar")
+	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
 end
 
 function train:unmount()

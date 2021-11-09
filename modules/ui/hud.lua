@@ -1,4 +1,5 @@
 local CPS = require("CPStyling")
+local utils = require("modules/utils/utils")
 local theme = CPS.theme
 
 hud = {
@@ -6,25 +7,20 @@ hud = {
     exitVisible = false,
     doorVisible = false,
     trainVisible = false,
-    destVisible = false
+    destVisible = false,
+
+    interactionHUDTrain = false,
+    interactionHUDExit = false,
+    interactionHUDDoor = false
 }
 
 function hud.draw(ts)
+    hud.drawTrain()
+    hud.drawExit()
+    hud.drawDoor()
     if hud.entryVisible then
         hud.drawEntry()
         hud.entryVisible = false
-    end
-    if hud.exitVisible then
-        hud.drawExit()
-        hud.exitVisible = false
-    end
-    if hud.doorVisible then
-        hud.drawDoor()
-        hud.doorVisible = false
-    end
-    if hud.trainVisible then
-        hud.enterTrain()
-        hud.trainVisible = false
     end
     if hud.destVisible then
         hud.drawDestinations(ts.stationSys)
@@ -38,10 +34,15 @@ function hud.drawEntry(station)
     CPS:setThemeBegin()
     CPS.styleBegin("WindowBorderSize", 0)
     CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("enterStation", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
+    ImGui.Begin("exitStation", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
     ImGui.SetWindowFontScale(1.5)
-    ImGui.SetWindowPos((wWidth / 2) - 5, wHeight * 0.84)
-    ImGui.TextColored(1, 0.76, 0.23, 1, "[15 E$]")
+    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.79)
+    CPS.colorBegin("Text", theme.CPButtonText)
+    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
+    ImGui.SameLine()
+    ImGui.Text("Enter Station")
+    --ImGui.TextColored(1, 0.76, 0.23, 1, "[10 E$]")
+    CPS.colorEnd()
     ImGui.End()
     CPS.colorEnd(1)
     CPS.styleEnd(1)
@@ -49,65 +50,42 @@ function hud.drawEntry(station)
 end
 
 function hud.drawExit()
-    local wWidth, wHeight = GetDisplayResolution()
-
-    CPS:setThemeBegin()
-    CPS.styleBegin("WindowBorderSize", 0)
-    CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("exitStation", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
-    ImGui.SetWindowFontScale(1.5)
-    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.79)
-    CPS.colorBegin("Text", theme.CPButtonText)
-    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
-    ImGui.SameLine()
-    ImGui.Text("Exit Station")
-    --ImGui.TextColored(1, 0.76, 0.23, 1, "[10 E$]")
-    CPS.colorEnd()
-    ImGui.End()
-    CPS.colorEnd(1)
-    CPS.styleEnd(1)
-    CPS:setThemeEnd()
+    if hud.exitVisible then
+        hud.exitVisible = false
+        utils.createInteractionHub("Exit Station", "Choice1", true)
+        hud.interactionHUDExit = true
+    else
+        if hud.interactionHUDExit then
+            utils.createInteractionHub("Exit Station", "Choice1", false)
+        end
+        hud.interactionHUDExit = false
+    end
 end
 
 function hud.drawDoor()
-    local wWidth, wHeight = GetDisplayResolution()
-
-    CPS:setThemeBegin()
-    CPS.styleBegin("WindowBorderSize", 0)
-    CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("useDoor", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
-    ImGui.SetWindowFontScale(1.5)
-    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.79)
-    CPS.colorBegin("Text", theme.CPButtonText)
-    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
-    ImGui.SameLine()
-    ImGui.Text("Use Door")
-    CPS.colorEnd()
-    ImGui.End()
-    CPS.colorEnd(1)
-    CPS.styleEnd(1)
-    CPS:setThemeEnd()
+    if hud.doorVisible then
+        hud.doorVisible = false
+        utils.createInteractionHub("Use Door", "Choice1", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
+        hud.interactionHUDDoor = true
+    else
+        if hud.interactionHUDDoor then
+            utils.createInteractionHub("Use Door", "Choice1", false)
+        end
+        hud.interactionHUDDoor = false
+    end
 end
 
-function hud.enterTrain()
-    local wWidth, wHeight = GetDisplayResolution()
-
-    CPS:setThemeBegin()
-    CPS.styleBegin("WindowBorderSize", 0)
-    CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("enter train", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
-    ImGui.SetWindowFontScale(1.5)
-    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.78)
-    CPS.colorBegin("Text", theme.CPButtonText)
-    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
-    ImGui.SameLine()
-    ImGui.Text("Enter Train")
-    --ImGui.TextColored(1, 0.76, 0.23, 1, "[10 E$]")
-    CPS.colorEnd()
-    ImGui.End()
-    CPS.colorEnd(1)
-    CPS.styleEnd(1)
-    CPS:setThemeEnd()
+function hud.drawTrain()
+    if hud.trainVisible then
+        hud.trainVisible = false
+        utils.createInteractionHub("Enter Train", "Choice1", true)
+        hud.interactionHUDTrain = true
+    else
+        if hud.interactionHUDTrain then
+            utils.createInteractionHub("Enter Train", "Choice1", false)
+        end
+        hud.interactionHUDTrain = false
+    end
 end
 
 function hud.drawDestinations(sys)

@@ -22,9 +22,13 @@ function station:new(ts)
 	o.exitDoorPosition = Vector4.new(0, 0, 0, 0)
 	o.exitDoorSealed = true
 
+	o.soundID = nil
+
 	o.spawnOffset = -10
 
 	o.radius = 0
+	o.minZ = 0
+	o.holdTime = 10
 	o.useDoors = true
 	o.loaded = false
 	o.ts = ts
@@ -47,6 +51,8 @@ function station:exitToGround(ts)
 	self.loaded = false
 	self:despawn()
 
+	self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
+
     Cron.After(entry.elevatorTime, function ()
         ts.observers.noSave = false
 		ts.runtimeData.noTrains = false
@@ -56,6 +62,8 @@ function station:exitToGround(ts)
 
 		Game.ChangeZoneIndicatorPublic()
 		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
+
+		Game.FindEntityByID(self.soundID):GetEntity():Destroy()
     end)
 end
 
@@ -80,7 +88,9 @@ function station:update()
 end
 
 function station:inStation() -- Is player in station
-	return utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.center) < self.radius
+	local radius = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.center) < self.radius
+	local z = Game.GetPlayer():GetWorldPosition().z > self.minZ
+	return radius and z
 end
 
 function station:nearExit()
@@ -135,10 +145,12 @@ function station:load(path)
     self.useDoors = data.useDoors
 	self.id = data.id
 	self.radius = data.radius
+	self.minZ = data.minZ
 	self.spawnOffset = data.spawnOffset
 	self.trainExit = {pos = utils.getVector(data.trainExit.pos), rot = utils.getQuaternion(data.trainExit.rot)}
 	self.portalPoint = {pos = utils.getVector(data.portalPoint.pos), rot = utils.getQuaternion(data.portalPoint.rot)}
 	self.groundPoint = {pos = utils.getVector(data.groundPoint.pos), rot = utils.getQuaternion(data.groundPoint.rot)}
+	self.holdTime = data.holdTime
 
 	self.objectFileName = data.objectFileName
 	self.exitDoorPosition = utils.getVector(data.exitDoorPosition)
@@ -159,6 +171,8 @@ function station:save(path)
 	data.useDoors = self.useDoors
 	data.radius = self.radius
 	data.spawnOffset = self.spawnOffset
+	data.minZ = self.minZ
+	data.holdTime = self.holdTime
 
 	data.objectFileName = self.objectFileName
 	data.exitDoorPosition = utils.fromVector(self.exitDoorPosition)

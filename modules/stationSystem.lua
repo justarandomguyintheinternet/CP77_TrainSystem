@@ -45,6 +45,7 @@ function stationSys:enter() -- TP to station, toggle pin
 	self.currentStation:tpTo(self.currentStation.portalPoint)
 	self.onStation = true
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+	utils.setupTPPCam(self.ts.settings.camDist)
 end
 
 function stationSys:loadStation(id) -- Load station objects, start train spawning
@@ -115,6 +116,7 @@ function stationSys:activateArrival()
 		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
 		self.activeTrain:spawn()
 		self.activeTrain:startDrive("arrive")
+		self:startArriveTimer()
 	end
 end
 
@@ -139,6 +141,7 @@ function stationSys:leave() -- Leave to ground level
 		self.backUpTrain:despawn()
 		self.backUpTrain = nil
 	end
+	utils.removeTPPTweaks()
 end
 
 function stationSys:nearTrain()
@@ -180,11 +183,13 @@ function stationSys:update(deltaTime)
 			self.ts.hud.exitVisible = true
 			if self.ts.input.interactKey then
                 self.ts.input.interactKey = false
-				for _, timer in pairs(Cron.timers) do
-					if timer.id == self.cronStopID then
-						Cron.Halt(timer.id)
+				pcall(function ()
+					for _, timer in pairs(Cron.timers) do
+						if timer.id == self.cronStopID then
+							Cron.Halt(timer.id)
+						end
 					end
-				end
+				end)
 				self:leave()
             end
 		end
@@ -200,6 +205,12 @@ function stationSys:update(deltaTime)
 			self.activeTrain.justArrived = false
 			self.trainInStation = true
 
+			if self.activeTrain.playerMounted then
+				local tdbid = TweakDBID.new("Items.money")
+				local moneyId = GetSingleton('gameItemID'):FromTDBID(tdbid)
+				Game.GetTransactionSystem():RemoveItem(Game.GetPlayer(), moneyId, self.ts.settings.moneyPerStation)
+			end
+
 			print("previous station id", self.previousStationID, " curren one is ", self.currentStation.id)
 
 			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
@@ -212,13 +223,17 @@ function stationSys:update(deltaTime)
 				self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
 			end
 
-			self.cronStopID = Cron.After(self.holdTime, function ()
+			self.cronStopID = Cron.After(self.currentStation.holdTime * self.ts.settings.holdMult, function ()
 				self.trainInStation = false
-				self.activeTrain:startDrive("exit")
 				if self.activeTrain.playerMounted then
 					self.onStation = false
 				end
+				--self.activeTrain:startDrive("exit") --is done inside startExitTimer, calling it twice is bad
+				--self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+				self:startExitTimer()
 			end)
+
+			self:startHoldTimer()
 		end
 
 		if self.activeTrain.playerMounted and not self.trainInStation then
@@ -234,14 +249,68 @@ function stationSys:update(deltaTime)
 	if self.trainInStation and self.activeTrain ~= nil then
 		if self:nearTrain() and not self.activeTrain.playerMounted then
 			self.ts.hud.trainVisible = true
-			if self.ts.input.interactKey and not self.mountLocked then
+			if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
 				self.ts.input.interactKey = false
 				self.activeTrain:mount()
 				utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
 			end
 		end
 	end
+end
 
+function stationSys:startHoldTimer()
+	self.ts.observers.timetableValue = self.currentStation.holdTime * self.ts.settings.holdMult
+	Cron.Every(1, {tick = 0}, function(timer)
+		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
+		if self.ts.observers.timetableValue <= 0 then
+			timer:Halt()
+		end
+		if self.activeTrain.driving then
+			timer:Halt()
+		end
+	end)
+end
+
+function stationSys:startExitTimer()
+	self.activeTrain:startDrive("aaa") -- Sets pointIndex and pos properly for remainingLength calcs
+	local exitTime = math.floor((self.activeTrain:getRemainingExitLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
+
+	if self.currentPathsIndex + 1 > self.totalPaths then
+		self.activeTrain:loadRoute(self.pathsData[1])
+	else
+		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex + 1])
+	end
+	self.activeTrain:startDrive("arrive")
+
+	local arriveTime = math.floor((self.activeTrain:getRemainingLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
+
+	self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+	self.activeTrain:startDrive("exit")
+
+	self.ts.observers.timetableValue = exitTime + arriveTime
+
+	Cron.Every(1, {tick = 0}, function(timer)
+		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
+		if self.ts.observers.timetableValue <= 0 then
+			timer:Halt()
+		end
+		if not self.activeTrain.driving then
+			timer:Halt()
+		end
+	end)
+end
+
+function stationSys:startArriveTimer()
+	self.ts.observers.timetableValue = math.floor((self.activeTrain:getRemainingLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
+	Cron.Every(1, {tick = 0}, function(timer)
+		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
+		if self.ts.observers.timetableValue <= 0 then
+			timer:Halt()
+		end
+		if not self.activeTrain.driving then
+			timer:Halt()
+		end
+	end)
 end
 
 return stationSys

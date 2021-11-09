@@ -6,6 +6,7 @@ observers = {
     activatedGate = false,
     noSave = false,
     noKnockdown = false,
+    timetableValue = 0,
     trainIDS = {},
     ts = nil
 }
@@ -13,17 +14,6 @@ observers = {
 
 function observers.start(ts)
     observers.ts = ts
-
-    Observe("MenuScenario_HubMenu", "GetMenusState", function(self)
-        if self:IsA("MenuScenario_FastTravel") then
-            if observers.noFastTravel then
-                observers.activatedGate = true
-                Cron.After(0.5, function ()
-                    self:GotoIdleState()
-                end)
-            end
-        end
-    end)
 
     Override("gameScriptableSystem", "IsSavingLocked", function(_)
         return observers.noSave
@@ -93,10 +83,57 @@ function observers.start(ts)
         end
     end)
 
-    Observe("FakeDoor", "OnGameAttached", function(self)
-        if self:GetClassName().value == "FakeDoor" then
-            ts.objectSys.handleNewObject(self)
+    Override("DataTerm", "OnOpenWorldMapAction", function(this)
+        if observers.noFastTravel then
+            observers.activatedGate = true
+        else
+            this:EnableFastTravelOnMap()
+            this:TriggerMenuEvent("OnOpenFastTravel")
+            this:ProcessFastTravelTutorial()
         end
+    end)
+
+    Override("NcartTimetableControllerPS", "GetCurrentTimeToDepart", function(this)
+        if observers.noSave then
+            return math.floor(math.max(observers.timetableValue, 0))
+        else
+            return this.currentTimeToDepart
+        end
+    end)
+
+    -- All credits for the following two Overrides go to psiberx from the CP2077 Modding Community Server
+    Override('WarningMessageGameController', 'UpdateWidgets', function(self)
+        if self.simpleMessage.isShown and self.simpleMessage.message ~= '' then
+            self.root:StopAllAnimations()
+
+            inkTextRef.SetLetterCase(self.mainTextWidget, textLetterCase.UpperCase)
+            inkTextRef.SetText(self.mainTextWidget, self.simpleMessage.message)
+
+            Game.GetAudioSystem():Play('ui_jingle_chip_malfunction')
+
+            self.animProxyShow = self:PlayLibraryAnimation('warning')
+
+            local fakeAnim = inkAnimTransparency.new()
+            fakeAnim:SetStartTransparency(1.00)
+            fakeAnim:SetEndTransparency(1.00)
+            fakeAnim:SetDuration(3.2)
+
+            local fakeAnimDef = inkAnimDef.new()
+            fakeAnimDef:AddInterpolator(fakeAnim)
+
+            self.animProxyTimeout = self.root:PlayAnimation(fakeAnimDef)
+            self.animProxyTimeout:RegisterToCallback(inkanimEventType.OnFinish, self, 'OnShown')
+
+            self.root:SetVisible(true)
+        elseif self.animProxyShow then
+            self.animProxyShow:RegisterToCallback(inkanimEventType.OnFinish, self, 'OnHidden')
+            self.animProxyShow:Resume()
+        end
+    end)
+
+    Override('WarningMessageGameController', 'OnShown', function(self)
+        self.animProxyShow:Pause()
+        self:SetTimeout(self.simpleMessage.duration)
     end)
 end
 

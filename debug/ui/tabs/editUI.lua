@@ -100,7 +100,13 @@ function editUI.drawStation()
     local dist = utils.distanceVector(station.center, Game.GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to center: " .. tonumber(string.format("%.2f", dist)))
 
+    station.minZ = ImGui.InputFloat('Min Z', station.minZ, 0, 500, "%.1f")
+    local distZ = utils.distanceVector(utils.subVector(Game.GetPlayer():GetWorldPosition(), Vector4.new(0, 0, Game.GetPlayer():GetWorldPosition().z - station.minZ, 0)), Game.GetPlayer():GetWorldPosition())
+    ImGui.Text("Current distance to Z: " .. tonumber(string.format("%.2f", distZ)))
+
     station.spawnOffset = ImGui.InputFloat('Train Spawn Offset', station.spawnOffset, -100, 100, "%.1f")
+
+    station.holdTime = ImGui.InputFloat('Hold Time', station.holdTime, -100, 100, "%.1f")
 -- Doors
     station.useDoors = ImGui.Checkbox("Use doors", station.useDoors)
 -- Center

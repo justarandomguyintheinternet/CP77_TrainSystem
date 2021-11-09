@@ -7,7 +7,13 @@ local Cron = require("modules/utils/Cron")
 objects = {
     entries = {},
     removalData = {},
-    rmToDo = {}
+    rmToDo = {},
+
+    doors = {14623667433762366432ULL, 17785660048348043325ULL, 18152551121382210999ULL, 1637380487816572663ULL, --rep way north
+             283370035515700666ULL, 13825642878604797175ULL, 10180697779767399351ULL, 9813806706733231677ULL, 6651814092147554784ULL, --ellison st
+             821456880000517909ULL, 12110311706836548408ULL, 7110836648040637807ULL, 13381044026794042399ULL, 16956053804465631986ULL, --glen north
+             15705056095356773324ULL, 2800463139005652945ULL, 7782450094505129069ULL, 17055156223622417486ULL, 4915933337779732199ULL, --congress
+             9193886172035533538ULL, 6823456052343767283ULL, 15652140921899556937ULL, 9269767803950229077ULL, 5337313584294953832ULL} -- glen south
 }
 
 function objects.run()
@@ -22,10 +28,14 @@ function objects.initialize()
         end
     end
 
-    local file = config.loadFile("data/objects/removal.json")
-    for _, p in pairs(file) do
-        table.insert(objects.removalData, utils.getVector(p))
-    end
+    Cron.Every(2.0, function ()
+        for _, i in ipairs (objects.doors) do
+            local id = entEntityID.new({hash = i})
+            if Game.FindEntityByID(id) ~= nil then
+                Game.FindEntityByID(id):Dispose()
+            end
+        end
+    end)
 end
 
 function objects.handleEntries()
@@ -39,35 +49,31 @@ function objects.handleEntries()
             end
         elseif utils.distanceVector(Game.GetPlayer():GetWorldPosition(), entry.pos) > entry.range + 2 and #entry.ids ~= 0 then
             for _, id in pairs(entry.ids) do
-                Game.FindEntityByID(id):GetEntity():Destroy()
+                if Game.FindEntityByID(id) then
+                    Game.FindEntityByID(id):GetEntity():Destroy()
+                end
             end
             entry.ids = {}
         end
     end
 end
 
-function objects.updateRemoval()
-    for _, id in pairs(objects.rmToDo) do
-        if Game.FindEntityByID(id) ~= nil then
-            Game.FindEntityByID(id):Dispose()
-        else
-            utils.removeItem(objects.rmToDo, id)
-        end
-    end
-end
-
-function objects.handleNewObject(obj)
-    for _, p in pairs(objects.removalData) do
-        if utils.isVector(p, obj:GetWorldPosition()) then
-            table.insert(objects.rmToDo, obj:GetEntityID())
-        end
-    end
+function objects.updateRemoval(ss)
+    -- for _, id in pairs(objects.rmToDo) do
+    --     if Game.FindEntityByID(id) ~= nil then
+    --         Game.FindEntityByID(id):Dispose()
+    --     else
+    --         utils.removeItem(objects.rmToDo, id)
+    --     end
+    -- end
 end
 
 function objects.despawnAll()
     for _, e in pairs(objects.entries) do
         for _, id in pairs(e.ids) do
-            Game.FindEntityByID(id):GetEntity():Destroy()
+            if Game.FindEntityByID(id) ~= nil then
+                exEntitySpawner.Despawn(Game.FindEntityByID(id))
+            end
         end
     end
 end

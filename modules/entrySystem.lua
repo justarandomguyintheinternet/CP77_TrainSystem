@@ -11,6 +11,7 @@ function entrySys:new(ts)
 	o.entries = {}
     o.maxDistToEntry = 2.4
     o.elevatorIDS = {}
+    o.soundID = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -42,7 +43,9 @@ function entrySys:update()
                 self.ts.observers.noFastTravel = true
             end
             if self:looksAtEntry(closest) then
-                self.ts.hud.entryVisible = true
+                if closest.useDoors then
+                    self.ts.hud.entryVisible = true
+                end
                 if self.ts.input.interactKey then
                     self.ts.input.interactKey = false
                     if self.ts.stationSys.currentStation == nil then
@@ -63,11 +66,14 @@ function entrySys:enter(entry)
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
 
+    self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
+
     Cron.After(0.25, function ()
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
     end)
     Cron.After(entry.elevatorTime, function ()
         self.ts.stationSys:enter()
+        Game.FindEntityByID(self.soundID):GetEntity():Destroy()
     end)
     Cron.After(entry.elevatorTime * 0.3, function ()
         self.ts.stationSys:loadStation(entry.stationID)
@@ -110,8 +116,10 @@ function entrySys:handleElevators()
             end
         else
             if self.elevatorIDS[e.stationID] ~= nil then
-                Game.FindEntityByID(self.elevatorIDS[e.stationID]):GetEntity():Destroy()
-                self.elevatorIDS[e.stationID] = nil
+                if Game.FindEntityByID(self.elevatorIDS[e.stationID]) ~= nil then
+                    Game.FindEntityByID(self.elevatorIDS[e.stationID]):GetEntity():Destroy()
+                    self.elevatorIDS[e.stationID] = nil
+                end
             end
         end
     end

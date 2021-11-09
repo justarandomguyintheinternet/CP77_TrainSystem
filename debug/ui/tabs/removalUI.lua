@@ -10,14 +10,14 @@ function rmUI.draw()
         rmUI.data = {}
         local file = config.loadFile("data/objects/removal.json")
         for _, p in pairs(file) do
-            table.insert(rmUI.data, utils.getVector(p))
+            table.insert(rmUI.data, p)
         end
     end
 
     if ImGui.Button("Add look at") then
         local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
         if target then
-            table.insert(rmUI.data, target:GetWorldPosition())
+            table.insert(rmUI.data, tostring(target:GetEntityID().hash))
             target:Dispose()
             rmUI.save()
         end
@@ -33,18 +33,22 @@ function rmUI.draw()
             utils.removeItem(rmUI.data, p)
             rmUI.save()
         end
-        ImGui.PopID()
+
         ImGui.SameLine()
-        if ImGui.Button("TP To") then
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), p, Game.GetPlayer():GetWorldOrientation():ToEulerAngles())
+        if ImGui.Button("Copy hash string to clipboard") then
+            ImGui.SetClipboardText(tostring(p .. ", "))
         end
+        ImGui.PopID()
+        -- if ImGui.Button("TP To") then
+        --     Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), p, Game.GetPlayer():GetWorldOrientation():ToEulerAngles())
+        -- end
     end
 end
 
 function rmUI.save()
     local toSave = {}
     for _, p in pairs(rmUI.data) do
-        table.insert(toSave, utils.fromVector(p))
+        table.insert(toSave, p)
     end
     config.saveFile("data/objects/removal.json", toSave)
 end
