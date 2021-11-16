@@ -88,6 +88,19 @@ function editUI.drawEntry()
     if ImGui.Button("Despawn") then
         if entry.elevatorID ~= nil then Game.FindEntityByID(entry.elevatorID):GetEntity():Destroy() end
     end
+
+    ImGui.Separator()
+    entry.useSecondaryElevator = ImGui.Checkbox("Use secondary Elevator", entry.useSecondaryElevator)
+    if entry.useSecondaryElevator then
+        if ImGui.Button("Set secondary Elevator Position") then
+            entry.secondaryPosition = Game.GetPlayer():GetWorldPosition()
+        end
+        ImGui.SameLine()
+        if ImGui.Button("TP to 2") then
+            print(Game.GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
+        end
+    end
 end
 
 function editUI.drawStation()

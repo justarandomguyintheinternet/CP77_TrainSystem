@@ -17,6 +17,9 @@ function entry:new()
     o.elevatorPosition = Vector4.new(0, 0, 0, 0)
     o.elevatorPlayerRotation = EulerAngles.new(0, 0, 0)
 
+    o.useSecondaryElevator = false
+    o.secondaryPosition = Vector4.new(0, 0, 0, 0)
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -34,6 +37,10 @@ function entry:load(path)
     self.elevatorTime = data.elevatorTime
     self.elevatorPosition = utils.getVector(data.elevatorPosition)
     self.elevatorPlayerRotation = utils.getEuler(data.elevatorPlayerRotation)
+
+    self.useSecondaryElevator = data.useSecondaryElevator or false
+    self.secondaryPosition = data.secondaryPosition or Vector4.new(0, 0, 0, 0)
+    self.secondaryPosition = utils.getVector(self.secondaryPosition)
 end
 
 function entry:save(path)
@@ -48,6 +55,10 @@ function entry:save(path)
     data.elevatorTime = self.elevatorTime
     data.elevatorPosition = utils.fromVector(self.elevatorPosition)
     data.elevatorPlayerRotation = utils.fromEuler(self.elevatorPlayerRotation)
+
+    data.useSecondaryElevator = self.useSecondaryElevator or false
+    data.secondaryPosition = self.secondaryPosition or Vector4.new(0, 0, 0, 0)
+    data.secondaryPosition = utils.fromVector(data.secondaryPosition)
 
     config.saveFile(path, data)
 end

@@ -68,9 +68,19 @@ function entrySys:enter(entry)
 
     self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
 
-    Cron.After(0.25, function ()
+    if entry.useSecondaryElevator then
+        local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition, entry.elevatorPlayerRotation)
+        Cron.After(0.25, function ()
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+        end)
+        Cron.After(0.5, function ()
+            Game.FindEntityByID(secondID):GetEntity():Destroy()
+            secondID = nil
+        end)
+    else
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
-    end)
+    end
     Cron.After(entry.elevatorTime, function ()
         self.ts.stationSys:enter()
         Game.FindEntityByID(self.soundID):GetEntity():Destroy()

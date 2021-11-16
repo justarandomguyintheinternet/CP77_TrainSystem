@@ -47,7 +47,20 @@ end
 function station:exitToGround(ts)
 	local entry = ts.entrySys:findEntryByID(self.id)
 
-	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+	if entry.useSecondaryElevator then
+        local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+        Cron.After(0.25, function ()
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition, entry.elevatorPlayerRotation)
+        end)
+        Cron.After(entry.elevatorTime, function ()
+            Game.FindEntityByID(secondID):GetEntity():Destroy()
+            secondID = nil
+        end)
+    else
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+    end
+
 	self.loaded = false
 	self:despawn()
 
