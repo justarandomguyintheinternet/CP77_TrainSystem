@@ -74,11 +74,15 @@ function trackSys:generatePaths(track, station) -- Main function to fill the sel
 end
 
 function trackSys:DFS(track, previous, path) -- Recursive calling search function
+	print("DFS:", track.id, track.hasStation.next, track.hasStation.last)
 	if previous.id == track.connectedID.first.next or previous.id == track.connectedID.second.next then -- If track is "backwards", "tip" of arrow is connected to previous, means the next track is at the beginning of this track
 		table.insert(path, track) -- Add track to path
+		print("track id now: " .. track.id .. " is next of " .. previous.id)
 		if track.hasStation.next ~= -1 then -- If station is found then break the recursive function
+			print("found station on last of track " .. track.id .. "station id" .. track.hasStation.last .. "length of path: " .. #path)
 			self:insertPath(path)
 		elseif track.hasStation.last ~= -1 then
+			print("found station on next of track " .. track.id .. "station id" .. track.hasStation.next .. "length of path: " .. #path)
 			self:insertPath(path)
 		else
 			if track.connectedID.first.last ~= -1 then -- Call recursive func for all possible "last" ones

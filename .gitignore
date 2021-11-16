@@ -1,8 +1,9 @@
-
-*.json
 *.md
 *.csv
 *.txt
 *.sqlite3
 *.log
 todo
+.vscode/settings.json
+data/config.json
+test.json

@@ -225,7 +225,7 @@ function miscUtils.multEuler(e1, factor)
     return EulerAngles.new(e1.roll * factor, e1.pitch * factor, e1.yaw * factor)
 end
 
-function miscUtils.isVector(v1, v2) -- Returns if two vectors are the same
+function miscUtils.isVector(v1, v2) -- Returns true if two vectors are the same
     return (v1.x == v2.x) and (v1.y == v2.y) and (v1.z == v2.z)
 end
 
@@ -254,7 +254,7 @@ function miscUtils.calcDeltaEuler(eul1, eul2)
         delta.pitch = altDeltaPitch
     end
 
-    local deltaYaw = eul1.yaw - eul2.yaw -- -178, 178 => - 4
+    local deltaYaw = eul1.yaw - eul2.yaw
     local altDeltaYaw = (180 - math.abs(eul1.yaw)) + (180 - math.abs(eul2.yaw))
     if eul1.yaw > eul2.yaw then
         altDeltaYaw = - altDeltaYaw
@@ -268,11 +268,12 @@ function miscUtils.calcDeltaEuler(eul1, eul2)
     return delta
 end
 
-function miscUtils.spawnObject(path, pos, rot)
+function miscUtils.spawnObject(path, pos, rot, appearance)
+    local app = appearance or ""
     local transform = Game.GetPlayer():GetWorldTransform()
     transform:SetOrientation(rot)
     transform:SetPosition(pos)
-    local entityID = exEntitySpawner.Spawn(path, transform)
+    local entityID = exEntitySpawner.Spawn(path, transform, app)
     return entityID
 end
 
@@ -322,7 +323,6 @@ function miscUtils.setupTPPCam(dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 150000)
-    print("set ", dist)
 end
 
 function miscUtils.removeTPPTweaks()
@@ -330,7 +330,6 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", 4.500000)
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", 4.500000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
-    print("removed")
 end
 
 return miscUtils

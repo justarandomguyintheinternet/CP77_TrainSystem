@@ -8,12 +8,55 @@ observers = {
     noKnockdown = false,
     timetableValue = 0,
     trainIDS = {},
-    ts = nil
+    ts = nil,
+    hudText = nil
 }
 
 
 function observers.start(ts)
     observers.ts = ts
+
+    Observe('QuestTrackerGameController', 'OnInitialize', function(self)
+        local rootWidget = self:GetRootCompoundWidget()
+
+        local label = inkText.new()
+        CName.add("ncartTracker")
+        label:SetName('ncartTracker')
+        label:SetFontFamily('base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily')
+        label:SetFontStyle('Medium')
+        label:SetFontSize(40)
+        label:SetLetterCase(textLetterCase.OriginalCase)
+        label:SetTintColor(HDRColor.new({ Red = 1.1761, Green = 0.3809, Blue = 0.3476, Alpha = 1.0 }))
+        label:SetAnchor(inkEAnchor.Fill)
+        label:SetHorizontalAlignment(textHorizontalAlignment.Center)
+        label:SetVerticalAlignment(textVerticalAlignment.Center)
+        label:SetMargin(inkMargin.new({ left = 400.0, top = 1900.0, right = 0.0, bottom = 0.0 }))
+        label:SetText("")
+        label:SetVisible(false)
+        label:Reparent(rootWidget, -1)
+
+        observers.hudText = label
+    end)
+
+    Override('hudCarController', 'OnMountingEvent', function(this)
+        if observers.noSave then
+            this.activeVehicle = GetMountedVehicle(GetPlayer())
+            this.driver = VehicleComponent.IsDriver(GetPlayer())
+            this:RegisterToVehicle(true)
+            this:Reset()
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'maindashcontainer'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'holder_code'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'flufftext'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'speed_fluff'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'main'})):SetVisible(false)
+        else
+            this.activeVehicle = GetMountedVehicle(GetPlayer())
+            this.driver = VehicleComponent.IsDriver(GetPlayer())
+            this:GetRootWidget():SetVisible(false)
+            this:RegisterToVehicle(true)
+            this:Reset()
+        end
+    end)
 
     Override("gameScriptableSystem", "IsSavingLocked", function(_)
         return observers.noSave

@@ -15,7 +15,8 @@ editUI = {
     timeStop = false,
     skipAmount = 0.1,
     autoPlace = false,
-    addAtFrame = false
+    addAtFrame = false,
+    newPointOffset = Vector4.new(0, 0, 0, 0)
 }
 
 function editUI.draw(debug)
@@ -383,6 +384,7 @@ function editUI.drawTrack()
                 if track.target ~= nil then
                     local p = point:new()
                     p.pos = track.target:GetWorldPosition()
+                    p.pos = utils.addVector(p.pos, editUI.newPointOffset)
                     p.rot = track.target:GetWorldOrientation()
                     if editUI.addAtFrame then
                         table.insert(track.points, track.currentPointID, p)
@@ -431,6 +433,7 @@ function editUI.drawTrack()
         if track.target ~= nil then
             local p = point:new()
             p.pos = track.target:GetWorldPosition()
+            p.pos = utils.addVector(p.pos, editUI.newPointOffset)
             p.rot = track.target:GetWorldOrientation()
             if editUI.addAtFrame then
                 table.insert(track.points, track.currentPointID, p)
@@ -443,6 +446,16 @@ function editUI.drawTrack()
     editUI.autoPlace = ImGui.Checkbox("Auto place", editUI.autoPlace)
     ImGui.SameLine()
     editUI.addAtFrame = ImGui.Checkbox("Place on current frame", editUI.addAtFrame)
+
+    ImGui.PushItemWidth(100)
+    editUI.newPointOffset.x = ImGui.DragFloat("##xx", editUI.newPointOffset.x, 0.01, -9999, 9999, "%.3f X")
+    ImGui.SameLine()
+    editUI.newPointOffset.y = ImGui.DragFloat("##yy", editUI.newPointOffset.y, 0.01, -9999, 9999, "%.3f Y")
+    ImGui.SameLine()
+    editUI.newPointOffset.z = ImGui.DragFloat("##zz", editUI.newPointOffset.z, 0.01, -9999, 9999, "%.3f Z")
+    ImGui.PopItemWidth()
+    ImGui.SameLine()
+    ImGui.Text("New Point Offset")
 -- Points
     if #track.points ~= 0 then
         editUI.drawPoint(track.points[track.currentPointID], track)
@@ -463,6 +476,10 @@ function editUI.drawPoint(point, track)
     ImGui.PopItemWidth()
     ImGui.SameLine()
     editUI.drawPinBox("Pin", point, "pos", point.pos)
+    ImGui.SameLine()
+    if ImGui.Button("TP to") then
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), point.pos,  point.rot:ToEulerAngles())
+    end
 
     ImGui.PushItemWidth(150)
     local x, changed = ImGui.DragFloat("##r_x", 0, 0.01, -9999, 9999, "%.3f Relativ X")
@@ -481,6 +498,7 @@ function editUI.drawPoint(point, track)
             local v = track.trainObj.entity:GetWorldForward()
             point.pos.x = point.pos.x + (v.x * y)
             point.pos.y = point.pos.y + (v.y * y)
+            point.pos.z = point.pos.z + (v.z * y)
         end
         y = 0
     end

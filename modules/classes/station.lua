@@ -69,7 +69,7 @@ end
 
 function station:spawn()
 	for _, o in pairs(self.objects) do
-		local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat())
+		local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat(), o.app)
         table.insert(self.objectIDS, id)
 	end
 	self.loaded = true
@@ -120,7 +120,7 @@ end
 function station:handleFakeDoor(target)
 	local player = Game.GetPlayer()
 
-	if target:GetClassName().value == "FakeDoor" then
+	if (target:GetClassName().value == "FakeDoor" or target:GetClassName().value == "Door") and self.useDoors then
 		self.ts.hud.doorVisible = true
 		if self.ts.input.interactKey then
 			self.ts.input.interactKey = false

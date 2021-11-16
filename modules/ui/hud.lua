@@ -11,7 +11,10 @@ hud = {
 
     interactionHUDTrain = false,
     interactionHUDExit = false,
-    interactionHUDDoor = false
+    interactionHUDDoor = false,
+
+    nextStationPoint = nil,
+    nextStationText = ""
 }
 
 function hud.draw(ts)
@@ -25,6 +28,12 @@ function hud.draw(ts)
     if hud.destVisible then
         hud.drawDestinations(ts.stationSys)
         hud.destVisible = false
+    else
+        observers.nextStationText = ""
+        Game.GetMappinSystem():UnregisterMappin(observers.nextStationPoint)
+        if ts.observers.hudText then
+            ts.observers.hudText:SetVisible(false)
+        end
     end
 end
 
@@ -89,25 +98,27 @@ function hud.drawTrain()
 end
 
 function hud.drawDestinations(sys)
-    local wWidth, wHeight = GetDisplayResolution()
-
-    CPS:setThemeBegin()
-    CPS.styleBegin("WindowBorderSize", 0)
-    CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("ts_hud_destinations", bit32.bor(ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoTitleBar))
+    local text = "NCART Next Station:\n"
 
     for k, d in pairs(sys.pathsData) do
         if k == sys.currentPathsIndex then
-            ImGui.Text(sys.stations[d.targetID].displayName .. " X")
+            text = text .. tostring(" [X] " .. sys.stations[d.targetID].displayName .. "\n")
+
+            if observers.nextStationText ~= sys.stations[d.targetID].displayName then
+                Game.GetMappinSystem():UnregisterMappin(observers.nextStationPoint)
+                observers.nextStationText = sys.stations[d.targetID].displayName
+                observers.nextStationPoint = Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), sys.stations[d.targetID].trainExit.pos)
+            end
+
         else
-            ImGui.Text(sys.stations[d.targetID].displayName)
+            text = text .. tostring(" [  ] " .. sys.stations[d.targetID].displayName .. "\n")
         end
     end
 
-    ImGui.End()
-    CPS.colorEnd(1)
-    CPS.styleEnd(1)
-    CPS:setThemeEnd()
+    if not sys.ts.observers.hudText then return end
+
+    sys.ts.observers.hudText:SetVisible(true)
+    sys.ts.observers.hudText:SetText(text)
 end
 
 return hud

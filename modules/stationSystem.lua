@@ -207,7 +207,7 @@ function stationSys:update(deltaTime)
 
 			if self.activeTrain.playerMounted then
 				local tdbid = TweakDBID.new("Items.money")
-				local moneyId = GetSingleton('gameItemID'):FromTDBID(tdbid)
+				local moneyId = gameItemID.FromTDBID(tdbid)
 				Game.GetTransactionSystem():RemoveItem(Game.GetPlayer(), moneyId, self.ts.settings.moneyPerStation)
 			end
 
@@ -262,6 +262,10 @@ function stationSys:startHoldTimer()
 	self.ts.observers.timetableValue = self.currentStation.holdTime * self.ts.settings.holdMult
 	Cron.Every(1, {tick = 0}, function(timer)
 		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
+		if self.activeTrain == nil then
+			timer:Halt()
+			return
+		end
 		if self.ts.observers.timetableValue <= 0 then
 			timer:Halt()
 		end
@@ -294,6 +298,10 @@ function stationSys:startExitTimer()
 		if self.ts.observers.timetableValue <= 0 then
 			timer:Halt()
 		end
+		if self.activeTrain == nil then
+			timer:Halt()
+			return
+		end
 		if not self.activeTrain.driving then
 			timer:Halt()
 		end
@@ -306,6 +314,10 @@ function stationSys:startArriveTimer()
 		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
 		if self.ts.observers.timetableValue <= 0 then
 			timer:Halt()
+		end
+		if self.activeTrain == nil then
+			timer:Halt()
+			return
 		end
 		if not self.activeTrain.driving then
 			timer:Halt()

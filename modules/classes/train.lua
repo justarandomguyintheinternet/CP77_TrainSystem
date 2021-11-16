@@ -18,7 +18,7 @@ function train:new(stationSys)
 
 	o.carName =  "Vehicle.v_sportbike3_brennan_apollo" --Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
 	o.carApp = "brennan_apollo_basic_burnt_v_2"--"makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
-	o.carOffset = Vector4.new(0, 0, 1.5, 0)
+	o.carOffset = Vector4.new(0, 0, 2, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
 	o.carObject = nil
@@ -74,10 +74,12 @@ end
 function train:spawnBus()
 	self.busObject = object:new(self.busLayer)
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
-	local pos = Game.GetPlayer():GetWorldPosition()
-	pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist + 5
-	pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist + 5
-	pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist + 5
+
+	local point = self.arrivalPath[#self.arrivalPath]
+	local pos = utils.addVector(point.pos, Vector4.new(0, 0, math.abs(self.stationSys.currentStation.spawnOffset*2), 0))-- Game.GetPlayer():GetWorldPosition()
+	-- pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist + 5
+	-- pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist + 5
+	-- pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist + 5
 	self.busObject.rot = Game.GetCameraSystem():GetActiveCameraForward():ToRotation():ToQuat()
 	self.busObject.pos = pos
 	self.busObject:spawn()
@@ -379,6 +381,12 @@ function train:unmount()
 	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
 	utils.unmount()
 	self.busObject:despawn()
+
+	-- For the very unlikely case that someone uses the weaponized vehicle mod
+	local evt = DeleteInputHintBySourceEvent.new()
+    evt.source = "turret"
+    evt.targetHintContainer = "GameplayInputHelper"
+    Game.GetUISystem():QueueEvent(evt)
 end
 
 return train

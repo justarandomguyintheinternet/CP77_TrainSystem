@@ -8,6 +8,7 @@ function debug.run(ts)
     end
     debug.baseUI.loadedUI.update()
     debug.baseUI.editUI.update()
+    debug.baseUI.utilUI.update()
 end
 
 return debug
