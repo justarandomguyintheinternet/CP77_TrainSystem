@@ -9,7 +9,7 @@ function entrySys:new(ts)
 
     o.ts = ts
 	o.entries = {}
-    o.maxDistToEntry = 2.4
+    o.maxDistToEntry = 2.6
     o.elevatorIDS = {}
     o.soundID = nil
 
@@ -65,6 +65,7 @@ function entrySys:enter(entry)
     self.ts.runtimeData.noTrains = true
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
+    utils.createInteractionHub("Enter NCART Station", "Choice1", false)
 
     self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
 
@@ -93,12 +94,17 @@ end
 function entrySys:looksAtEntry(closest)
     local looksAt = false
     local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
-    if target then
+    if target and GetPlayer():GetFastTravelSystem():IsFastTravelEnabled() then
         if (target:GetClassName().value == "DataTerm" and not closest.useDoors) or (target:GetClassName().value == "FakeDoor" and closest.useDoors) then
             if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < self.maxDistToEntry then
                 looksAt = true
+                utils.createInteractionHub("Enter NCART Station", "Choice1", true)
+            else
+                utils.createInteractionHub("Enter NCART Station", "Choice1", false)
             end
         end
+    else
+        utils.createInteractionHub("Enter NCART Station", "Choice1", false)
     end
     return looksAt
 end

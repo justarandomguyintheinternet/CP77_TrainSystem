@@ -60,6 +60,9 @@ function settings.draw(ts)
     ts.settings.moneyPerStation, changed = ImGui.InputInt("Price per Station", ts.settings.moneyPerStation)
     if changed then config.saveFile("data/config.json", ts.settings) end
 
+    ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
+    if changed then config.saveFile("data/config.json", ts.settings) end
+
     ImGui.End()
     ts.CPS:setThemeEnd()
 end

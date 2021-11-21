@@ -323,6 +323,7 @@ function miscUtils.setupTPPCam(dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 150000)
+    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 150000)
 end
 
 function miscUtils.removeTPPTweaks()
@@ -330,6 +331,17 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", 4.500000)
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", 4.500000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
+    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
+end
+
+function miscUtils.forceStop(ts)
+    ts.entrySys:despawnElevators()
+    ts.objectSys.despawnAll()
+    miscUtils.removeTPPTweaks()
+
+    if ts.observers.noSave then
+
+    end
 end
 
 return miscUtils

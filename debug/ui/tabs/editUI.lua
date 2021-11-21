@@ -16,7 +16,7 @@ editUI = {
     skipAmount = 0.1,
     autoPlace = false,
     addAtFrame = false,
-    newPointOffset = Vector4.new(0, 0, 0, 0)
+    newPointOffset = nil
 }
 
 function editUI.draw(debug)
@@ -389,6 +389,11 @@ function editUI.drawTrack()
         end
     end
     ImGui.SameLine()
+
+    if editUI.newPointOffset == nil then
+        editUI.newPointOffset = Vector4.new(0, 0, 0, 0)
+    end
+
     if ImGui.Button("Skip") then
         Game.SetTimeDilation(0)
         Cron.After(editUI.skipAmount, function ()

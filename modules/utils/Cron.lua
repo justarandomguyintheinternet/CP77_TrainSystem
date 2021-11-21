@@ -5,22 +5,22 @@ Timed Tasks Manager
 Copyright (c) 2021 psiberx
 ]]
 
-local Cron = {}
+local Cron = { version = '1.0.2' }
 
-Cron.timers = { version = '1.0.1' }
+local timers = {}
 local counter = 0
 
---@param timeout number
---@param recurring boolean
---@param callback function
---@param args
---@return any
+---@param timeout number
+---@param recurring boolean
+---@param callback function
+---@param args
+---@return any
 local function addTimer(timeout, recurring, callback, args)
 	if type(timeout) ~= 'number' then
 		return
 	end
 
-	if timeout <= 0 then
+	if timeout < 0 then
 		return
 	end
 
@@ -72,49 +72,57 @@ local function addTimer(timeout, recurring, callback, args)
 		args.Resume = Cron.Resume
 	end
 
-	table.insert(Cron.timers, timer)
+	table.insert(timers, timer)
 
 	return timer.id
 end
---@param timeout number
---@param callback function
---@param data
---@return any
+
+---@param timeout number
+---@param callback function
+---@param data
+---@return any
 function Cron.After(timeout, callback, data)
 	return addTimer(timeout, false, callback, data)
 end
 
---@param timeout number
---@param callback function
---@param data
---@return any
+---@param timeout number
+---@param callback function
+---@param data
+---@return any
 function Cron.Every(timeout, callback, data)
 	return addTimer(timeout, true, callback, data)
 end
 
---@param timerId any
---@return void
+---@param callback function
+---@param data
+---@return any
+function Cron.NextTick(callback, data)
+	return addTimer(0, false, callback, data)
+end
+
+---@param timerId any
+---@return void
 function Cron.Halt(timerId)
 	if type(timerId) == 'table' then
 		timerId = timerId.id
 	end
 
-	for i, timer in ipairs(Cron.timers) do
+	for i, timer in ipairs(timers) do
 		if timer.id == timerId then
-			table.remove(Cron.timers, i)
+			table.remove(timers, i)
 			break
 		end
 	end
 end
 
---@param timerId any
---@return void
+---@param timerId any
+---@return void
 function Cron.Pause(timerId)
 	if type(timerId) == 'table' then
 		timerId = timerId.id
 	end
 
-	for _, timer in ipairs(Cron.timers) do
+	for _, timer in ipairs(timers) do
 		if timer.id == timerId then
 			timer.active = false
 			break
@@ -122,14 +130,14 @@ function Cron.Pause(timerId)
 	end
 end
 
---@param timerId any
---@return void
+---@param timerId any
+---@return void
 function Cron.Resume(timerId)
 	if type(timerId) == 'table' then
 		timerId = timerId.id
 	end
 
-	for _, timer in ipairs(Cron.timers) do
+	for _, timer in ipairs(timers) do
 		if timer.id == timerId then
 			timer.active = true
 			break
@@ -137,11 +145,11 @@ function Cron.Resume(timerId)
 	end
 end
 
---@param delta number
---@return void
+---@param delta number
+---@return void
 function Cron.Update(delta)
-	if #Cron.timers > 0 then
-		for i, timer in ipairs(Cron.timers) do
+	if #timers > 0 then
+		for i, timer in ipairs(timers) do
 			if timer.active then
 				timer.delay = timer.delay - delta
 
@@ -149,7 +157,7 @@ function Cron.Update(delta)
 					if timer.recurring then
 						timer.delay = timer.delay + timer.timeout
 					else
-						table.remove(Cron.timers, i)
+						table.remove(timers, i)
 						i = i - 1
 					end
 

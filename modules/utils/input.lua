@@ -34,12 +34,18 @@ function input.startInputObserver()
             end
         elseif actionName == 'NextWeapon' then
             if actionType == 'BUTTON_PRESSED' then
-                print("next")
                 input.down = true
             end
         elseif actionName == 'PreviousWeapon' then
             if actionType == 'BUTTON_PRESSED' then
-                print("last")
+                input.up = true
+            end
+        elseif actionName == 'dpad_left' then
+            if actionType == 'BUTTON_PRESSED' then
+                input.down = true
+            end
+        elseif actionName == 'dpad_up' then
+            if actionType == 'BUTTON_PRESSED' then
                 input.up = true
             end
         end

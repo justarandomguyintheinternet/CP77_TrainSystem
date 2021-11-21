@@ -11,11 +11,12 @@ ts = {
     },
 
     defaultSettings = {
-        camDist = 20,
-        trainSpeed = 35,
+        camDist = 16,
+        trainSpeed = 25,
         defaultSeat = 1,
         moneyPerStation = 2,
-        holdMult = 1
+        holdMult = 1,
+        tppOnly = false
     },
 
     settings = {},
@@ -57,8 +58,7 @@ function ts:new()
 
         ts.GameUI.OnSessionEnd(function()
             ts.runtimeData.inGame = false
-            ts.entrySys:despawnElevators()
-            ts.objectSys.despawnAll()
+            utils.forceStop(ts)
         end)
 
         ts.runtimeData.inGame = not ts.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
@@ -77,9 +77,7 @@ function ts:new()
     end)
 
     registerForEvent("onShutdown", function ()
-        ts.entrySys:despawnElevators()
-        ts.objectSys.despawnAll()
-        utils.removeTPPTweaks()
+        utils.forceStop(ts)
     end)
 
     registerForEvent("onDraw", function()

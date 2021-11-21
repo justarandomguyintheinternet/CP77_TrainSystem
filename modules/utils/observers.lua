@@ -56,18 +56,11 @@ function observers.start(ts)
             this:RegisterToVehicle(true)
             this:Reset()
         end
+        collectgarbage()
     end)
 
     Override("gameScriptableSystem", "IsSavingLocked", function(_)
         return observers.noSave
-    end)
-
-    Override("OpenWorldMapDeviceAction", "GetTweakDBChoiceRecord", function(_)
-        if observers.noFastTravel then
-            return "Enter"
-        else
-            return "SellectDestination" -- Ah yes se LL ect
-        end
     end)
 
     Observe("VehicleComponent", "OnGameAttach", function(self)

@@ -12,6 +12,7 @@ hud = {
     interactionHUDTrain = false,
     interactionHUDExit = false,
     interactionHUDDoor = false,
+    interactionHUDEntry = false,
 
     nextStationPoint = nil,
     nextStationText = ""
@@ -21,10 +22,7 @@ function hud.draw(ts)
     hud.drawTrain()
     hud.drawExit()
     hud.drawDoor()
-    if hud.entryVisible then
-        hud.drawEntry()
-        hud.entryVisible = false
-    end
+    hud.drawEntry()
     if hud.destVisible then
         hud.drawDestinations(ts.stationSys)
         hud.destVisible = false
@@ -37,25 +35,17 @@ function hud.draw(ts)
     end
 end
 
-function hud.drawEntry(station)
-    local wWidth, wHeight = GetDisplayResolution()
-
-    CPS:setThemeBegin()
-    CPS.styleBegin("WindowBorderSize", 0)
-    CPS.colorBegin("WindowBg", {0,0,0,0})
-    ImGui.Begin("exitStation", true, bit32.bor(ImGuiWindowFlags.NoResize and ImGuiWindowFlags.AlwaysAutoResize and ImGuiWindowFlags.NoTitleBar))
-    ImGui.SetWindowFontScale(1.5)
-    ImGui.SetWindowPos((wWidth / 2) - 100, wHeight * 0.79)
-    CPS.colorBegin("Text", theme.CPButtonText)
-    CPS.CPRect("F", 28, 28, theme.Hidden, theme.CPButtonText, 1, 2)
-    ImGui.SameLine()
-    ImGui.Text("Enter Station")
-    --ImGui.TextColored(1, 0.76, 0.23, 1, "[10 E$]")
-    CPS.colorEnd()
-    ImGui.End()
-    CPS.colorEnd(1)
-    CPS.styleEnd(1)
-    CPS:setThemeEnd()
+function hud.drawEntry()
+    if hud.entryVisible then
+        hud.entryVisible = false
+        utils.createInteractionHub("Enter NCART Station", "Choice1", true)
+        hud.interactionHUDEntry = true
+    else
+        if hud.interactionHUDEntry then
+            utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+        end
+        hud.interactionHUDEntry = false
+    end
 end
 
 function hud.drawExit()

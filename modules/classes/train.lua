@@ -76,7 +76,7 @@ function train:spawnBus()
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
 
 	local point = self.arrivalPath[#self.arrivalPath]
-	local pos = utils.addVector(point.pos, Vector4.new(0, 0, math.abs(self.stationSys.currentStation.spawnOffset*2), 0))-- Game.GetPlayer():GetWorldPosition()
+	local pos = utils.addVector(point.pos, Vector4.new(0, 0, -math.abs(self.stationSys.currentStation.spawnOffset*2), 0))-- Game.GetPlayer():GetWorldPosition()
 	-- pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist + 5
 	-- pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist + 5
 	-- pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist + 5
@@ -217,7 +217,7 @@ function train:update(deltaTime)
 	end
 
 	if self.playerMounted then
-		if self.ts.input.toggleCam then
+		if self.ts.input.toggleCam and not self.ts.settings.tppOnly then
 			self.ts.input.toggleCam = false
 			if self.perspective == "tpp" and self.busObject.spawned then
 				utils.unmount()
@@ -280,9 +280,9 @@ function train:updateLocation(obj)
 			self.carObject.rot = self.rot
 		else
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 3
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 1.5
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 1.5
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 1.5
 			self.carObject.pos = pos
 		end
 	elseif obj == "train" then
@@ -357,6 +357,7 @@ function train:updateCam()
 			Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
 		else
 			utils.switchCarCam("FPP")
+			GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0.2,0))
 		end
 	end
 end
@@ -367,26 +368,35 @@ function train:mount()
 	self.ts.input.down = false
 	self.ts.input.up = false
 	Cron.After(0.5, function ()
+		if self.ts.settings.tppOnly then return end
 		self:spawnBus()
 	end)
 	self.playerMounted = true
 	utils.mount(self.carObject.entID, "seat_front_left")
 	utils.switchCarCam("TPPFar")
 	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
+	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
 end
 
 function train:unmount()
+	GetPlayer():QueueEvent(vehicleCameraResetEvent.new())
+	StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoDriving")
+
 	self.perspective = "tpp"
 	self.playerMounted = false
 	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
 	utils.unmount()
 	self.busObject:despawn()
 
-	-- For the very unlikely case that someone uses the weaponized vehicle mod
 	local evt = DeleteInputHintBySourceEvent.new()
-    evt.source = "turret"
-    evt.targetHintContainer = "GameplayInputHelper"
-    Game.GetUISystem():QueueEvent(evt)
+	evt.source = "turret"
+	evt.targetHintContainer = "GameplayInputHelper"
+	Game.GetUISystem():QueueEvent(evt)
+
+	local evt = DeleteInputHintBySourceEvent.new()
+	evt.source = "Debug"
+	evt.targetHintContainer = "GameplayInputHelper"
+	Game.GetUISystem():QueueEvent(evt)
 end
 
 return train
