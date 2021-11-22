@@ -1,3 +1,5 @@
+local settings = require("modules/utils/GameSettings")
+
 miscUtils = {}
 
 function miscUtils.deepcopy(origin)
@@ -334,13 +336,59 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
 end
 
+function miscUtils.showInputHint(key, text, prio, holdAnimation)
+    local hold = holdAnimation or false
+    local evt = UpdateInputHintEvent.new()
+    local data = InputHintData.new()
+    data.action = key
+    data.source = "train"
+    data.localizedLabel = text
+    data.enableHoldAnimation = hold
+    data.sortingPriority  = prio or 1
+    evt = UpdateInputHintEvent.new()
+    evt.data = data
+    evt.show = true
+    evt.targetHintContainer = "GameplayInputHelper"
+    Game.GetUISystem():QueueEvent(evt)
+end
+
+function miscUtils.hideCustomHints()
+    local evt = DeleteInputHintBySourceEvent.new()
+    evt.source = "train"
+    evt.targetHintContainer = "GameplayInputHelper"
+    Game.GetUISystem():QueueEvent(evt)
+end
+
 function miscUtils.forceStop(ts)
     ts.entrySys:despawnElevators()
     ts.objectSys.despawnAll()
     miscUtils.removeTPPTweaks()
 
     if ts.observers.noSave then
+        if ts.stationSys.activeTrain then
+            pcall(function()
+                ts.stationSys.activeTrain:unmount()
+            end)
+            ts.stationSys.activeTrain:despawn()
+            StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoDriving")
+            StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoCombat")
+            StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+            Game.ChangeZoneIndicatorPublic()
+            settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
+            if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
+            miscUtils.togglePin(ts.stationSys, "exit", false)
+            ts.stationSys.currentStation:despawn()
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
 
+            ts.entrySys = require("modules/entrySystem"):new(ts)
+            ts.stationSys = require("modules/stationSystem"):new(ts)
+            ts.trackSys = require("modules/trackSystem"):new(ts)
+
+            ts.trackSys:load()
+            ts.entrySys:load()
+            ts.stationSys:load()
+            ts.objectSys.initialize()
+        end
     end
 end
 

@@ -2,6 +2,7 @@ local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
 local train = require("modules/classes/train")
+local settings = require("modules/utils/GameSettings")
 
 stationSys = {}
 
@@ -26,6 +27,8 @@ function stationSys:new(ts)
 	o.backUpTrain = nil
 
 	o.cronStopID = nil
+
+	o.inputHintsOriginal = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -145,16 +148,40 @@ function stationSys:leave() -- Leave to ground level
 end
 
 function stationSys:nearTrain()
+	if not Game.FindEntityByID(self.activeTrain.carObject.entID) then return end
+	local maxDiff = 45
 	local near = false
-	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
-	if target then
-		if target:GetClassName().value == "vehicleAVBaseObject" or target:GetClassName().value == "vehicleBikeBaseObject" then
-			if utils.distanceVector(self.activeTrain.pos, Game.GetPlayer():GetWorldPosition()) < 7.5 then
-				near = true
-			end
+
+	local offset = utils.multVector(Game.FindEntityByID(self.activeTrain.carObject.entID):GetWorldForward(), 2)
+	local diff1 = Vector4.GetAngleBetween(utils.subVector(self.activeTrain.pos, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
+	local pos2 = utils.addVector(self.activeTrain.pos, offset)
+	local diff2 = Vector4.GetAngleBetween(utils.subVector(pos2, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
+	local pos3 = utils.subVector(self.activeTrain.pos, offset)
+	local diff3 = Vector4.GetAngleBetween(utils.subVector(pos3, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
+
+	if diff1 < maxDiff or diff2 < maxDiff or diff3 < maxDiff then
+		if utils.distanceVector(self.activeTrain.pos, Game.GetPlayer():GetWorldPosition()) < 6 then
+			near = true
 		end
 	end
 	return near
+end
+
+function stationSys:collidesWithTrain()
+	local maxDist = 2.4
+	local inside = false
+
+	local offset = utils.multVector(Game.FindEntityByID(self.activeTrain.carObject.entID):GetWorldForward(), 2)
+	local diff1 = utils.distanceVector(GetPlayer():GetWorldPosition(), self.activeTrain.pos)
+	local pos2 = utils.addVector(self.activeTrain.pos, offset)
+	local diff2 = utils.distanceVector(GetPlayer():GetWorldPosition(), pos2)
+	local pos3 = utils.subVector(self.activeTrain.pos, offset)
+	local diff3 = utils.distanceVector(GetPlayer():GetWorldPosition(), pos3)
+
+	if diff1 < maxDist or diff2 < maxDist or diff3 < maxDist then
+		inside = true
+	end
+	return inside
 end
 
 function stationSys:handleExitTrain()
@@ -254,6 +281,12 @@ function stationSys:update(deltaTime)
 				self.activeTrain:mount()
 				utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
 			end
+		end
+	end
+
+	if self.activeTrain ~= nil and not self.activeTrain.playerMounted then
+		if self:collidesWithTrain() then
+			self.currentStation:tpTo(self.currentStation.trainExit)
 		end
 	end
 end

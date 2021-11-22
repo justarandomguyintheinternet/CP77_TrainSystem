@@ -1,6 +1,7 @@
 local entry = require("modules/classes/entry")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
+local settings = require("modules/utils/GameSettings")
 
 entrySys = {}
 
@@ -66,6 +67,8 @@ function entrySys:enter(entry)
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
     utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+    self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")
+    settings.Set("/interface/hud/input_hints", false)
 
     self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
 

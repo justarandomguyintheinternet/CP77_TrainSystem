@@ -12,12 +12,13 @@ function train:new(stationSys)
 	o.activePath = {}
 	o.targetID = nil
 	o.driving = false
-	o.originalSpeed = stationSys.ts.settings.trainSpeed--35 --30
+	o.originalSpeed = stationSys.ts.settings.trainSpeed
 	o.speed = 0
 	o.pointIndex = 1
+	o.routeDir = ""
 
-	o.carName =  "Vehicle.v_sportbike3_brennan_apollo" --Vehicle.cs_savable_makigai_maimai" --"Vehicle.v_sportbike3_brennan_apollo"--"Vehicle.cs_savable_mahir_mt28_coach" -- "Vehicle.cs_savable_makigai_maimai"
-	o.carApp = "brennan_apollo_basic_burnt_v_2"--"makigai_maimai__basic_burnt_01" --"brennan_apollo_basic_burnt_v_2"
+	o.carName =  "Vehicle.v_sportbike3_brennan_apollo"
+	o.carApp = "brennan_apollo_basic_burnt_v_2"
 	o.carOffset = Vector4.new(0, 0, 2, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
@@ -113,11 +114,13 @@ function train:startDrive(route)
 		self.activePath = self.arrivalPath
 		self.driving = true
 		self.speed = self.originalSpeed
+		self.routeDir = "arrive"
 	elseif route == "exit" then
 		self.activePath = self.exitPath
 		self.driving = true
 		self.speed = 0
 		self:handlePoint(self.activePath[1])
+		self.routeDir = "exit"
 	end
 	self.pos = self.activePath[1].pos
 	self.rot = self.activePath[1].rot
@@ -161,7 +164,7 @@ function train:update(deltaTime)
 
 	if self.driving then
 		--print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
-		if self:getDoneLength() < 25 then
+		if self:getDoneLength() < 25 and self.routeDir == "exit" then
 			self.speed = self:getDoneLength() * 3 + 0.1--self.originalSpeed * ((self:getDoneLength() + 0.01 / 25))
 			self.speed = math.min(self.speed, self.originalSpeed)
 		end
@@ -169,7 +172,6 @@ function train:update(deltaTime)
 			self.speed = self.originalSpeed * (self:getRemainingLength() / 25)
 			self.speed = math.max(0.75, self.speed)
 		end
-
 		if utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) > self.speed * deltaTime then
 			--print("below next point")
 			local todo = self.speed * deltaTime -- How much i want to do
@@ -319,9 +321,11 @@ function train:handlePoint(point)
 
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
-			print("no player, back to arriving")
 			self.driving = false
-			self.stationSys:requestNewTrain()
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 10, 0))
+			Cron.After(2.5, function ()
+				self.stationSys:requestNewTrain()
+			end)
 		end
 	end
 end
@@ -379,8 +383,8 @@ function train:mount()
 end
 
 function train:unmount()
-	GetPlayer():QueueEvent(vehicleCameraResetEvent.new())
 	StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoDriving")
+	GetPlayer():QueueEvent(vehicleCameraResetEvent.new())
 
 	self.perspective = "tpp"
 	self.playerMounted = false

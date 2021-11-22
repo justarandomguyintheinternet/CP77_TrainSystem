@@ -1,7 +1,7 @@
-local object = require("modules/classes/object")
 local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
+local settings = require("modules/utils/GameSettings")
 
 station = {}
 
@@ -77,6 +77,7 @@ function station:exitToGround(ts)
 		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
 
 		Game.FindEntityByID(self.soundID):GetEntity():Destroy()
+		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
     end)
 end
 
