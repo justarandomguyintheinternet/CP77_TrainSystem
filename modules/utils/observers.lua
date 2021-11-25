@@ -48,7 +48,6 @@ function observers.start(ts)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'holder_code'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'flufftext'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'speed_fluff'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'main'})):SetVisible(false)
         else
             this.activeVehicle = GetMountedVehicle(GetPlayer())
             this.driver = VehicleComponent.IsDriver(GetPlayer())

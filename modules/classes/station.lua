@@ -114,8 +114,10 @@ function station:nearExit()
 	if target then
 		if utils.isVector(target:GetWorldPosition(), self.exitDoorPosition) then
 			if self.exitDoorSealed then
-				local targetPS = target:GetDevicePS()
-				if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+				pcall(function ()
+					local targetPS = target:GetDevicePS()
+					if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+				end)
 			end
 			if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 				near = true

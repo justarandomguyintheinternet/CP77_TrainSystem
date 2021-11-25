@@ -1,1 +1,2342 @@
-[{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1929.6970214844,"x":-1503.2310791016,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1928.6204833984,"x":-1506.021484375,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1926.9073486328,"x":-1502.1552734375,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1925.8314208984,"x":-1504.9455566406,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1924.1179199219,"x":-1501.0792236328,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1923.0418701172,"x":-1503.8696289063,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1921.3382568359,"x":-1500.0069580078,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1920.2618408203,"x":-1502.7978515625,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1918.5872802734,"x":-1498.9074707031,"z":74.511390686035,"w":0},"app":"","rot":{"yaw":-21.100778579712,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1919.6605224609,"x":-1496.1278076172,"z":74.511390686035,"w":0},"app":"","rot":{"yaw":-21.100778579712,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1922.36328125,"x":-1497.2349853516,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1927.9892578125,"x":-1499.4053955078,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1930.7692871094,"x":-1500.4777832031,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-111.10078430176,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1930.8540039063,"x":-1500.4244384766,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-21.100778579712,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent","pos":{"y":-1929.7806396484,"x":-1503.2039794922,"z":74.511383056641,"w":0},"app":"","rot":{"yaw":-21.100778579712,"roll":0,"pitch":0}},{"path":"base\\train_system\\trash\\tripple_can.ent","pos":{"y":-1928.0089111328,"x":-1503.5075683594,"z":74.508644104004,"w":0},"app":"","rot":{"yaw":-471.20037841797,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_j.ent","pos":{"y":-1927.4174804688,"x":-1502.5568847656,"z":74.508644104004,"w":0},"app":"","rot":{"yaw":-211.03047180176,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_h.ent","pos":{"y":-1927.5306396484,"x":-1502.6010742188,"z":74.778373718262,"w":0},"app":"","rot":{"yaw":-191.88008117676,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\misc\\int_misc_001__newspaper_j_pile.ent","pos":{"y":-1928.02734375,"x":-1502.8566894531,"z":74.508644104004,"w":0},"app":"","rot":{"yaw":-261.79510498047,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\misc\\int_misc_002__newspaper_a_full.ent","pos":{"y":-1927.9685058594,"x":-1502.8350830078,"z":74.508377075195,"w":0},"app":"","rot":{"yaw":-316.66522216797,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_f_lid.ent","pos":{"y":-1928.4453125,"x":-1502.9669189453,"z":74.508644104004,"w":0},"app":"","rot":{"yaw":-349.27557373047,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\garbage\\int_garbage_002__trash_packaging_c_bottom.ent","pos":{"y":-1929.2109375,"x":-1503.9621582031,"z":74.748374938965,"w":0},"app":"","rot":{"yaw":-382.68963623047,"roll":0,"pitch":70}},{"path":"base\\gameplay\\devices\\vending_machines\\vending_machine_2.ent","pos":{"y":-1926.1745605469,"x":-1502.4680175781,"z":74.511390686035,"w":0},"app":"vending_machines_d_slaughterhouse","rot":{"yaw":-471.92694091797,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent","pos":{"y":-1928.0489501953,"x":-1499.4185791016,"z":74.516067504883,"w":0},"app":"","rot":{"yaw":-291.20037841797,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent","pos":{"y":-1925.4487304688,"x":-1498.4096679688,"z":74.516067504883,"w":0},"app":"","rot":{"yaw":-291.20037841797,"roll":0,"pitch":0}},{"path":"base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_a_phx.ent","pos":{"y":-1927.5421142578,"x":-1499.6176757813,"z":74.516067504883,"w":0},"app":"","rot":{"yaw":-110.29609680176,"roll":0,"pitch":0}},{"path":"base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent","pos":{"y":-1929.6511230469,"x":-1500.7109375,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-65.544143676758,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_f_opened.ent","pos":{"y":-1926.9171142578,"x":-1499.4461669922,"z":74.962066650391,"w":0},"app":"","rot":{"yaw":-85.013870239258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\ashtray_junk.ent","pos":{"y":-1930.0029296875,"x":-1500.2640380859,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-70.254104614258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\medical_gaze_junk.ent","pos":{"y":-1929.8682861328,"x":-1500.3836669922,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-60.653518676758,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\candle_junk.ent","pos":{"y":-1929.9367675781,"x":-1500.4652099609,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-110.75898742676,"roll":0,"pitch":0}},{"path":"base\\items\\quest\\q110__chicken_newspaper_a.ent","pos":{"y":-1927.5643310547,"x":-1499.5815429688,"z":74.512069702148,"w":0},"app":"","rot":{"yaw":-101.93379211426,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_c.ent","pos":{"y":-1927.9268798828,"x":-1499.6156005859,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-166.88398742676,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_d.ent","pos":{"y":-1927.8704833984,"x":-1499.658203125,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-125.10371398926,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_a.ent","pos":{"y":-1927.2634277344,"x":-1499.4012451172,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-85.789260864258,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_b.ent","pos":{"y":-1927.28515625,"x":-1499.5155029297,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-122.02363586426,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_b.ent","pos":{"y":-1927.2427978516,"x":-1499.5832519531,"z":74.521896362305,"w":0},"app":"","rot":{"yaw":-160.89863586426,"roll":0,"pitch":90}},{"path":"base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_c_phx.ent","pos":{"y":-1930.2711181641,"x":-1500.6198730469,"z":74.511390686035,"w":0},"app":"","rot":{"yaw":-131.35176086426,"roll":0,"pitch":0}},{"path":"base\\quest\\main_quests\\part1\\q101\\entities\\q101_mattress.ent","pos":{"y":-1928.8800048828,"x":-1503.4517822266,"z":74.511390686035,"w":0},"app":"","rot":{"yaw":-199.27168273926,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent","pos":{"y":-1920.4809570313,"x":-1496.5676269531,"z":74.512825012207,"w":0},"app":"","rot":{"yaw":-290.59979248047,"roll":0,"pitch":0}},{"path":"base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_a_phx.ent","pos":{"y":-1919.9450683594,"x":-1496.771484375,"z":74.512825012207,"w":0},"app":"","rot":{"yaw":-109.69551086426,"roll":0,"pitch":0}},{"path":"base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent","pos":{"y":-1922.2529296875,"x":-1497.7247314453,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-157.81855773926,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_f_opened.ent","pos":{"y":-1921.9643554688,"x":-1497.5816650391,"z":74.958824157715,"w":0},"app":"","rot":{"yaw":-84.414260864258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\ashtray_junk.ent","pos":{"y":-1922.4437255859,"x":-1497.3922119141,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-69.653518676758,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\medical_gaze_junk.ent","pos":{"y":-1922.3103027344,"x":-1497.5128173828,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-60.053909301758,"roll":0,"pitch":0}},{"path":"base\\items\\quest\\q110__chicken_newspaper_a.ent","pos":{"y":-1919.9986572266,"x":-1496.7355957031,"z":74.508827209473,"w":0},"app":"","rot":{"yaw":-131.13398742676,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_c.ent","pos":{"y":-1920.361328125,"x":-1496.7655029297,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-166.28437805176,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_d.ent","pos":{"y":-1920.3046875,"x":-1496.8093261719,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-124.50410461426,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_a.ent","pos":{"y":-1919.6949462891,"x":-1496.5579833984,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-85.188674926758,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_b.ent","pos":{"y":-1919.7180175781,"x":-1496.671875,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-121.42402648926,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\food\\int_food_001__soda_can_b.ent","pos":{"y":-1919.6766357422,"x":-1496.7401123047,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-160.29902648926,"roll":0,"pitch":90}},{"path":"base\\gameplay\\items\\misc\\appearances\\disinfectant_junk.ent","pos":{"y":-1922.416015625,"x":-1497.3400878906,"z":74.523094177246,"w":0},"app":"","rot":{"yaw":-79.763870239258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\loot\\tokens\\misc\\junk_token.ent","pos":{"y":-1922.3193359375,"x":-1497.6101074219,"z":74.523094177246,"w":0},"app":"","rot":{"yaw":-73.584182739258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\chaplet_a_junk.ent","pos":{"y":-1919.7794189453,"x":-1496.9025878906,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-81.353713989258,"roll":0,"pitch":0}},{"path":"base\\gameplay\\items\\misc\\appearances\\hair_wax_junk.ent","pos":{"y":-1920.24609375,"x":-1496.9426269531,"z":74.518653869629,"w":0},"app":"","rot":{"yaw":-108.44355773926,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1929.4555664063,"x":-1500.4315185547,"z":70.531669616699,"w":0},"app":"","rot":{"yaw":68.516273498535,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1929.4555664063,"x":-1500.4315185547,"z":66.751670837402,"w":0},"app":"","rot":{"yaw":68.516273498535,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1929.4555664063,"x":-1500.4315185547,"z":62.971664428711,"w":0},"app":"","rot":{"yaw":68.516273498535,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1922.916015625,"x":-1498.6922607422,"z":70.531669616699,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1922.916015625,"x":-1498.6922607422,"z":66.751670837402,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1922.916015625,"x":-1498.6922607422,"z":62.971664428711,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1919.6594238281,"x":-1496.5086669922,"z":70.531669616699,"w":0},"app":"","rot":{"yaw":68.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1919.6594238281,"x":-1496.5086669922,"z":66.751670837402,"w":0},"app":"","rot":{"yaw":68.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1919.6594238281,"x":-1496.5086669922,"z":62.971664428711,"w":0},"app":"","rot":{"yaw":68.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1923.9029541016,"x":-1494.8481445313,"z":69.641654968262,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1923.9029541016,"x":-1494.8481445313,"z":65.861671447754,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_pillar_h400.ent","pos":{"y":-1923.9029541016,"x":-1494.8481445313,"z":62.081672668457,"w":0},"app":"","rot":{"yaw":158.51628112793,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\doors\\double_door\\double_door_sliding_c_baremetal.ent","pos":{"y":-1923.7239990234,"x":-1502.1348876953,"z":74.499908447266,"w":0},"app":"","rot":{"yaw":-291.74627685547,"roll":0,"pitch":0}},{"path":"base\\train_system\\signs\\ncart_sign_full.ent","pos":{"y":-1923.6849365234,"x":-1502.1441650391,"z":77.620086669922,"w":0},"app":"","rot":{"yaw":-471.87908935547,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\elevators\\appearances\\kitsch_terminal.ent","pos":{"y":-1921.9329833984,"x":-1501.4207763672,"z":75.884140014648,"w":0},"app":"","rot":{"yaw":-201.69648742676,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\drop_points\\drop_point.ent","pos":{"y":-1920.9520263672,"x":-1501.2647705078,"z":74.514190673828,"w":0},"app":"","rot":{"yaw":-470.35369873047,"roll":0,"pitch":0}},{"path":"base\\environment\\decoration\\garbage\\bins\\industrial_trash_can\\industrial_trash_can_c_dst.ent","pos":{"y":-1921.9504394531,"x":-1500.9815673828,"z":74.514175415039,"w":0},"app":"","rot":{"yaw":-463.39959716797,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_g.ent","pos":{"y":-1921.2858886719,"x":-1500.4819335938,"z":74.514190673828,"w":0},"app":"","rot":{"yaw":-388.15838623047,"roll":0,"pitch":0}},{"path":"base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent","pos":{"y":-1921.0565185547,"x":-1500.3795166016,"z":74.514190673828,"w":0},"app":"","rot":{"yaw":-288.89276123047,"roll":0,"pitch":0}},{"path":"base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent","pos":{"y":-1921.5009765625,"x":-1500.5321044922,"z":74.524368286133,"w":0},"app":"","rot":{"yaw":-323.39276123047,"roll":0,"pitch":0}},{"path":"base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_g.ent","pos":{"y":-1920.5262451172,"x":-1500.5026855469,"z":74.974365234375,"w":0},"app":"","rot":{"yaw":-272.96795654297,"roll":0,"pitch":70}},{"path":"base\\gameplay\\devices\\utilities\\industrial\\industrial_cleaning_machine.ent","pos":{"y":-1919.9240722656,"x":-1500.2857666016,"z":74.514190673828,"w":0},"app":"","rot":{"yaw":-349.66424560547,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\arcade_machines\\arcade_machine_1.ent","pos":{"y":-1919.2121582031,"x":-1499.5203857422,"z":74.511390686035,"w":0},"app":"","rot":{"yaw":-161.61738586426,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\arcade_machines\\appearences\\arcade_machine_5.ent","pos":{"y":-1919.0466308594,"x":-1498.7972412109,"z":74.831359863281,"w":0},"app":"","rot":{"yaw":-203.05000305176,"roll":-90,"pitch":0}},{"path":"base\\gameplay\\devices\\security_systems\\surveillance_cameras\\appearances\\surveillance_camera_1_militech.ent","pos":{"y":-1923.4637451172,"x":-1501.849609375,"z":79.42138671875,"w":0},"app":"","rot":{"yaw":-114.84980773926,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\security_systems\\security_turret\\special\\security_turret_ceiling_prevention.ent","pos":{"y":-1923.4382324219,"x":-1502.0103759766,"z":81.482002258301,"w":0},"app":"","rot":{"yaw":-292.65057373047,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_corridor_light_c45.ent","pos":{"y":-1919.8310546875,"x":-1500.4892578125,"z":81.331672668457,"w":0},"app":"","rot":{"yaw":-292.34686279297,"roll":0,"pitch":-90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_corridor_light_c45.ent","pos":{"y":-1926.703125,"x":-1503.3151855469,"z":81.331672668457,"w":0},"app":"","rot":{"yaw":-292.34686279297,"roll":0,"pitch":-90}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1939.6407470703,"x":-1485.9473876953,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1927.4613037109,"x":-1481.064453125,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1911.8975830078,"x":-1474.8225097656,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1899.1624755859,"x":-1469.7152099609,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1931.8850097656,"x":-1505.2891845703,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1915.3070068359,"x":-1498.6430664063,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1904.3201904297,"x":-1493.7189941406,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent","pos":{"y":-1891.6092529297,"x":-1488.5467529297,"z":76.426002502441,"w":0},"app":"","rot":{"yaw":68.150199890137,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1926.3360595703,"x":-1495.5485839844,"z":73.471946716309,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1925.9859619141,"x":-1496.4638671875,"z":73.821937561035,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1925.6346435547,"x":-1497.3793945313,"z":74.171943664551,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1923.5178222656,"x":-1494.4699707031,"z":73.471946716309,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1923.1655273438,"x":-1495.3834228516,"z":73.821937561035,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent","pos":{"y":-1922.8154296875,"x":-1496.2994384766,"z":74.171943664551,"w":0},"app":"","rot":{"yaw":339.02978515625,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l60_b_dst.ent","pos":{"y":-1923.3851318359,"x":-1494.4451904297,"z":73.471672058105,"w":0},"app":"","rot":{"yaw":519.02996826172,"roll":0,"pitch":0}},{"path":"base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l60_b_dst.ent","pos":{"y":-1926.2044677734,"x":-1495.5244140625,"z":73.471672058105,"w":0},"app":"","rot":{"yaw":519.02996826172,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1922.6506347656,"x":-1496.5791015625,"z":73.55689239502,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1922.4793701172,"x":-1497.0260009766,"z":73.746879577637,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1922.2897949219,"x":-1497.5213623047,"z":73.936882019043,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1922.0870361328,"x":-1498.0555419922,"z":74.126884460449,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1921.8702392578,"x":-1498.6170654297,"z":74.316886901855,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\train_system\\floor\\metro_floor_300.ent","pos":{"y":-1921.6405029297,"x":-1499.2241210938,"z":74.507225036621,"w":0},"app":"","rot":{"yaw":519.10479736328,"roll":0,"pitch":0}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1923.9331054688,"x":-1493.931640625,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1924.3255615234,"x":-1494.0871582031,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1924.7176513672,"x":-1494.2413330078,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1925.1157226563,"x":-1494.3975830078,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1925.5075683594,"x":-1494.5528564453,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1925.8983154297,"x":-1494.70703125,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent","pos":{"y":-1926.279296875,"x":-1494.8571777344,"z":73.54467010498,"w":0},"app":"","rot":{"yaw":68.474998474121,"roll":0,"pitch":90}},{"path":"base\\gameplay\\devices\\traffic\\ncart_timetables\\ncart_timetable_1.ent","pos":{"y":-1919.5131835938,"x":-1500.4743652344,"z":77.161666870117,"w":0},"app":"","rot":{"yaw":158.14999389648,"roll":0,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1929.2565917969,"x":-1504.5999755859,"z":76.611000061035,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1929.2565917969,"x":-1504.5999755859,"z":70.78099822998,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1923.0314941406,"x":-1502.0963134766,"z":76.611000061035,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1923.0314941406,"x":-1502.0963134766,"z":70.78099822998,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1916.9362792969,"x":-1499.6448974609,"z":76.611000061035,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1916.9362792969,"x":-1499.6448974609,"z":70.78099822998,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1910.5534667969,"x":-1497.0784912109,"z":76.611000061035,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1910.5534667969,"x":-1497.0784912109,"z":70.78099822998,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1902.7333984375,"x":-1493.3977050781,"z":76.600997924805,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1902.7333984375,"x":-1493.3977050781,"z":70.77099609375,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1896.5083007813,"x":-1490.8940429688,"z":76.600997924805,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1896.5083007813,"x":-1490.8940429688,"z":70.77099609375,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1890.4130859375,"x":-1488.4426269531,"z":76.600997924805,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1890.4130859375,"x":-1488.4426269531,"z":70.77099609375,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1883.2231445313,"x":-1485.5506591797,"z":76.600997924805,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1883.2231445313,"x":-1485.5506591797,"z":70.77099609375,"w":0},"app":"","rot":{"yaw":-111.89961242676,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1945.0812988281,"x":-1487.9223632813,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1945.0812988281,"x":-1487.9223632813,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1937.9006347656,"x":-1485.037109375,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1937.9006347656,"x":-1485.037109375,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1930.7292480469,"x":-1482.1538085938,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1930.7292480469,"x":-1482.1538085938,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1923.6042480469,"x":-1479.2890625,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1923.6042480469,"x":-1479.2890625,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1916.5998535156,"x":-1476.4730224609,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1916.5998535156,"x":-1476.4730224609,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1909.5119628906,"x":-1473.6242675781,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1909.5119628906,"x":-1473.6242675781,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1902.3962402344,"x":-1470.7634277344,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1902.3962402344,"x":-1470.7634277344,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1897.8317871094,"x":-1468.9283447266,"z":76.468948364258,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\walls\\metro_wall_600x600.ent","pos":{"y":-1897.8317871094,"x":-1468.9283447266,"z":70.488998413086,"w":1},"app":"","rot":{"yaw":68.099998474121,"roll":90,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1928.7618408203,"x":-1492.7747802734,"z":71.791000366211,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1934.3336181641,"x":-1494.9742431641,"z":71.791000366211,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1939.8021240234,"x":-1497.1376953125,"z":71.791000366211,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1945.3359375,"x":-1499.3247070313,"z":71.791000366211,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1923.2369384766,"x":-1490.5905761719,"z":71.791000366211,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":0}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1917.8333740234,"x":-1488.4544677734,"z":71.802299499512,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1912.3411865234,"x":-1486.2808837891,"z":71.407356262207,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1906.8397216797,"x":-1484.1043701172,"z":71.011734008789,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1901.3475341797,"x":-1481.9318847656,"z":70.616790771484,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1895.8367919922,"x":-1479.7525634766,"z":70.220573425293,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}},{"path":"base\\train_system\\tracks\\track_l600.ent","pos":{"y":-1890.306640625,"x":-1477.5655517578,"z":69.822967529297,"w":1},"app":"","rot":{"yaw":158.42500305176,"roll":0,"pitch":3.8250000476837}}]
+[
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1941.3572998047,
+            "x": -1486.5810546875,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1924.5946044922,
+            "x": -1479.9189453125,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1911.8975830078,
+            "x": -1474.8225097656,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1899.1624755859,
+            "x": -1469.7152099609,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1931.8850097656,
+            "x": -1505.2891845703,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1915.3070068359,
+            "x": -1498.6430664063,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1904.3201904297,
+            "x": -1493.7189941406,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\rounded\\billboard_screen_a_straight_w600_h400.ent",
+        "pos": {
+            "y": -1891.6092529297,
+            "x": -1488.5467529297,
+            "z": 76.426002502441,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.150199890137,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1929.2565917969,
+            "x": -1504.5999755859,
+            "z": 76.611000061035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1929.2565917969,
+            "x": -1504.5999755859,
+            "z": 70.78099822998,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1923.0314941406,
+            "x": -1502.0963134766,
+            "z": 76.611000061035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1923.0314941406,
+            "x": -1502.0963134766,
+            "z": 70.78099822998,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1916.9362792969,
+            "x": -1499.6448974609,
+            "z": 76.611000061035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1916.9362792969,
+            "x": -1499.6448974609,
+            "z": 70.78099822998,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1910.5534667969,
+            "x": -1497.0784912109,
+            "z": 76.611000061035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1910.5534667969,
+            "x": -1497.0784912109,
+            "z": 70.78099822998,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1902.7333984375,
+            "x": -1493.3977050781,
+            "z": 76.600997924805,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1902.7333984375,
+            "x": -1493.3977050781,
+            "z": 70.77099609375,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1896.5083007813,
+            "x": -1490.8940429688,
+            "z": 76.600997924805,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1896.5083007813,
+            "x": -1490.8940429688,
+            "z": 70.77099609375,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1890.4130859375,
+            "x": -1488.4426269531,
+            "z": 76.600997924805,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1890.4130859375,
+            "x": -1488.4426269531,
+            "z": 70.77099609375,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1883.2231445313,
+            "x": -1485.5506591797,
+            "z": 76.600997924805,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1883.2231445313,
+            "x": -1485.5506591797,
+            "z": 70.77099609375,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.89961242676,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1945.0812988281,
+            "x": -1487.9223632813,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1945.0812988281,
+            "x": -1487.9223632813,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1937.9006347656,
+            "x": -1485.037109375,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1937.9006347656,
+            "x": -1485.037109375,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1930.7292480469,
+            "x": -1482.1538085938,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1930.7292480469,
+            "x": -1482.1538085938,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1923.6042480469,
+            "x": -1479.2890625,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1923.6042480469,
+            "x": -1479.2890625,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1916.5998535156,
+            "x": -1476.4730224609,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1916.5998535156,
+            "x": -1476.4730224609,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1909.5119628906,
+            "x": -1473.6242675781,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1909.5119628906,
+            "x": -1473.6242675781,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1902.3962402344,
+            "x": -1470.7634277344,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1902.3962402344,
+            "x": -1470.7634277344,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1897.8317871094,
+            "x": -1468.9283447266,
+            "z": 76.468948364258,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_wall_600x600.ent",
+        "pos": {
+            "y": -1897.8317871094,
+            "x": -1468.9283447266,
+            "z": 70.488998413086,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.099998474121,
+            "roll": 90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1929.0578613281,
+            "x": -1482.9962158203,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1930.1343994141,
+            "x": -1480.2058105469,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1931.84765625,
+            "x": -1484.0720214844,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1932.9234619141,
+            "x": -1481.2817382813,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1934.6369628906,
+            "x": -1485.1479492188,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1935.7130126953,
+            "x": -1482.3577880859,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1937.4166259766,
+            "x": -1486.2203369141,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1938.4931640625,
+            "x": -1483.4294433594,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1940.1677246094,
+            "x": -1487.3198242188,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.89921569824,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1939.0944824219,
+            "x": -1490.099609375,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.89921569824,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1936.3916015625,
+            "x": -1488.9923095703,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1930.765625,
+            "x": -1486.8217773438,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1927.9857177734,
+            "x": -1485.7495117188,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 68.899215698242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1927.9008789063,
+            "x": -1485.8028564453,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.89921569824,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l300_b_dst.ent",
+        "pos": {
+            "y": -1928.9742431641,
+            "x": -1483.0233154297,
+            "z": 74.511383056641,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.89921569824,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\trash\\tripple_can.ent",
+        "pos": {
+            "y": -1930.7459716797,
+            "x": -1482.7197265625,
+            "z": 74.508644104004,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -291.20037841797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_j.ent",
+        "pos": {
+            "y": -1931.3374023438,
+            "x": -1483.6704101563,
+            "z": 74.508644104004,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -31.030471801758,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_h.ent",
+        "pos": {
+            "y": -1931.2242431641,
+            "x": -1483.6262207031,
+            "z": 74.778373718262,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -11.880081176758,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\misc\\int_misc_001__newspaper_j_pile.ent",
+        "pos": {
+            "y": -1930.7275390625,
+            "x": -1483.3706054688,
+            "z": 74.508644104004,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -81.795104980469,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\misc\\int_misc_002__newspaper_a_full.ent",
+        "pos": {
+            "y": -1930.7863769531,
+            "x": -1483.3922119141,
+            "z": 74.508377075195,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -136.66522216797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_f_lid.ent",
+        "pos": {
+            "y": -1930.3095703125,
+            "x": -1483.2603759766,
+            "z": 74.508644104004,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -169.27557373047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\garbage\\int_garbage_002__trash_packaging_c_bottom.ent",
+        "pos": {
+            "y": -1929.5439453125,
+            "x": -1482.2652587891,
+            "z": 74.748374938965,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -202.68963623047,
+            "roll": 0,
+            "pitch": 70
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\vending_machines\\vending_machine_2.ent",
+        "pos": {
+            "y": -1932.5803222656,
+            "x": -1483.7592773438,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "vending_machines_d_slaughterhouse",
+        "rot": {
+            "yaw": -291.92694091797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent",
+        "pos": {
+            "y": -1930.7059326172,
+            "x": -1486.8087158203,
+            "z": 74.516067504883,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.20037841797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent",
+        "pos": {
+            "y": -1933.3061523438,
+            "x": -1487.8176269531,
+            "z": 74.516067504883,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.20037841797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_a_phx.ent",
+        "pos": {
+            "y": -1931.2127685547,
+            "x": -1486.6096191406,
+            "z": 74.516067504883,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 69.703903198242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent",
+        "pos": {
+            "y": -1929.1037597656,
+            "x": -1485.5163574219,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 114.45585632324,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_f_opened.ent",
+        "pos": {
+            "y": -1931.8376464844,
+            "x": -1486.7811279297,
+            "z": 74.962066650391,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 94.986129760742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\ashtray_junk.ent",
+        "pos": {
+            "y": -1928.751953125,
+            "x": -1485.9632568359,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 109.74589538574,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\medical_gaze_junk.ent",
+        "pos": {
+            "y": -1928.8865966797,
+            "x": -1485.8435058594,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 119.34648132324,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\candle_junk.ent",
+        "pos": {
+            "y": -1928.8181152344,
+            "x": -1485.7619628906,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 69.241012573242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\quest\\q110__chicken_newspaper_a.ent",
+        "pos": {
+            "y": -1931.1906738281,
+            "x": -1486.6457519531,
+            "z": 74.512069702148,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 78.066207885742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_c.ent",
+        "pos": {
+            "y": -1930.8280029297,
+            "x": -1486.6116943359,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 13.116012573242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_d.ent",
+        "pos": {
+            "y": -1930.8843994141,
+            "x": -1486.5690917969,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 54.896286010742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_a.ent",
+        "pos": {
+            "y": -1931.4914550781,
+            "x": -1486.8260498047,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 94.210739135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_b.ent",
+        "pos": {
+            "y": -1931.4698486328,
+            "x": -1486.7117919922,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 57.976364135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_b.ent",
+        "pos": {
+            "y": -1931.5120849609,
+            "x": -1486.6440429688,
+            "z": 74.521896362305,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 19.101364135742,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_c_phx.ent",
+        "pos": {
+            "y": -1928.4837646484,
+            "x": -1485.607421875,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 48.648239135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\quest\\main_quests\\part1\\q101\\entities\\q101_mattress.ent",
+        "pos": {
+            "y": -1929.8748779297,
+            "x": -1482.7755126953,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -19.271682739258,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\megabuilding\\decorations\\bench\\_dst\\megabuilding_deco_bench_ad_dst_ent.ent",
+        "pos": {
+            "y": -1938.2739257813,
+            "x": -1489.6595458984,
+            "z": 74.512825012207,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -110.59979248047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\decoration\\containers\\barrel\\drum\\barrel_drum_a_trash_a_phx.ent",
+        "pos": {
+            "y": -1938.8098144531,
+            "x": -1489.4558105469,
+            "z": 74.512825012207,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 70.304489135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent",
+        "pos": {
+            "y": -1936.5020751953,
+            "x": -1488.5025634766,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 22.181442260742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_f_opened.ent",
+        "pos": {
+            "y": -1936.7905273438,
+            "x": -1488.6457519531,
+            "z": 74.958824157715,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 95.585739135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\ashtray_junk.ent",
+        "pos": {
+            "y": -1936.3111572266,
+            "x": -1488.8350830078,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 110.34648132324,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\medical_gaze_junk.ent",
+        "pos": {
+            "y": -1936.4447021484,
+            "x": -1488.7144775391,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 119.94609069824,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\quest\\q110__chicken_newspaper_a.ent",
+        "pos": {
+            "y": -1938.7562255859,
+            "x": -1489.4916992188,
+            "z": 74.508827209473,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 48.866012573242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_c.ent",
+        "pos": {
+            "y": -1938.3935546875,
+            "x": -1489.4619140625,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 13.715621948242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_d.ent",
+        "pos": {
+            "y": -1938.4501953125,
+            "x": -1489.41796875,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 55.495895385742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_a.ent",
+        "pos": {
+            "y": -1939.0599365234,
+            "x": -1489.6693115234,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 94.811325073242,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_b.ent",
+        "pos": {
+            "y": -1939.0368652344,
+            "x": -1489.5555419922,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 58.575973510742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\food\\int_food_001__soda_can_b.ent",
+        "pos": {
+            "y": -1939.0782470703,
+            "x": -1489.4871826172,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 19.700973510742,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\disinfectant_junk.ent",
+        "pos": {
+            "y": -1936.3388671875,
+            "x": -1488.8872070313,
+            "z": 74.523094177246,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 100.23612976074,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\loot\\tokens\\misc\\junk_token.ent",
+        "pos": {
+            "y": -1936.435546875,
+            "x": -1488.6171875,
+            "z": 74.523094177246,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 106.41581726074,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\chaplet_a_junk.ent",
+        "pos": {
+            "y": -1938.9754638672,
+            "x": -1489.3248291016,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 98.646286010742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\items\\misc\\appearances\\hair_wax_junk.ent",
+        "pos": {
+            "y": -1938.5087890625,
+            "x": -1489.2845458984,
+            "z": 74.518653869629,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 71.556442260742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1929.2993164063,
+            "x": -1485.7956542969,
+            "z": 70.531669616699,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51626586914,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1929.2993164063,
+            "x": -1485.7956542969,
+            "z": 66.751670837402,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51626586914,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1929.2993164063,
+            "x": -1485.7956542969,
+            "z": 62.971664428711,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51626586914,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1935.8388671875,
+            "x": -1487.5350341797,
+            "z": 70.531669616699,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1935.8388671875,
+            "x": -1487.5350341797,
+            "z": 66.751670837402,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1935.8388671875,
+            "x": -1487.5350341797,
+            "z": 62.971664428711,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1939.0954589844,
+            "x": -1489.71875,
+            "z": 70.531669616699,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51628112793,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1939.0954589844,
+            "x": -1489.71875,
+            "z": 66.751670837402,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51628112793,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1939.0954589844,
+            "x": -1489.71875,
+            "z": 62.971664428711,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.51628112793,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1934.8519287109,
+            "x": -1491.3791503906,
+            "z": 69.641654968262,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1934.8519287109,
+            "x": -1491.3791503906,
+            "z": 65.861671447754,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\walls\\metro_pillar_h400.ent",
+        "pos": {
+            "y": -1934.8519287109,
+            "x": -1491.3791503906,
+            "z": 62.081672668457,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.51629638672,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\doors\\double_door\\double_door_sliding_c_baremetal.ent",
+        "pos": {
+            "y": -1935.0308837891,
+            "x": -1484.0924072266,
+            "z": 74.499908447266,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -111.74627685547,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\signs\\ncart_sign_full.ent",
+        "pos": {
+            "y": -1935.0698242188,
+            "x": -1484.0831298828,
+            "z": 77.620086669922,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -291.87908935547,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\elevators\\appearances\\kitsch_terminal.ent",
+        "pos": {
+            "y": -1936.8220214844,
+            "x": -1484.8065185547,
+            "z": 75.884140014648,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -21.696487426758,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\drop_points\\drop_point.ent",
+        "pos": {
+            "y": -1937.8028564453,
+            "x": -1484.9625244141,
+            "z": 74.514190673828,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -290.35369873047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\decoration\\garbage\\bins\\industrial_trash_can\\industrial_trash_can_c_dst.ent",
+        "pos": {
+            "y": -1936.8045654297,
+            "x": -1485.2457275391,
+            "z": 74.514175415039,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -283.39959716797,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_01_g.ent",
+        "pos": {
+            "y": -1937.4689941406,
+            "x": -1485.7452392578,
+            "z": 74.514190673828,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -208.15838623047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent",
+        "pos": {
+            "y": -1937.6983642578,
+            "x": -1485.8479003906,
+            "z": 74.514190673828,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -108.89276123047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\quest\\main_quests\\prologue\\q000\\entities\\q000_hym_cardboard.ent",
+        "pos": {
+            "y": -1937.25390625,
+            "x": -1485.6951904297,
+            "z": 74.524368286133,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -143.39276123047,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\items\\interactive\\containers\\int_containers_001__cardboard_box_02_g.ent",
+        "pos": {
+            "y": -1938.2286376953,
+            "x": -1485.724609375,
+            "z": 74.974365234375,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -92.967956542969,
+            "roll": 0,
+            "pitch": 70
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\utilities\\industrial\\industrial_cleaning_machine.ent",
+        "pos": {
+            "y": -1938.8308105469,
+            "x": -1485.9415283203,
+            "z": 74.514190673828,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -169.66424560547,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\arcade_machines\\arcade_machine_1.ent",
+        "pos": {
+            "y": -1939.5427246094,
+            "x": -1486.7069091797,
+            "z": 74.511390686035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 18.382614135742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\arcade_machines\\appearences\\arcade_machine_5.ent",
+        "pos": {
+            "y": -1939.7081298828,
+            "x": -1487.4300537109,
+            "z": 74.831359863281,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -23.050003051758,
+            "roll": -90,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\security_systems\\surveillance_cameras\\appearances\\surveillance_camera_1_militech.ent",
+        "pos": {
+            "y": -1935.291015625,
+            "x": -1484.3776855469,
+            "z": 79.42138671875,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 65.150192260742,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\security_systems\\security_turret\\special\\security_turret_ceiling_prevention.ent",
+        "pos": {
+            "y": -1935.3088378906,
+            "x": -1484.2354736328,
+            "z": 81.482002258301,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -112.65057373047,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_corridor_light_c45.ent",
+        "pos": {
+            "y": -1938.9237060547,
+            "x": -1485.7380371094,
+            "z": 81.331672668457,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -112.34686279297,
+            "roll": 0,
+            "pitch": -90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_corridor_light_c45.ent",
+        "pos": {
+            "y": -1932.0517578125,
+            "x": -1482.912109375,
+            "z": 81.331672668457,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": -112.34686279297,
+            "roll": 0,
+            "pitch": -90
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1932.4188232422,
+            "x": -1490.6787109375,
+            "z": 73.471946716309,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1932.7687988281,
+            "x": -1489.7634277344,
+            "z": 73.821937561035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1933.1202392578,
+            "x": -1488.8477783203,
+            "z": 74.171943664551,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1935.2369384766,
+            "x": -1491.7573242188,
+            "z": 73.471946716309,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1935.5893554688,
+            "x": -1490.8438720703,
+            "z": 73.821937561035,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l100_c_dst.ent",
+        "pos": {
+            "y": -1935.939453125,
+            "x": -1489.9278564453,
+            "z": 74.171943664551,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 519.02978515625,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l60_b_dst.ent",
+        "pos": {
+            "y": -1935.3697509766,
+            "x": -1491.7821044922,
+            "z": 73.471672058105,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.02996826172,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\environment\\architecture\\common\\int\\int_nkt_jp_apartment_a\\int_nkt_jp_apartment_a_handrail_l60_b_dst.ent",
+        "pos": {
+            "y": -1932.5504150391,
+            "x": -1490.7028808594,
+            "z": 73.471672058105,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.02996826172,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1936.1042480469,
+            "x": -1489.6481933594,
+            "z": 73.55689239502,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1936.2755126953,
+            "x": -1489.2014160156,
+            "z": 73.746879577637,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1936.4650878906,
+            "x": -1488.7059326172,
+            "z": 73.936882019043,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1936.6678466797,
+            "x": -1488.1717529297,
+            "z": 74.126884460449,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1936.8845214844,
+            "x": -1487.6102294922,
+            "z": 74.316886901855,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\floor\\metro_floor_300.ent",
+        "pos": {
+            "y": -1937.1143798828,
+            "x": -1487.0032958984,
+            "z": 74.507225036621,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 699.10479736328,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1934.8217773438,
+            "x": -1492.2956542969,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1934.4291992188,
+            "x": -1492.1401367188,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1934.0373535156,
+            "x": -1491.9859619141,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1933.6392822266,
+            "x": -1491.8297119141,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1933.2473144531,
+            "x": -1491.6744384766,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1932.8565673828,
+            "x": -1491.5202636719,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\lights\\indestructible\\arroyo_tech_light_tank.ent",
+        "pos": {
+            "y": -1932.4755859375,
+            "x": -1491.3701171875,
+            "z": 73.54467010498,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 248.47500610352,
+            "roll": 0,
+            "pitch": 90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\traffic\\ncart_timetables\\ncart_timetable_1.ent",
+        "pos": {
+            "y": -1939.2416992188,
+            "x": -1485.7529296875,
+            "z": 77.161666870117,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 338.14999389648,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1928.7618408203,
+            "x": -1492.7747802734,
+            "z": 71.791000366211,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1934.3336181641,
+            "x": -1494.9742431641,
+            "z": 71.791000366211,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1939.8021240234,
+            "x": -1497.1376953125,
+            "z": 71.791000366211,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1945.3359375,
+            "x": -1499.3247070313,
+            "z": 71.791000366211,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1923.2369384766,
+            "x": -1490.5905761719,
+            "z": 71.791000366211,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1917.8333740234,
+            "x": -1488.4544677734,
+            "z": 71.802299499512,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1912.3411865234,
+            "x": -1486.2808837891,
+            "z": 71.407356262207,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1906.8397216797,
+            "x": -1484.1043701172,
+            "z": 71.011734008789,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1901.3475341797,
+            "x": -1481.9318847656,
+            "z": 70.616790771484,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1895.8367919922,
+            "x": -1479.7525634766,
+            "z": 70.220573425293,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    },
+    {
+        "path": "base\\train_system\\tracks\\track_l600.ent",
+        "pos": {
+            "y": -1890.306640625,
+            "x": -1477.5655517578,
+            "z": 69.822967529297,
+            "w": 1
+        },
+        "app": "",
+        "rot": {
+            "yaw": 158.42500305176,
+            "roll": 0,
+            "pitch": 3.8250000476837
+        }
+    }
+]

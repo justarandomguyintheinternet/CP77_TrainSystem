@@ -168,6 +168,7 @@ function stationSys:nearTrain()
 end
 
 function stationSys:collidesWithTrain()
+	if not Game.FindEntityByID(self.activeTrain.carObject.entID) then return end
 	local maxDist = 2.4
 	local inside = false
 
@@ -251,6 +252,7 @@ function stationSys:update(deltaTime)
 			end
 
 			self.cronStopID = Cron.After(self.currentStation.holdTime * self.ts.settings.holdMult, function ()
+				if not self.activeTrain then return end
 				self.trainInStation = false
 				if self.activeTrain.playerMounted then
 					self.onStation = false

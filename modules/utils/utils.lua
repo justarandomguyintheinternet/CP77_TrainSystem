@@ -366,6 +366,10 @@ function miscUtils.forceStop(ts)
 
     if ts.observers.noSave then
         if ts.stationSys.activeTrain then
+            ts.observers.noSave = false
+            ts.observers.noKnockdown = false
+            ts.observers.noFastTravel = false
+            ts.observers.activatedGate = false
             pcall(function()
                 ts.stationSys.activeTrain:unmount()
             end)

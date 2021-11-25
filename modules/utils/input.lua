@@ -44,10 +44,6 @@ function input.startInputObserver()
             if actionType == 'BUTTON_PRESSED' then
                 input.down = true
             end
-        elseif actionName == 'dpad_up' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.up = true
-            end
         end
     end)
 end
