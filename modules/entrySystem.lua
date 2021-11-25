@@ -64,15 +64,17 @@ function entrySys:enter(entry)
     self.ts.observers.noSave = true
     self.ts.observers.noKnockdown = true
     self.ts.runtimeData.noTrains = true
+
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
+
     utils.createInteractionHub("Enter NCART Station", "Choice1", false)
     self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")
     settings.Set("/interface/hud/input_hints", false)
 
-    self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
+    self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0)) -- Sounds like an elevator?
 
-    if entry.useSecondaryElevator then
+    if entry.useSecondaryElevator then -- Ugly af fix for too long distances
         local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
@@ -85,11 +87,13 @@ function entrySys:enter(entry)
     else
         Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
     end
-    Cron.After(entry.elevatorTime, function ()
+
+    Cron.After(entry.elevatorTime, function () -- Tp to station and more
         self.ts.stationSys:enter()
         Game.FindEntityByID(self.soundID):GetEntity():Destroy()
     end)
-    Cron.After(entry.elevatorTime * 0.3, function ()
+
+    Cron.After(entry.elevatorTime * 0.7, function () -- Spawn station objects
         self.ts.stationSys:loadStation(entry.stationID)
     end)
 end

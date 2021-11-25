@@ -1,7 +1,3 @@
-local debug = require("debug/logic/debug")
-local config = require("modules/utils/config")
-local utils = require("modules/utils/utils")
-
 ts = {
     runtimeData = {
         cetOpen = false,
@@ -16,7 +12,8 @@ ts = {
         defaultSeat = 1,
         moneyPerStation = 2,
         holdMult = 1,
-        tppOnly = false
+        tppOnly = false,
+        showImGui = false
     },
 
     settings = {},
@@ -27,13 +24,18 @@ ts = {
     hud = require("modules/ui/hud"),
     settingsUI = require("modules/ui/settingsUI"),
     Cron = require("modules/utils/Cron"),
-    GameUI = require("modules/utils/GameUI")
+    GameUI = require("modules/utils/GameUI"),
+
+    utils = require("modules/utils/utils"),
+    config = require("modules/utils/config"),
+    debug = require("debug/logic/debug")
 }
 
 function ts:new()
     registerForEvent("onInit", function()
-        config.tryCreateConfig("data/config.json", ts.defaultSettings)
-        ts.settings = config.loadFile("data/config.json")
+        ts.config.tryCreateConfig("data/config.json", ts.defaultSettings)
+        ts.settings = ts.config.loadFile("data/config.json")
+        ts.settingsUI.setupNative(ts)
 
         ts.entrySys = require("modules/entrySystem"):new(ts)
         ts.stationSys = require("modules/stationSystem"):new(ts)
@@ -58,7 +60,7 @@ function ts:new()
 
         ts.GameUI.OnSessionEnd(function()
             ts.runtimeData.inGame = false
-            utils.forceStop(ts)
+            ts.utils.forceStop(ts)
         end)
 
         ts.runtimeData.inGame = not ts.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
@@ -72,18 +74,20 @@ function ts:new()
             ts.objectSys.run()
             ts.Cron.Update(deltaTime) --??????
 
-            debug.baseUI.utilUI.update()
+            ts.debug.baseUI.utilUI.update()
         end
     end)
 
     registerForEvent("onShutdown", function ()
-        utils.forceStop(ts)
+        ts.utils.forceStop(ts)
     end)
 
     registerForEvent("onDraw", function()
         if ts.runtimeData.cetOpen then
-            ts.settingsUI.draw(ts)
-            debug.run(ts)
+            if ts.settings.showImGui then
+                ts.settingsUI.draw(ts)
+            end
+            ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)
