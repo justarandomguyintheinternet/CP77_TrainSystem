@@ -9,12 +9,27 @@ observers = {
     timetableValue = 0,
     trainIDS = {},
     ts = nil,
-    hudText = nil
+    hudText = nil,
+    onMap = false,
+    worldMap = nil
 }
 
 
 function observers.start(ts)
     observers.ts = ts
+
+    Observe("WorldMapMenuGameController", "OnInitialize", function (this)
+        observers.onMap = true
+        observers.worldMap = this
+    end)
+
+    Observe("WorldMapMenuGameController", "OnUninitialize", function ()
+        observers.onMap = false
+    end)
+
+    Observe("WorldMapMenuGameController", "RefreshInputHints", function ()
+        utils.showInputHint("UI_Apply", "Track closest NCART Station", "WorldMapInputHints", 10)
+    end)
 
     Observe('QuestTrackerGameController', 'OnInitialize', function(self)
         local rootWidget = self:GetRootCompoundWidget()
@@ -58,8 +73,12 @@ function observers.start(ts)
         collectgarbage()
     end)
 
-    Override("gameScriptableSystem", "IsSavingLocked", function(_)
-        return observers.noSave
+    Override("gameScriptableSystem", "IsSavingLocked", function(_, wrapped)
+        if observers.noSave then
+            return true
+        else
+            return wrapped()
+        end
     end)
 
     Observe("VehicleComponent", "OnGameAttach", function(self)

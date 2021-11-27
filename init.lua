@@ -47,7 +47,7 @@ function ts:new()
         ts.objectSys.initialize()
 
         ts.observers.start(ts)
-        ts.input.startInputObserver()
+        ts.input.startInputObserver(ts)
         ts.input.startListeners(Game.GetPlayer())
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu

@@ -29,6 +29,7 @@ function stationSys:new(ts)
 	o.cronStopID = nil
 
 	o.inputHintsOriginal = nil
+	o.jobTrackerOriginal = nil
 
 	self.__index = self
    	return setmetatable(o, self)

@@ -38,11 +38,11 @@ end
 function hud.drawEntry()
     if hud.entryVisible then
         hud.entryVisible = false
-        utils.createInteractionHub("Enter NCART Station", "Choice1", true)
+        utils.createInteractionHub("Enter NCART Station", "UI_Apply", true)
         hud.interactionHUDEntry = true
     else
         if hud.interactionHUDEntry then
-            utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+            utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
         end
         hud.interactionHUDEntry = false
     end
@@ -51,11 +51,11 @@ end
 function hud.drawExit()
     if hud.exitVisible then
         hud.exitVisible = false
-        utils.createInteractionHub("Exit Station", "Choice1", true)
+        utils.createInteractionHub("Exit Station", "UI_Apply", true)
         hud.interactionHUDExit = true
     else
         if hud.interactionHUDExit then
-            utils.createInteractionHub("Exit Station", "Choice1", false)
+            utils.createInteractionHub("Exit Station", "UI_Apply", false)
         end
         hud.interactionHUDExit = false
     end
@@ -64,11 +64,11 @@ end
 function hud.drawDoor()
     if hud.doorVisible then
         hud.doorVisible = false
-        utils.createInteractionHub("Use Door", "Choice1", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
+        utils.createInteractionHub("Use Door", "UI_Apply", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
         hud.interactionHUDDoor = true
     else
         if hud.interactionHUDDoor then
-            utils.createInteractionHub("Use Door", "Choice1", false)
+            utils.createInteractionHub("Use Door", "UI_Apply", false)
         end
         hud.interactionHUDDoor = false
     end
@@ -77,11 +77,11 @@ end
 function hud.drawTrain()
     if hud.trainVisible then
         hud.trainVisible = false
-        utils.createInteractionHub("Enter Train", "Choice1", true)
+        utils.createInteractionHub("Enter Train", "UI_Apply", true)
         hud.interactionHUDTrain = true
     else
         if hud.interactionHUDTrain then
-            utils.createInteractionHub("Enter Train", "Choice1", false)
+            utils.createInteractionHub("Enter Train", "UI_Apply", false)
         end
         hud.interactionHUDTrain = false
     end

@@ -159,7 +159,9 @@ end
 
 function train:update(deltaTime)
 	if self.justArrived and self.playerMounted then -- Once new station is reached, despawn the previous one
-		self.stationSys.stations[self.stationSys.previousStationID]:despawn()
+		if self.stationSys.stations[self.stationSys.previousStationID] then
+			self.stationSys.stations[self.stationSys.previousStationID]:despawn()
+		end
 	end
 
 	if self.driving then

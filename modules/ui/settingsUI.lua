@@ -1,11 +1,14 @@
 local config = require("modules/utils/config")
 
 settings = {
-    nativeOptions = {}
+    nativeOptions = {},
+    minCETMet = true,
+    nativeSettings = nil
 }
 
 function settings.setupNative(ts)
     local nativeSettings = GetMod("nativeSettings")
+    settings.nativeSettings = nativeSettings
     if not nativeSettings then
         print("[TrainSystem] Error: NativeSettings lib not found!")
         return
@@ -18,6 +21,7 @@ function settings.setupNative(ts)
     if cetVer < 1.18001 then
         print("[TrainSystem] Error: CET version below recommended, switched to ImGui settings UI!")
         ts.settings.showImGui = true
+        ts.settings.minCETMet = false
         config.saveFile("data/config.json", ts.settings)
         return
     end
@@ -76,12 +80,16 @@ function settings.draw(ts)
         ImGui.PopStyleColor(3)
     else
         ts.settings.trainSpeed, changed = ImGui.InputInt("Train Speed", ts.settings.trainSpeed)
+        settings.nativeSettings.setOption(settings.nativeOptions["trainSpeed"], ts.settings.trainSpeed)
         if changed then config.saveFile("data/config.json", ts.settings) end
     end
 
     ts.settings.camDist, changed = ImGui.InputInt("Train TPP Cam Dist", ts.settings.camDist)
     ts.settings.camDist = math.min(math.max(ts.settings.camDist, 6), 22)
-    if changed then config.saveFile("data/config.json", ts.settings) end
+    if changed then
+        config.saveFile("data/config.json", ts.settings)
+        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPDist"], ts.settings.camDist)
+    end
 
     ImGui.Separator()
 
@@ -89,6 +97,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Front Right", ts.settings.defaultSeat == 1) then
         ts.settings.defaultSeat = 1
+        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -96,6 +105,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Back Right", ts.settings.defaultSeat == 2) then
         ts.settings.defaultSeat = 2
+        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -103,6 +113,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Back Left", ts.settings.defaultSeat == 3) then
         ts.settings.defaultSeat = 3
+        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -110,6 +121,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Front Left", ts.settings.defaultSeat == 4) then
         ts.settings.defaultSeat = 4
+        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -117,13 +129,22 @@ function settings.draw(ts)
 
     ts.settings.holdMult, changed = ImGui.InputFloat("Station Hold Time Multiplier", ts.settings.holdMult, 1, 1000, "%.2f")
     ts.settings.holdMult = math.min(math.max(ts.settings.holdMult, 0.2), 5)
-    if changed then config.saveFile("data/config.json", ts.settings) end
+    if changed then
+        settings.nativeSettings.setOption(settings.nativeOptions["stationHold"], ts.settings.holdMult)
+        config.saveFile("data/config.json", ts.settings)
+    end
 
     ts.settings.moneyPerStation, changed = ImGui.InputInt("Price per Station", ts.settings.moneyPerStation)
-    if changed then config.saveFile("data/config.json", ts.settings) end
+    if changed then
+        settings.nativeSettings.setOption(settings.nativeOptions["stationPrice"], ts.settings.moneyPerStation)
+        config.saveFile("data/config.json", ts.settings)
+    end
 
     ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
-    if changed then config.saveFile("data/config.json", ts.settings) end
+    if changed then
+        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly)
+        config.saveFile("data/config.json", ts.settings)
+    end
 
     ImGui.End()
     ts.CPS:setThemeEnd()

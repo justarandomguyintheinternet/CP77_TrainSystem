@@ -78,6 +78,7 @@ function station:exitToGround(ts)
 
 		Game.FindEntityByID(self.soundID):GetEntity():Destroy()
 		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
+		settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
     end)
 end
 
@@ -111,7 +112,7 @@ function station:nearExit()
 	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
 	local near = false
 
-	if target then
+	if target and not (utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1) then -- Ugly hardcoded workaround for the force open door at rep way morth :(
 		if utils.isVector(target:GetWorldPosition(), self.exitDoorPosition) then
 			if self.exitDoorSealed then
 				pcall(function ()

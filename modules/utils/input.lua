@@ -6,7 +6,7 @@ input = {
     down = false
 }
 
-function input.startInputObserver()
+function input.startInputObserver(ts)
     Observe('PlayerPuppet', 'OnGameAttached', function(this)
         input.startListeners(this)
     end)
@@ -14,13 +14,7 @@ function input.startInputObserver()
     Observe('PlayerPuppet', 'OnAction', function(_, action)
         local actionName = Game.NameToString(action:GetName(action))
         local actionType = action:GetType(action).value
-        if actionName == 'Choice1_Release' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.interactKey = true
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.interactKey = false
-            end
-        elseif actionName == 'Exit' then
+        if actionName == 'Exit' then
             if actionType == 'BUTTON_PRESSED' then
                 input.exit = true
             elseif actionType == 'BUTTON_RELEASED' then
@@ -43,6 +37,15 @@ function input.startInputObserver()
         elseif actionName == 'dpad_left' then
             if actionType == 'BUTTON_PRESSED' then
                 input.down = true
+            end
+        elseif actionName == 'UI_Apply' then
+            if actionType == 'BUTTON_PRESSED' then
+                input.interactKey = true
+                if ts.observers.onMap then
+                    ts.entrySys:markClosest()
+                end
+            elseif actionType == 'BUTTON_RELEASED' then
+                input.interactKey = false
             end
         end
     end)

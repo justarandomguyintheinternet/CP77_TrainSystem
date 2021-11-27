@@ -336,7 +336,7 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
 end
 
-function miscUtils.showInputHint(key, text, prio, holdAnimation)
+function miscUtils.showInputHint(key, text, container, prio, holdAnimation)
     local hold = holdAnimation or false
     local evt = UpdateInputHintEvent.new()
     local data = InputHintData.new()
@@ -348,7 +348,7 @@ function miscUtils.showInputHint(key, text, prio, holdAnimation)
     evt = UpdateInputHintEvent.new()
     evt.data = data
     evt.show = true
-    evt.targetHintContainer = "GameplayInputHelper"
+    evt.targetHintContainer = container or "GameplayInputHelper"
     Game.GetUISystem():QueueEvent(evt)
 end
 
@@ -379,6 +379,7 @@ function miscUtils.forceStop(ts)
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
             Game.ChangeZoneIndicatorPublic()
             settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
+            settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
             miscUtils.togglePin(ts.stationSys, "exit", false)
             ts.stationSys.currentStation:despawn()

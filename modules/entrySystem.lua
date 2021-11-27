@@ -68,9 +68,12 @@ function entrySys:enter(entry)
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
 
-    utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+    utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
     self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")
     settings.Set("/interface/hud/input_hints", false)
+
+    self.ts.stationSys.jobTrackerOriginal = settings.Get("/interface/hud/quest_tracker")
+    settings.Set("/interface/hud/quest_tracker", true)
 
     self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0)) -- Sounds like an elevator?
 
@@ -105,13 +108,13 @@ function entrySys:looksAtEntry(closest)
         if (target:GetClassName().value == "DataTerm" and not closest.useDoors) or (target:GetClassName().value == "FakeDoor" and closest.useDoors) then
             if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < self.maxDistToEntry then
                 looksAt = true
-                utils.createInteractionHub("Enter NCART Station", "Choice1", true)
+                utils.createInteractionHub("Enter NCART Station", "UI_Apply", true)
             else
-                utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+                utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
             end
         end
     else
-        utils.createInteractionHub("Enter NCART Station", "Choice1", false)
+        utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
     end
     return looksAt
 end
@@ -155,6 +158,16 @@ function entrySys:despawnElevators()
         end
     end
     self.elevatorIDS = {}
+end
+
+function entrySys:markClosest()
+    if not self.ts.observers.worldMap then return end
+    self.ts.observers.worldMap:UntrackCustomPositionMappin()
+    self.ts.observers.worldMap:UntrackMappin()
+    self.ts.observers.worldMap:SetCustomFilter(gamedataWorldMapFilter.FastTravel)
+
+    local closest = self:getClosestEntry()
+    Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), closest.waypointPosition)
 end
 
 return entrySys
