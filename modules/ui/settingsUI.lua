@@ -31,12 +31,12 @@ function settings.setupNative(ts)
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
 
-    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controlls the speed of the train. Gets applied next time you take an elevator.", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
+    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controlls the speed of the train. Gets applied next time you enter / leave a station.", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
         ts.settings.trainSpeed = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controlls the distance of the TPP camera. Gets applied next time you take an elevator.", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
+    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controlls the distance of the TPP camera. Gets applied next time you enter / leave a station.", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
         ts.settings.camDist = value
         config.saveFile("data/config.json", ts.settings)
     end)

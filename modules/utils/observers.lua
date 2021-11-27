@@ -14,7 +14,6 @@ observers = {
     worldMap = nil
 }
 
-
 function observers.start(ts)
     observers.ts = ts
 

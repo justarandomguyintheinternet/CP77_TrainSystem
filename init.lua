@@ -8,7 +8,7 @@ ts = {
 
     defaultSettings = {
         camDist = 16,
-        trainSpeed = 25,
+        trainSpeed = 22,
         defaultSeat = 1,
         moneyPerStation = 2,
         holdMult = 1,

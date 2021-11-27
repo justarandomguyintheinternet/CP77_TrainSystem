@@ -88,7 +88,7 @@ function hud.drawTrain()
 end
 
 function hud.drawDestinations(sys)
-    local text = "NCART Next Station:\n"
+    local text = "Next NCART Station:\n"
 
     for k, d in pairs(sys.pathsData) do
         if k == sys.currentPathsIndex then

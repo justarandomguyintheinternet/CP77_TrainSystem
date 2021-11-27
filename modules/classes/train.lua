@@ -237,7 +237,7 @@ function train:update(deltaTime)
 					self.perspective = "tpp"
 					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
 				else
-					Game.GetPlayer():SetWarningMessage("Cant switch when in this seat")
+					Game.GetPlayer():SetWarningMessage("Can't switch when in this seat!")
 				end
 			end
 		end

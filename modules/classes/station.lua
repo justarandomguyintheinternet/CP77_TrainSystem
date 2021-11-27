@@ -123,7 +123,7 @@ function station:nearExit()
 			if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 				near = true
 			end
-		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.5 then
+		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 			self:handleFakeDoor(target)
 		elseif target:GetClassName().value == "Door" then
 			local targetPS = target:GetDevicePS()
