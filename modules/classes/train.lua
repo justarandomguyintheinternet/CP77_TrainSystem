@@ -77,10 +77,7 @@ function train:spawnBus()
 	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
 
 	local point = self.arrivalPath[#self.arrivalPath]
-	local pos = utils.addVector(point.pos, Vector4.new(0, 0, -math.abs(self.stationSys.currentStation.spawnOffset*2), 0))-- Game.GetPlayer():GetWorldPosition()
-	-- pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist + 5
-	-- pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist + 5
-	-- pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist + 5
+	local pos = utils.addVector(point.pos, Vector4.new(0, 0, -math.abs(self.stationSys.currentStation.spawnOffset*2), 0))
 	self.busObject.rot = Game.GetCameraSystem():GetActiveCameraForward():ToRotation():ToQuat()
 	self.busObject.pos = pos
 	self.busObject:spawn()
@@ -100,12 +97,12 @@ function train:loadRoute(route)
 	self.arrivalPath = route.arrivalPath
 	self.exitPath = route.exitPath
 	self.targetID = route.targetID
-	for k, p in pairs(self.exitPath) do
-		print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
-	end
-	for k, p in pairs(self.arrivalPath) do
-		print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "arrivalPath")
-	end
+	-- for k, p in pairs(self.exitPath) do
+	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
+	-- end
+	-- for k, p in pairs(self.arrivalPath) do
+	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "arrivalPath")
+	-- end
 end
 
 function train:startDrive(route)
@@ -325,14 +322,14 @@ function train:handlePoint(point)
 		if not self.playerMounted then
 			self.driving = false
 			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 10, 0))
-			Cron.After(2.5, function ()
+			Cron.After(2.0, function ()
 				self.stationSys:requestNewTrain()
 			end)
 		end
 	end
 end
 
-function train:spawnBackupTrain()
+function train:spawnBackupTrain() -- Not used anymore
 	if self.spawnStationID ~= self.stationSys.currentStation.id then
 		self.stationSys.backUpTrain = object:new(2021)
 		self.stationSys.backUpTrain.name = "Vehicle.av_public_train_b"
@@ -346,7 +343,7 @@ function train:spawnBackupTrain()
 				timer:halt()
 			end
 		end)
-		print("loaded backup train")
+		-- print("loaded backup train")
 	end
 end
 

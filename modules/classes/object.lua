@@ -33,7 +33,7 @@ function object:spawn()
 
     Cron.Every(0.25, {tick = 0}, function(timer)
         self.entity = Game.FindEntityByID(self.entID)
-        print("try spawn", self.name)
+        -- print("try spawn", self.name)
         if self.entity ~= nil then
 			timer:Halt()
             self.spawned = true
@@ -83,7 +83,7 @@ function object:respawn()
         if self.entity == nil then
 			timer:Halt()
             self:spawn()
-            print("new spawned")
+            -- print("new spawned")
 		end
 	end)
 end

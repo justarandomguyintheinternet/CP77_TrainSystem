@@ -97,7 +97,6 @@ function editUI.drawEntry()
         end
         ImGui.SameLine()
         if ImGui.Button("TP to 2") then
-            print(Game.GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
             Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
         end
     end

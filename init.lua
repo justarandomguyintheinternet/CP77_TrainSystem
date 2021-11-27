@@ -63,6 +63,14 @@ function ts:new()
             ts.utils.forceStop(ts)
         end)
 
+        ts.GameUI.OnPhotoModeOpen(function()
+            ts.runtimeData.inMenu = true
+        end)
+
+        ts.GameUI.OnPhotoModeClose(function()
+            ts.runtimeData.inMenu = false
+        end)
+
         ts.runtimeData.inGame = not ts.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
     end)
 

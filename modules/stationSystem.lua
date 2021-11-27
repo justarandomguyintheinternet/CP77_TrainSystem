@@ -2,7 +2,6 @@ local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
 local train = require("modules/classes/train")
-local settings = require("modules/utils/GameSettings")
 
 stationSys = {}
 
@@ -18,6 +17,7 @@ function stationSys:new(ts)
 	o.holdTime = 10
 	o.activeTrain = nil
 	o.trainInStation = false
+	o.canRespawnBus = true
 
 	o.pathsData = {}
 	o.currentPathsIndex = 0
@@ -84,7 +84,7 @@ function stationSys:requestPaths()
 	else
 		local prevPath = nil
 		for _, v in pairs(self.pathsData) do
-			print(v.targetID, self.previousStationID)
+			--print(v.targetID, self.previousStationID)
 			if v.targetID == self.previousStationID then
 				prevPath = v
 			end
@@ -197,7 +197,20 @@ function stationSys:handleExitTrain()
 			end)
 			self.currentStation:tpTo(self.currentStation.trainExit)
 		elseif self.activeTrain.playerMounted and not self.trainInStation then
-			Game.GetPlayer():SetWarningMessage("Cant do that now")
+			Game.GetPlayer():SetWarningMessage("Can't do that now!")
+		end
+	end
+end
+
+function stationSys:checkBus()
+	if not Game.FindEntityByID(self.activeTrain.busObject.entID) then
+		if self.canRespawnBus then
+			self.activeTrain:spawnBus()
+			self.canRespawnBus = false
+			print("Try respawn bus")
+			Cron.After(1.0, function ()
+				self.canRespawnBus = true
+			end)
 		end
 	end
 end
@@ -240,11 +253,11 @@ function stationSys:update(deltaTime)
 				Game.GetTransactionSystem():RemoveItem(Game.GetPlayer(), moneyId, self.ts.settings.moneyPerStation)
 			end
 
-			print("previous station id", self.previousStationID, " curren one is ", self.currentStation.id)
+			--print("previous station id", self.previousStationID, " curren one is ", self.currentStation.id)
 
 			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
 				self.onStation = true
-				print("previous station id was", self.previousStationID, "new curren one is ", self.currentStation.id)
+				--print("previous station id was", self.previousStationID, "new curren one is ", self.currentStation.id)
 				self:requestPaths()
 				self.previousStationID = self.currentStation.id
 				self.currentPathsIndex = self.currentPathsIndex + 1
@@ -268,6 +281,7 @@ function stationSys:update(deltaTime)
 
 		if self.activeTrain.playerMounted and not self.trainInStation then
 			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
+			self:checkBus()
 		else
 			local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
 			rmStatus(Game.GetPlayer(), "GameplayRestriction.VehicleBlockExit")

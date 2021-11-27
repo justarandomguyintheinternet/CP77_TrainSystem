@@ -74,15 +74,15 @@ function trackSys:generatePaths(track, station) -- Main function to fill the sel
 end
 
 function trackSys:DFS(track, previous, path) -- Recursive calling search function
-	print("DFS:", track.id, track.hasStation.next, track.hasStation.last)
+	--print("DFS:", track.id, track.hasStation.next, track.hasStation.last)
 	if previous.id == track.connectedID.first.next or previous.id == track.connectedID.second.next then -- If track is "backwards", "tip" of arrow is connected to previous, means the next track is at the beginning of this track
 		table.insert(path, track) -- Add track to path
-		print("track id now: " .. track.id .. " is next of " .. previous.id)
+		--print("track id now: " .. track.id .. " is next of " .. previous.id)
 		if track.hasStation.next ~= -1 then -- If station is found then break the recursive function
-			print("found station on last of track " .. track.id .. "station id" .. track.hasStation.last .. "length of path: " .. #path)
+			--print("found station on last of track " .. track.id .. "station id" .. track.hasStation.last .. "length of path: " .. #path)
 			self:insertPath(path)
 		elseif track.hasStation.last ~= -1 then
-			print("found station on next of track " .. track.id .. "station id" .. track.hasStation.next .. "length of path: " .. #path)
+			--print("found station on next of track " .. track.id .. "station id" .. track.hasStation.next .. "length of path: " .. #path)
 			self:insertPath(path)
 		else
 			if track.connectedID.first.last ~= -1 then -- Call recursive func for all possible "last" ones
@@ -159,9 +159,9 @@ end
 
 function trackSys:unpackPath(path, station) -- Take a path and generate a table with its total direction, target stationID and a table of all points to the targetID in the right order
 	local data = {dir = path[1].dir, targetID = station.id, points = {}}
-	for _, track in pairs(path) do
-		print(track.dir)
-	end
+	-- for _, track in pairs(path) do
+	-- 	print(track.dir)
+	-- end
 
 	if #path == 1 then -- Only one track aka station on that track
 		if path[1].dir == "next" then
@@ -231,16 +231,16 @@ function trackSys:unpackPath(path, station) -- Take a path and generate a table 
 					table.insert(data.points, point)
 				elseif (track.dir == "last" and track.hasStation.last ~= -1) then
 					table.insert(data.points, utils.reversePoint(track.points[1]))
-					print('WOULD ADD SINGLE STATION TRACK POINT LAST')
+					--print('WOULD ADD SINGLE STATION TRACK POINT LAST')
 				end
 			end
 		end
 	end
 
-	print("Generated data to station " .. data.targetID .. " Direction is " .. data.dir .. " with num points: " .. #data.points)
-	for _, p in pairs(data.points) do
-		print(p.pos, GetSingleton('Quaternion'):ToEulerAngles(p.rot))
-	end
+	-- print("Generated data to station " .. data.targetID .. " Direction is " .. data.dir .. " with num points: " .. #data.points)
+	-- for _, p in pairs(data.points) do
+	-- 	print(p.pos, GetSingleton('Quaternion'):ToEulerAngles(p.rot))
+	-- end
 
 	return data
 end
@@ -255,7 +255,7 @@ function trackSys:getPathsDataDir() --Check if all paths from self.pathsData go 
 			lasts = lasts + 1
 		end
 	end
-	print("lasts and nexts for arrive: ", lasts, nexts)
+	--print("lasts and nexts for arrive: ", lasts, nexts)
 	if nexts == 0 or lasts == 0 then
 		return false
 	else
@@ -270,9 +270,9 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 
 	for _, path in pairs(self.pathsData) do
 		for key, point in pairs(path.points) do
-			print(key, point.dir, point.loadStation.next)
+			--print(key, point.dir, point.loadStation.next)
 			if point.dir == "next" and point.loadStation.last then
-				print("found next at pos", point.pos)
+				--print("found next at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
 					local point = path.points[i]
@@ -280,16 +280,16 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 						point = utils.reversePoint(path.points[i])
 					end
 					table.insert(gen, point)
-					print(i)
+					--print(i)
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)
 				else
 					table.insert(lasts, gen)
 				end
-				print(#gen)
+				--print(#gen)
 			elseif point.dir == "last" and point.loadStation.next then
-				print("found last at pos", point.pos)
+				--print("found last at pos", point.pos)
 				local gen = {}
 				for i = key, 1, -1 do
 					local point = path.points[i]
@@ -297,14 +297,14 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 						point = utils.reversePoint(path.points[i])
 					end
 					table.insert(gen, point)
-					print(i)
+					--print(i)
 				end
 				if path.dir == "next" then
 					table.insert(nexts, gen)
 				else
 					table.insert(lasts, gen)
 				end
-				print(#gen)
+				--print(#gen)
 			end
 		end
 	end
@@ -333,13 +333,13 @@ function trackSys:generateArrivePaths(station) -- Uses the pathsData to create a
 		self.arrivePath.last = optimalLast
 	end
 
-	if self.arrivePath.next ~= nil then
-		print("#optimalNext: " .. #self.arrivePath.next)
-	end
-	if self.arrivePath.last ~= nil then
-		print("#optimalLast: " .. #self.arrivePath.last)
-	end
-	print("#nexts: " .. #nexts .. " #lasts: " .. #lasts)
+	-- if self.arrivePath.next ~= nil then
+	-- 	print("#optimalNext: " .. #self.arrivePath.next)
+	-- end
+	-- if self.arrivePath.last ~= nil then
+	-- 	print("#optimalLast: " .. #self.arrivePath.last)
+	-- end
+	-- print("#nexts: " .. #nexts .. " #lasts: " .. #lasts)
 end
 
 function trackSys:insertPath(path) -- Add path so far as independent field to the self.paths, as deepcopy is broken inside the recursive function?!
@@ -360,7 +360,7 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 		self:calcDirs(path, station)
 		local data = self:unpackPath(path, station)
 		table.insert(self.pathsData, data)
-		print("Inserted new exitPath lenght ", #data.points)
+		--print("Inserted new exitPath lenght ", #data.points)
 	end
 
 	self:generateArrivePaths(station)
@@ -374,7 +374,7 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 				data.arrivalPath = self.arrivePath.next
 			end
 			table.insert(self.combinedData, data)
-			print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
+			--print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
 		elseif path.dir == "last" then
 			local data = {exitPath = {}, arrivalPath = {}, dir = path.dir, targetID = path.targetID}
 			data.exitPath = path.points
@@ -383,7 +383,7 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 				data.arrivalPath = self.arrivePath.last
 			end
 			table.insert(self.combinedData, data)
-			print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
+			--print("Creating path with dir: ", data.dir, " targetID: ", data.targetID, " #exitpath: ", #data.exitPath, " #arrivalPath: ", #data.arrivalPath)
 		end
 	end
 
