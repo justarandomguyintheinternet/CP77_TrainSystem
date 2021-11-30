@@ -306,6 +306,11 @@ function stationSys:update(deltaTime)
 			self.currentStation:tpTo(self.currentStation.trainExit)
 		end
 	end
+
+	if self.ts.observers.noSave then -- aka mod is active
+		Game.PrevSys_off()
+		Game.ChangeZoneIndicatorSafe()
+	end
 end
 
 function stationSys:startHoldTimer()

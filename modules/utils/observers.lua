@@ -17,6 +17,37 @@ observers = {
 function observers.start(ts)
     observers.ts = ts
 
+    -- ObserveAfter("DlcMenuGameController", "OnInitialize", function(this) -- Funny but stupid
+    --     local data = DlcDescriptionData.new()
+    --     CName.add("trainSystem")
+    --     data.guide = "trainSystem"
+    --     this:AsyncSpawnFromLocal(inkWidgetRef.Get(this.containersRef), "dlcDescription", this, "OnDescriptionSpawned", data)
+    -- end)
+
+    -- Override("DlcDescriptionController", "SetData", function (this, data, wrapped)
+    --     if data.guide.value == "trainSystem" then
+    --         inkTextRef.SetText(this.titleRef, "Train System")
+    --         inkTextRef.SetText(this.descriptionRef, "This adds a fully useable NCART System, with 19 Stations and tons of tracks to explore")
+    --         inkTextRef.SetText(this.guideRef, "Go to any of the \"Metro: ...\" fast travel points to use it")
+    --         inkImageRef.SetTexturePart(this.imageRef, "none")
+    --     else
+    --         wrapped(data)
+    --     end
+    -- end)
+
+    -- Override("DlcMenuGameController", "SpawnDescriptions", function (_, titel, desc, guide, image, wrapped)
+    --     if guide.value == "UI-DLC-JohnnyAltApp_Guide" then -- Im sorry...
+    --         return
+    --     else
+    --         wrapped(titel, desc, guide, image)
+    --     end
+    -- end)
+
+    Override("FakeDoor", "CreateFakeDoorChoice", function(_, wrapped)
+        if observers.noSave then return end
+        wrapped()
+    end)
+
     Observe("WorldMapMenuGameController", "OnInitialize", function (this)
         observers.onMap = true
         observers.worldMap = this
@@ -44,7 +75,7 @@ function observers.start(ts)
         label:SetAnchor(inkEAnchor.Fill)
         label:SetHorizontalAlignment(textHorizontalAlignment.Center)
         label:SetVerticalAlignment(textVerticalAlignment.Center)
-        label:SetMargin(inkMargin.new({ left = 355.0, top = 1800.0, right = 0.0, bottom = 0.0 }))
+        label:SetMargin(inkMargin.new({ left = 355.0, top = 1750.0, right = 0.0, bottom = 0.0 }))
         label:SetText("")
         label:SetVisible(false)
         label:Reparent(rootWidget, -1)

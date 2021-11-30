@@ -1,5 +1,3 @@
--- Module for loading object files, mainly for entries and tracks, also for removing
-
 local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")

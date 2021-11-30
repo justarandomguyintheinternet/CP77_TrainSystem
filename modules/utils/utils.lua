@@ -383,6 +383,9 @@ function miscUtils.forceStop(ts)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
             miscUtils.togglePin(ts.stationSys, "exit", false)
             ts.stationSys.currentStation:despawn()
+            if ts.stationSys.previousStationID then
+                ts.stationSys.stations[ts.stationSys.previousStationID]:despawn()
+            end
             Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
 
             ts.entrySys = require("modules/entrySystem"):new(ts)

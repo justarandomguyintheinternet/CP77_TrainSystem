@@ -62,6 +62,11 @@ function settings.setupNative(ts)
         config.saveFile("data/config.json", ts.settings)
     end)
 
+    settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", "Elevator Duration", "This controlls how long the elevator ride takes, in seconds", 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
+        ts.settings.elevatorTime = value
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
     settings.nativeOptions["showImGui"] = nativeSettings.addSwitch("/trainSystem/misc", "Show ImGui settings UI", "Show all the settings here in a seperate ImGui window, visible when the CET overlay is opened. This option gets turned on when the CET version is too low for NativeSettings", ts.settings.showImGui, ts.defaultSettings.showImGui, function(state)
         ts.settings.showImGui = state
         config.saveFile("data/config.json", ts.settings)
@@ -137,6 +142,13 @@ function settings.draw(ts)
     ts.settings.moneyPerStation, changed = ImGui.InputInt("Price per Station", ts.settings.moneyPerStation)
     if changed then
         settings.nativeSettings.setOption(settings.nativeOptions["stationPrice"], ts.settings.moneyPerStation)
+        config.saveFile("data/config.json", ts.settings)
+    end
+
+    ts.settings.elevatorTime, changed = ImGui.InputFloat("Elevator duration", ts.settings.elevatorTime, 3, 15, "%.1f")
+    ts.settings.elevatorTime = math.min(math.max(ts.settings.elevatorTime, 3), 15)
+    if changed then
+        settings.nativeSettings.setOption(settings.nativeOptions["elevatorTime"], ts.settings.elevatorTime)
         config.saveFile("data/config.json", ts.settings)
     end
 

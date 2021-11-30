@@ -77,26 +77,29 @@ function entrySys:enter(entry)
 
     self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0)) -- Sounds like an elevator?
 
+    local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(1.1, 0, 0, 0))-- Adjusted to make the player stand less in front of the wall
+    local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(1.1, 0, 0, 0))
+
     if entry.useSecondaryElevator then -- Ugly af fix for too long distances
-        local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition, entry.elevatorPlayerRotation)
+        local secondID = utils.spawnObject(entry.elevatorPath, playerSecondaryElevatorPos, EulerAngles.new(0, 0, 0):ToQuat())
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         end)
         Cron.After(0.5, function ()
             Game.FindEntityByID(secondID):GetEntity():Destroy()
             secondID = nil
         end)
     else
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end
 
-    Cron.After(entry.elevatorTime, function () -- Tp to station and more
+    Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more
         self.ts.stationSys:enter()
         Game.FindEntityByID(self.soundID):GetEntity():Destroy()
     end)
 
-    Cron.After(entry.elevatorTime * 0.7, function () -- Spawn station objects
+    Cron.After(self.ts.settings.elevatorTime * 0.7, function () -- Spawn station objects
         self.ts.stationSys:loadStation(entry.stationID)
     end)
 end

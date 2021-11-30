@@ -36,7 +36,7 @@ function entry:load(path)
     self.elevatorPath = data.elevatorPath
     self.elevatorTime = data.elevatorTime
     self.elevatorPosition = utils.getVector(data.elevatorPosition)
-    self.elevatorPlayerRotation = utils.getEuler(data.elevatorPlayerRotation)
+    self.elevatorPlayerRotation = EulerAngles.new(0, 0, -90) -- Its always -90, idiot
 
     self.useSecondaryElevator = data.useSecondaryElevator or false
     self.secondaryPosition = data.secondaryPosition or Vector4.new(0, 0, 0, 0)

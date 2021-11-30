@@ -1,3 +1,5 @@
+-- Made by keanuWheeze, with the incredible help of the CP2077 Modding Community <3
+
 ts = {
     runtimeData = {
         cetOpen = false,
@@ -8,12 +10,13 @@ ts = {
 
     defaultSettings = {
         camDist = 16,
-        trainSpeed = 22,
+        trainSpeed = 24,
         defaultSeat = 1,
         moneyPerStation = 2,
         holdMult = 1,
         tppOnly = false,
-        showImGui = false
+        showImGui = false,
+        elevatorTime = 7
     },
 
     settings = {},
@@ -34,6 +37,7 @@ ts = {
 function ts:new()
     registerForEvent("onInit", function()
         ts.config.tryCreateConfig("data/config.json", ts.defaultSettings)
+        ts.config.backwardComp("data/config.json", ts.defaultSettings)
         ts.settings = ts.config.loadFile("data/config.json")
         ts.settingsUI.setupNative(ts)
 
@@ -80,7 +84,7 @@ function ts:new()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
-            ts.Cron.Update(deltaTime) --??????
+            ts.Cron.Update(deltaTime)
 
             ts.debug.baseUI.utilUI.update()
         end

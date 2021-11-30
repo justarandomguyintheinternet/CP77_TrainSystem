@@ -47,18 +47,21 @@ end
 function station:exitToGround(ts)
 	local entry = ts.entrySys:findEntryByID(self.id)
 
+	local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(1.1, 0, 0, 0))-- Adjusted to make the player stand less in front of the wall
+    local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(1.1, 0, 0, 0))
+
 	if entry.useSecondaryElevator then
         local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition, entry.elevatorPlayerRotation)
+            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         end)
-        Cron.After(entry.elevatorTime, function ()
+        Cron.After(self.ts.settings.elevatorTime, function ()
             Game.FindEntityByID(secondID):GetEntity():Destroy()
             secondID = nil
         end)
     else
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition, entry.elevatorPlayerRotation)
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end
 
 	self.loaded = false
@@ -66,7 +69,7 @@ function station:exitToGround(ts)
 
 	self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
 
-    Cron.After(entry.elevatorTime, function ()
+    Cron.After(self.ts.settings.elevatorTime, function ()
         ts.observers.noSave = false
 		ts.runtimeData.noTrains = false
 		ts.observers.noKnockdown = false
@@ -112,7 +115,7 @@ function station:nearExit()
 	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
 	local near = false
 
-	if target and not (utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1) then -- Ugly hardcoded workaround for the force open door at rep way morth :(
+	if target and not (utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1) then -- Ugly hardcoded workaround for the force open door at rep way north :(
 		if utils.isVector(target:GetWorldPosition(), self.exitDoorPosition) then
 			if self.exitDoorSealed then
 				pcall(function ()

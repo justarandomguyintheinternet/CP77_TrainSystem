@@ -26,6 +26,7 @@ function train:new(stationSys)
 	o.trainObject = nil
 
 	o.perspective = "tpp"
+	o.camDist = stationSys.ts.settings.camDist
 	o.allowSwitching = true
 	o.currentSeat = stationSys.ts.settings.defaultSeat
 	o.seats = {"seat_front_right", "seat_back_right", "seat_back_left", "seat_front_left"}
@@ -232,7 +233,7 @@ function train:update(deltaTime)
 					utils.unmount()
 					utils.mount(self.carObject.entID, "seat_front_left")
 					self.perspective = "tpp"
-					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
+					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
 				else
 					Game.GetPlayer():SetWarningMessage("Can't switch when in this seat!")
 				end
@@ -280,29 +281,21 @@ function train:updateLocation(obj)
 			self.carObject.pos = utils.addVector(self.pos, self.carOffset)
 			self.carObject.rot = self.rot
 		else
-			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 1.5
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 1.5
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 1.5
-			self.carObject.pos = pos
+			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 7, 0))
 		end
 	elseif obj == "train" then
 		if self.perspective == "tpp" then
 			self.trainObject.pos = self.pos
 			self.trainObject.rot = self.rot
 		else
-			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * self.stationSys.ts.settings.camDist / 3
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * self.stationSys.ts.settings.camDist / 3
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * self.stationSys.ts.settings.camDist / 3
-			self.trainObject.pos = pos
+			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 7, 0))
 		end
 	else
 		if self.perspective == "tpp" then
 			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.stationSys.ts.settings.camDist + 10)
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.stationSys.ts.settings.camDist + 10)
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.stationSys.ts.settings.camDist + 10)
+			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.camDist + 20)
+			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.camDist + 20)
+			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.camDist + 20)
 			self.busObject.pos = pos
 		else
 			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
@@ -357,7 +350,7 @@ function train:updateCam()
 
 		if self.perspective == "tpp" then
 			utils.switchCarCam("TPPFar")
-			Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
+			Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
 		else
 			utils.switchCarCam("FPP")
 			GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0.2,0))
@@ -377,7 +370,7 @@ function train:mount()
 	self.playerMounted = true
 	utils.mount(self.carObject.entID, "seat_front_left")
 	utils.switchCarCam("TPPFar")
-	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.stationSys.ts.settings.camDist,0,0))
+	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
 	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
 end
 
