@@ -207,7 +207,6 @@ function stationSys:checkBus()
 		if self.canRespawnBus then
 			self.activeTrain:spawnBus()
 			self.canRespawnBus = false
-			print("Try respawn bus")
 			Cron.After(1.0, function ()
 				self.canRespawnBus = true
 			end)

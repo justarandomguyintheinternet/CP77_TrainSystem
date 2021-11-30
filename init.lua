@@ -86,7 +86,7 @@ function ts:new()
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
 
-            ts.debug.baseUI.utilUI.update()
+            -- ts.debug.baseUI.utilUI.update()
         end
     end)
 
@@ -99,7 +99,7 @@ function ts:new()
             if ts.settings.showImGui then
                 ts.settingsUI.draw(ts)
             end
-            ts.debug.run(ts)
+            -- ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)
