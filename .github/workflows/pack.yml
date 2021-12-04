@@ -15,17 +15,4 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Setup folders
         run: |
-          sudo cd ${{ github.workspace }}
-          sudo mkdir -p /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo mkdir -p /bin/x64/plugins/cyber_engine_tweaks/mods/nativeSettings
-          sudo mkdir -p /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo mkdir -p /archive/pc/mod
-      - name: Copy files
-        run: |
-          sudo cp -r /modules /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo cp -r /debug /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo cp -r /data /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo cp -r /CPStyling /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo cp -r /init.lua /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
-          sudo cp -r /trainSystem.archive /archive/pc/mod
-          sudo ls
+          mkdir -p /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
