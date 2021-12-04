@@ -25,5 +25,8 @@ jobs:
           sudo cp -r CPStyling /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r init.lua /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r trainSystem.archive /trainSystemPacked/archive/pc/mod/
-          cd /trainSystemPacked/archive/pc/mod/
-          ls
+      - name: Upload zip
+        uses: actions/upload-artifact@v2
+        with:
+            name: package
+            path: /trainSystemPacked/
