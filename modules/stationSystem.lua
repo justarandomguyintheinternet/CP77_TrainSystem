@@ -307,7 +307,7 @@ function stationSys:update(deltaTime)
 	end
 
 	if self.ts.observers.noSave then -- aka mod is active
-		Game.PrevSys_off()
+		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
 		Game.ChangeZoneIndicatorSafe()
 	end
 end

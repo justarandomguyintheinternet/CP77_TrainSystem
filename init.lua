@@ -16,7 +16,8 @@ ts = {
         holdMult = 1,
         tppOnly = false,
         showImGui = false,
-        elevatorTime = 7
+        elevatorTime = 7,
+        uiLayout = 1 -- 1 = Vanilla, 2 = E3, 3 = Superior
     },
 
     settings = {},

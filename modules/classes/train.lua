@@ -281,14 +281,14 @@ function train:updateLocation(obj)
 			self.carObject.pos = utils.addVector(self.pos, self.carOffset)
 			self.carObject.rot = self.rot
 		else
-			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 7, 0))
+			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 8, 0))
 		end
 	elseif obj == "train" then
 		if self.perspective == "tpp" then
 			self.trainObject.pos = self.pos
 			self.trainObject.rot = self.rot
 		else
-			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 7, 0))
+			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 8, 0))
 		end
 	else
 		if self.perspective == "tpp" then
@@ -314,7 +314,7 @@ function train:handlePoint(point)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
-			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 10, 0))
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 12, 0))
 			Cron.After(2.0, function ()
 				self.stationSys:requestNewTrain()
 			end)

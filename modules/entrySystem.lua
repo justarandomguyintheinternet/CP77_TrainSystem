@@ -14,6 +14,8 @@ function entrySys:new(ts)
     o.elevatorIDS = {}
     o.soundID = nil
 
+    o.mappinID = nil
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -64,6 +66,12 @@ function entrySys:enter(entry)
     self.ts.observers.noSave = true
     self.ts.observers.noKnockdown = true
     self.ts.runtimeData.noTrains = true
+
+    if self.mappinID then
+        pcall(function ()
+            Game.GetMappinSystem():UnregisterMappin(self.mappinID)
+        end)
+    end
 
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
@@ -170,7 +178,7 @@ function entrySys:markClosest()
     self.ts.observers.worldMap:SetCustomFilter(gamedataWorldMapFilter.FastTravel)
 
     local closest = self:getClosestEntry()
-    Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), closest.waypointPosition)
+    self.mappinID = Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), closest.waypointPosition)
 end
 
 return entrySys

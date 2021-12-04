@@ -16,7 +16,7 @@ end)
 ```
 ]]
 
-local GameUI = { version = '1.1.2' }
+local GameUI = { version = '1.1.7' }
 
 GameUI.Event = {
 	Braindance = 'Braindance',
@@ -66,6 +66,9 @@ GameUI.Event = {
 	Session = 'Session',
 	SessionEnd = 'SessionEnd',
 	SessionStart = 'SessionStart',
+	Shard = 'Shard',
+	ShardClose = 'ShardClose',
+	ShardOpen = 'ShardOpen',
 	Tutorial = 'Tutorial',
 	TutorialClose = 'TutorialClose',
 	TutorialOpen = 'TutorialOpen',
@@ -95,6 +98,7 @@ GameUI.StateEvent = {
 	[GameUI.Event.Scanner] = GameUI.Event.Scanner,
 	[GameUI.Event.Scene] = GameUI.Event.Scene,
 	[GameUI.Event.Session] = GameUI.Event.Session,
+	[GameUI.Event.Shard] = GameUI.Event.Shard,
 	[GameUI.Event.Tutorial] = GameUI.Event.Tutorial,
 	[GameUI.Event.Update] = GameUI.Event.Update,
 	[GameUI.Event.Vehicle] = GameUI.Event.Vehicle,
@@ -123,6 +127,7 @@ local isVehicle = false
 local isBraindance = false
 local isFastTravel = false
 local isPhotoMode = false
+local isShard = false
 local isTutorial = false
 local sceneTier = 4
 local isPossessed = false
@@ -154,6 +159,7 @@ local stateProps = {
 	{ current = 'isWheel', previous = 'wasWheel', event = { change = GameUI.Event.Wheel, on = GameUI.Event.WheelOpen, off = GameUI.Event.WheelClose, scope = GameUI.Event.Context } },
 	{ current = 'isDevice', previous = 'wasDevice', event = { change = GameUI.Event.Device, on = GameUI.Event.DeviceEnter, off = GameUI.Event.DeviceExit, scope = GameUI.Event.Context } },
 	{ current = 'isPhoto', previous = 'wasPhoto', event = { change = GameUI.Event.PhotoMode, on = GameUI.Event.PhotoModeOpen, off = GameUI.Event.PhotoModeClose } },
+	{ current = 'isShard', previous = 'wasShard', event = { change = GameUI.Event.Shard, on = GameUI.Event.ShardOpen, off = GameUI.Event.ShardClose } },
 	{ current = 'isTutorial', previous = 'wasTutorial', event = { change = GameUI.Event.Tutorial, on = GameUI.Event.TutorialOpen, off = GameUI.Event.TutorialClose } },
 	{ current = 'menu', previous = 'lastMenu', event = { change = GameUI.Event.MenuNav, reqs = { isMenu = true, wasMenu = true }, scope = GameUI.Event.Menu } },
 	{ current = 'submenu', previous = 'lastSubmenu', event = { change = GameUI.Event.MenuNav, reqs = { isMenu = true, wasMenu = true }, scope = GameUI.Event.Menu } },
@@ -246,6 +252,10 @@ end
 
 local function updatePhotoMode(photoModeActive)
 	isPhotoMode = photoModeActive
+end
+
+local function updateShard(shardActive)
+	isShard = shardActive
 end
 
 local function updateTutorial(tutorialActive)
@@ -530,18 +540,15 @@ local function initialize(event)
 	-- Loading State Listeners
 
 	if required[GameUI.Event.Loading] and not initialized[GameUI.Event.Loading] then
-		Observe('LoadingScreenProgressBarController', 'OnInitialize', function()
-			--spdlog.error(('LoadingScreenProgressBarController::OnInitialize()'))
-
-			updateMenuScenario()
-			updateLoading(true)
-			notifyObservers()
-		end)
-
 		Observe('LoadingScreenProgressBarController', 'SetProgress', function(_, progress)
 			--spdlog.info(('LoadingScreenProgressBarController::SetProgress(%.3f)'):format(progress))
 
-			if progress == 1.0 then
+			if not isLoading then
+				updateMenuScenario()
+				updateLoading(true)
+				notifyObservers()
+
+			elseif progress == 1.0 then
 				if currentMenu ~= 'MainMenu' then
 					updateMenuScenario()
 				end
@@ -566,11 +573,11 @@ local function initialize(event)
 
 		for _, menuScenario  in pairs(menuOpenListeners) do
 			Observe(menuScenario, 'OnLeaveScenario', function(_, menuName)
-				--spdlog.error(('%s::OnLeaveScenario()'):format(menuScenario))
-
 				if type(menuName) ~= 'userdata' then
 					menuName = _
 				end
+
+				--spdlog.error(('%s::OnLeaveScenario()'):format(menuScenario))
 
 				updateMenuScenario(Game.NameToString(menuName))
 
@@ -580,14 +587,19 @@ local function initialize(event)
 			end)
 		end
 
-		Observe('MenuScenario_HubMenu', 'OnSelectMenuItem', function(menuItemData)
+		Observe('MenuScenario_HubMenu', 'OnSelectMenuItem', function(_, menuItemData)
+			if type(menuItemData) ~= 'userdata' then
+				menuItemData = _
+			end
+
 			--spdlog.error(('MenuScenario_HubMenu::OnSelectMenuItem(%q)'):format(menuItemData.menuData.label))
 
-			updateMenuItem(toStudlyCase(menuItemData.menuData.label))
+			updateMenuItem(EnumValueToName('HubMenuItems', menuItemData.menuData.identifier).value)
+			--updateMenuItem(toStudlyCase(menuItemData.menuData.label))
 			notifyObservers()
 		end)
 
-		Observe('MenuScenario_HubMenu', 'OnCloseHubMenu', function(_)
+		Observe('MenuScenario_HubMenu', 'OnCloseHubMenu', function()
 			--spdlog.error(('MenuScenario_HubMenu::OnCloseHubMenu()'))
 
 			updateMenuItem(false)
@@ -675,7 +687,11 @@ local function initialize(event)
 	-- Vehicle State Listeners
 
 	if required[GameUI.Event.Vehicle] and not initialized[GameUI.Event.Vehicle] then
-		Observe('hudCarController', 'OnCameraModeChanged', function(mode)
+		Observe('hudCarController', 'OnCameraModeChanged', function(_, mode)
+			if type(mode) ~= 'boolean' then
+				mode = _
+			end
+
 			--spdlog.error(('hudCarController::OnCameraModeChanged(%s)'):format(tostring(mode)))
 
 			updateVehicle(true, mode)
@@ -696,7 +712,11 @@ local function initialize(event)
 			notifyObservers()
 		end)
 
-		Observe('PlayerVisionModeController', 'OnRestrictedSceneChanged', function(sceneTierValue)
+		Observe('PlayerVisionModeController', 'OnRestrictedSceneChanged', function(_, sceneTierValue)
+			if type(sceneTierValue) ~= 'number' then
+				sceneTierValue = _
+			end
+
 			--spdlog.error(('PlayerVisionModeController::OnRestrictedSceneChanged(%d)'):format(sceneTierValue))
 
 			if isVehicle then
@@ -711,7 +731,11 @@ local function initialize(event)
 	-- Braindance State Listeners
 
 	if required[GameUI.Event.Braindance] and not initialized[GameUI.Event.Braindance] then
-		Observe('BraindanceGameController', 'OnIsActiveUpdated', function(braindanceActive)
+		Observe('BraindanceGameController', 'OnIsActiveUpdated', function(_, braindanceActive)
+			if type(braindanceActive) ~= 'boolean' then
+				braindanceActive = _
+			end
+
 			--spdlog.error(('BraindanceGameController::OnIsActiveUpdated(%s)'):format(tostring(braindanceActive)))
 
 			updateBraindance(braindanceActive)
@@ -724,7 +748,11 @@ local function initialize(event)
 	-- Scene State Listeners
 
 	if required[GameUI.Event.Scene] and not initialized[GameUI.Event.Scene] then
-		Observe('PlayerVisionModeController', 'OnRestrictedSceneChanged', function(sceneTierValue)
+		Observe('PlayerVisionModeController', 'OnRestrictedSceneChanged', function(_, sceneTierValue)
+			if type(sceneTierValue) ~= 'number' then
+				sceneTierValue = _
+			end
+
 			--spdlog.error(('PlayerVisionModeController::OnRestrictedSceneChanged(%d)'):format(sceneTierValue))
 
 			notifyAfterStart(function()
@@ -760,7 +788,11 @@ local function initialize(event)
 	if required[GameUI.Event.FastTravel] and not initialized[GameUI.Event.FastTravel] then
 		local fastTravelStart
 
-		Observe('FastTravelSystem', 'OnToggleFastTravelAvailabilityOnMapRequest', function(request)
+		Observe('FastTravelSystem', 'OnToggleFastTravelAvailabilityOnMapRequest', function(_, request)
+			if type(request) ~= 'userdata' then
+				request = _
+			end
+
 			--spdlog.error(('FastTravelSystem::OnToggleFastTravelAvailabilityOnMapRequest()'))
 
 			if request.isEnabled then
@@ -768,7 +800,11 @@ local function initialize(event)
 			end
 		end)
 
-		Observe('FastTravelSystem', 'OnPerformFastTravelRequest', function(request)
+		Observe('FastTravelSystem', 'OnPerformFastTravelRequest', function(_, request)
+			if type(request) ~= 'userdata' then
+				request = _
+			end
+
 			--spdlog.error(('FastTravelSystem::OnPerformFastTravelRequest()'))
 
 			local fastTravelDestination = request.pointData.pointRecord
@@ -780,7 +816,11 @@ local function initialize(event)
 			end
 		end)
 
-		Observe('FastTravelSystem', 'OnLoadingScreenFinished', function(finished)
+		Observe('FastTravelSystem', 'OnLoadingScreenFinished', function(_, finished)
+			if type(finished) ~= 'boolean' then
+				finished = _
+			end
+
 			--spdlog.error(('FastTravelSystem::OnLoadingScreenFinished(%s)'):format(tostring(finished)))
 
 			if isFastTravel and finished then
@@ -792,6 +832,24 @@ local function initialize(event)
 		end)
 
 		initialized[GameUI.Event.FastTravel] = true
+	end
+
+	-- Shard Listeners
+
+	if required[GameUI.Event.Shard] and not initialized[GameUI.Event.Shard] then
+		Observe('ShardNotificationController', 'SetButtonHints', function()
+			--spdlog.error(('ShardNotificationController::SetButtonHints()'))
+			updateShard(true)
+			notifyObservers()
+		end)
+
+		Observe('ShardNotificationController', 'Close', function()
+			--spdlog.error(('ShardNotificationController::Close()'))
+			updateShard(false)
+			notifyObservers()
+		end)
+
+		initialized[GameUI.Event.Shard] = true
 	end
 
 	-- Tutorial Listeners
@@ -836,7 +894,11 @@ local function initialize(event)
 			notifyObservers()
 		end)
 
-		Observe('HUDManager', 'OnQuickHackUIVisibleChanged', function(quickhacking)
+		Observe('HUDManager', 'OnQuickHackUIVisibleChanged', function(_, quickhacking)
+			if type(quickhacking) ~= 'boolean' then
+				quickhacking = _
+			end
+
 			--spdlog.error(('HUDManager::OnQuickHackUIVisibleChanged(%s)'):format(tostring(quickhacking)))
 
 			if quickhacking then
@@ -873,7 +935,11 @@ local function initialize(event)
 			end)
 		end)
 
-		Observe('cpPlayerSystem', 'OnLocalPlayerChanged', function(player)
+		Observe('cpPlayerSystem', 'OnLocalPlayerChanged', function(_, player)
+			if type(player) ~= 'userdata' then
+				player = _
+			end
+
 			--spdlog.error(('cpPlayerSystem::OnLocalPlayerChanged(%s)'):format(tostring(player:IsJohnnyReplacer())))
 
 			notifyAfterStart(function()
@@ -884,26 +950,34 @@ local function initialize(event)
 		initialized[GameUI.Event.Johnny] = true
 	end
 
-	-- Johnny
+	-- Cyberspace
 
 	if required[GameUI.Event.Cyberspace] and not initialized[GameUI.Event.Cyberspace] then
-		Observe('PlayerPuppet', 'OnStatusEffectApplied', function(evt)
-			local applyCyberspacePresence = evt.staticData:GameplayTagsContains('CyberspacePresence')
+		Observe('PlayerPuppet', 'OnStatusEffectApplied', function(_, evt)
+			--spdlog.error(('PlayerPuppet::OnStatusEffectApplied()'))
 
-			if applyCyberspacePresence then
-				notifyAfterStart(function()
-					updateCyberspace(true)
-				end)
+			if evt.staticData then
+				local applyCyberspacePresence = evt.staticData:GameplayTagsContains('CyberspacePresence')
+
+				if applyCyberspacePresence then
+					notifyAfterStart(function()
+						updateCyberspace(true)
+					end)
+				end
 			end
 		end)
 
-		Observe('PlayerPuppet', 'OnStatusEffectRemoved', function(evt)
-			local removeCyberspacePresence = evt.staticData:GameplayTagsContains('CyberspacePresence')
+		Observe('PlayerPuppet', 'OnStatusEffectRemoved', function(_, evt)
+			--spdlog.error(('PlayerPuppet::OnStatusEffectRemoved()'))
 
-			if removeCyberspacePresence then
-				notifyAfterStart(function()
-					updateCyberspace(false)
-				end)
+			if evt.staticData then
+				local removeCyberspacePresence = evt.staticData:GameplayTagsContains('CyberspacePresence')
+
+				if removeCyberspacePresence then
+					notifyAfterStart(function()
+						updateCyberspace(false)
+					end)
+				end
 			end
 		end)
 
@@ -973,6 +1047,10 @@ end
 
 function GameUI.IsMainMenu()
 	return isMenu and currentMenu == 'MainMenu'
+end
+
+function GameUI.IsShard()
+	return isShard
 end
 
 function GameUI.IsTutorial()
@@ -1085,6 +1163,7 @@ function GameUI.GetState()
 	currentState.isLoaded = isLoaded
 
 	currentState.isMenu = GameUI.IsMenu()
+	currentState.isShard = GameUI.IsShard()
 	currentState.isTutorial = GameUI.IsTutorial()
 
 	currentState.isScene = GameUI.IsScene()

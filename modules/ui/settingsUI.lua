@@ -1,4 +1,5 @@
 local config = require("modules/utils/config")
+utils = require("modules/utils/utils")
 
 settings = {
     nativeOptions = {},
@@ -31,12 +32,12 @@ function settings.setupNative(ts)
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
 
-    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controlls the speed of the train. Gets applied next time you enter / leave a station.", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
+    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controlls the speed of the train. Gets applied next time you enter / leave a station", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
         ts.settings.trainSpeed = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controlls the distance of the TPP camera. Gets applied next time you enter / leave a station.", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
+    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controlls the distance of the TPP camera. Gets applied next time you enter / leave a station", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
         ts.settings.camDist = value
         config.saveFile("data/config.json", ts.settings)
     end)
@@ -65,6 +66,16 @@ function settings.setupNative(ts)
     settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", "Elevator Duration", "This controlls how long the elevator ride takes, in seconds", 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
         ts.settings.elevatorTime = value
         config.saveFile("data/config.json", ts.settings)
+    end)
+
+    local list = {[1] = "Vanilla", [2] = "Spicy's E3 HUD", [3] = "Superior UI"}
+    settings.nativeOptions["uiLayout"] = nativeSettings.addSelectorString("/trainSystem/misc", "HUD Mod Fix", "If you are using the E3 HUD mod or the Superior UI mod, select them here, to make sure the \"Next Station\" text gets properly positioned and colored", list, ts.settings.uiLayout, ts.defaultSettings.uiLayout, function(value)
+        ts.settings.uiLayout = value
+        config.saveFile("data/config.json", ts.settings)
+        if ts.observers.hudText then
+            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
+            ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
+        end
     end)
 
     settings.nativeOptions["showImGui"] = nativeSettings.addSwitch("/trainSystem/misc", "Show ImGui settings UI", "Show all the settings here in a seperate ImGui window, visible when the CET overlay is opened. This option gets turned on when the CET version is too low for NativeSettings", ts.settings.showImGui, ts.defaultSettings.showImGui, function(state)
@@ -156,6 +167,42 @@ function settings.draw(ts)
     if changed then
         settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly)
         config.saveFile("data/config.json", ts.settings)
+    end
+
+    ImGui.Text("HUD Mod Fix:")
+
+    if ImGui.RadioButton("Vanilla", ts.settings.uiLayout == 1) then
+        ts.settings.uiLayout = 1
+        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        config.saveFile("data/config.json", ts.settings)
+        if ts.observers.hudText then
+            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
+            ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
+        end
+    end
+
+    ImGui.SameLine()
+
+    if ImGui.RadioButton("Spicy's E3 HUD", ts.settings.uiLayout == 2) then
+        ts.settings.uiLayout = 2
+        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        config.saveFile("data/config.json", ts.settings)
+        if ts.observers.hudText then
+            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
+            ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
+        end
+    end
+
+    ImGui.SameLine()
+
+    if ImGui.RadioButton("Superior UI", ts.settings.uiLayout == 3) then
+        ts.settings.uiLayout = 3
+        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        config.saveFile("data/config.json", ts.settings)
+        if ts.observers.hudText then
+            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
+            ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
+        end
     end
 
     ImGui.End()
