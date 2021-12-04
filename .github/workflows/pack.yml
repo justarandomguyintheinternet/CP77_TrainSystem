@@ -20,7 +20,7 @@ jobs:
           mkdir /bin/x64/plugins/cyber_engine_tweaks/mods/nativeSettings
           mkdir /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
           mkdir /archive/pc/mod
-      -name: Copy files
+      - name: Copy files
           cp -r /modules /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
           cp -r /debug /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
           cp -r /data /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
