@@ -13,9 +13,18 @@ jobs:
       - uses: actions/checkout@v2
 
       # Runs a set of commands using the runners shell
-      - name: Test
+      - name: Setup folders
         run: |
-          echo Start
-          echo ${{ github.workspace }}
-          echo ${{ github.workflow }}
-          curl https://raw.githubusercontent.com/justarandomguyintheinternet/CP77_FreeFly/main/freefly/init.lua
+          cd ${{ github.workspace }}
+          mkdir /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          mkdir /bin/x64/plugins/cyber_engine_tweaks/mods/nativeSettings
+          mkdir /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          mkdir /archive/pc/mod
+      -name: Copy files
+          cp -r /modules /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          cp -r /debug /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          cp -r /data /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          cp -r /CPStyling /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          cp -r /init.lua /bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem
+          cp -r /trainSystem.archive /archive/pc/mod
+          ls
