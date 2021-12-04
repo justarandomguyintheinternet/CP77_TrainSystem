@@ -1,0 +1,21 @@
+name: pack
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      # Runs a set of commands using the runners shell
+      - name: Test
+        run: |
+          echo Start
+          echo ${{ github.workspace }}
+          echo ${{ github.workflow }}
+          curl https://raw.githubusercontent.com/justarandomguyintheinternet/CP77_FreeFly/main/freefly/init.lua
