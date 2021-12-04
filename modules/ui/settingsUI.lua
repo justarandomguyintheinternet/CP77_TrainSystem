@@ -19,7 +19,7 @@ function settings.setupNative(ts)
         return ('%d.%02d%02d%d'):format(major, minor, patch, (wip == '' and 0 or 1))
     end)))
 
-    if cetVer < 1.18001 then
+    if cetVer < 1.18 then
         print("[TrainSystem] Error: CET version below recommended, switched to ImGui settings UI!")
         ts.settings.showImGui = true
         ts.settings.minCETMet = false
