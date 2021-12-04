@@ -9,10 +9,8 @@ jobs:
   pack:
     runs-on: ubuntu-latest
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a set of commands using the runners shell
       - name: Setup folders
         run: |
           cd ${{ github.workspace }}
@@ -21,20 +19,15 @@ jobs:
           sudo mkdir -p /trainSystemPacked/archive/pc/mod/
       - name: Copy files
         run: |
-          cd ${{ github.workspace }}
-          ls
           sudo cp -r modules /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r debug /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r data /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r CPStyling /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r init.lua /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r trainSystem.archive /trainSystemPacked/archive/pc/mod/
-          ls
-      - name: Zip folders
-        run: |
-          sudo zip -r test.zip ${{ github.workspace }}
+          ls trainSystemPacked
       - name: Upload zip
         uses: actions/upload-artifact@v2
         with:
             name: package
-            path: "*.zip"
+            path: trainSystemPacked
