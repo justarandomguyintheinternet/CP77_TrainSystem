@@ -131,16 +131,16 @@ function observers.start(ts)
         end
     end)
 
-    Observe("VehicleRadioPopupGameController", "Activate", function(this)
-        local data = this.selectedItem:GetStationData()
-        local i = data.record:Index()
-        if ts.stationSys.activeTrain.perspective == "tpp" then
-            utils.setRadioStation(ts.stationSys.activeTrain.busObject.entity, i)
-        else
-            utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, i)
-        end
-        ts.stationSys.activeTrain.radioStation = i
-    end)
+    -- Observe("VehicleRadioPopupGameController", "Activate", function(this)
+    --     local data = this.selectedItem:GetStationData()
+    --     local i = data.record:Index()
+    --     if ts.stationSys.activeTrain.perspective == "tpp" then
+    --         utils.setRadioStation(ts.stationSys.activeTrain.busObject.entity, i)
+    --     else
+    --         utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, i)
+    --     end
+    --     ts.stationSys.activeTrain.radioStation = i
+    -- end)
 
     Override("CollisionExitingEvents", "OnEnter", function (this, stateContext, scriptInterface)
         if not observers.noKnockdown then

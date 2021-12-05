@@ -86,7 +86,6 @@ function ts:new()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
-
             -- ts.debug.baseUI.utilUI.update()
         end
     end)

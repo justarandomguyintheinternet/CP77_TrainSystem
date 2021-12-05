@@ -404,7 +404,7 @@ function miscUtils.generateHUDMargin(type)
     if type == 1 then -- Vanilla
         return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })
     elseif type == 2 then -- E3
-        return inkMargin.new({ left = 355.0, top = 1560.0, right = 0.0, bottom = 0.0 })
+        return inkMargin.new({ left = 355.0, top = 1250.0, right = 0.0, bottom = 0.0 })
     elseif type == 3 then -- Superior
         return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 }) -- Its the same lol, but i`ll leave it cuz its cool
     end
