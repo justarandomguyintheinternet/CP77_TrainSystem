@@ -19,7 +19,7 @@ function train:new(stationSys)
 
 	o.carName =  "Vehicle.v_sportbike3_brennan_apollo"
 	o.carApp = "brennan_apollo_basic_burnt_v_2"
-	o.carOffset = Vector4.new(0, 0, 2, 0)
+	o.carOffset = Vector4.new(0, 0, 1.9, 0)
 	o.carLayer = 2010
 	o.trainLayer = 2011
 	o.carObject = nil

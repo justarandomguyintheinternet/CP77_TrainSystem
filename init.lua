@@ -87,6 +87,8 @@ function ts:new()
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
             -- ts.debug.baseUI.utilUI.update()
+        elseif ts.entrySys.forceRunCron then
+            ts.Cron.Update(deltaTime)
         end
     end)
 

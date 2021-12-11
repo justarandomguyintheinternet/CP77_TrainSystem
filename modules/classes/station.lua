@@ -116,6 +116,13 @@ function station:nearExit()
 	local near = false
 
 	if target and not (utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1) then -- Ugly hardcoded workaround for the force open door at rep way north :(
+		if target:GetClassName().value == "Door" then
+			---@type DoorControllerPS
+			local targetPS = target:GetDevicePS()
+			if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+			if targetPS:IsOpen() then targetPS:ToggleOpenOnDoor() end
+		end
+
 		if utils.isVector(target:GetWorldPosition(), self.exitDoorPosition) then
 			if self.exitDoorSealed then
 				pcall(function ()
@@ -128,9 +135,6 @@ function station:nearExit()
 			end
 		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 			self:handleFakeDoor(target)
-		elseif target:GetClassName().value == "Door" then
-			local targetPS = target:GetDevicePS()
-			if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
 		end
 	end
 

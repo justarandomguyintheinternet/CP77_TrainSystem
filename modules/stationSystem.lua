@@ -136,6 +136,7 @@ function stationSys:leave() -- Leave to ground level
 	self.currentStation:exitToGround(self.ts)
 	self.currentStation = nil
 	self.onStation = false
+	self.trainInStation = false
 	self.previousStationID = nil
 	if self.activeTrain ~= nil then
 		self.activeTrain:despawn()
@@ -282,15 +283,14 @@ function stationSys:update(deltaTime)
 			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
 			self:checkBus()
 		else
-			local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
-			rmStatus(Game.GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+			StatusEffectHelper.RemoveStatusEffect(Game.GetPlayer(), "GameplayRestriction.VehicleBlockExit")
 		end
 
 		self:handleExitTrain()
 	end
 
 	if self.trainInStation and self.activeTrain ~= nil then
-		if self:nearTrain() and not self.activeTrain.playerMounted then
+		if self:nearTrain() and (not self.activeTrain.playerMounted) then
 			self.ts.hud.trainVisible = true
 			if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
 				self.ts.input.interactKey = false

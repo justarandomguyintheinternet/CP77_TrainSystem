@@ -13,6 +13,7 @@ function entrySys:new(ts)
     o.maxDistToEntry = 2.6
     o.elevatorIDS = {}
     o.soundID = nil
+    o.forceRunCron = false
 
     o.mappinID = nil
 
@@ -59,6 +60,13 @@ function entrySys:update()
         else
             self.ts.observers.noFastTravel = false
         end
+
+        if self.mappinID and utils.distanceVector(Game.GetPlayer():GetWorldPosition(), closest.waypointPosition) < closest.radius then
+            pcall(function ()
+                Game.GetMappinSystem():UnregisterMappin(self.mappinID)
+                self.mappinID = nil
+            end)
+        end
     end
 end
 
@@ -72,6 +80,18 @@ function entrySys:enter(entry)
             Game.GetMappinSystem():UnregisterMappin(self.mappinID)
         end)
     end
+    self.mappinID = nil
+
+    self.forceRunCron = true
+    Cron.Every(0.05, {tick = 0}, function(timer)
+        if timer.tick < 1 then
+            timer.tick = timer.tick + 0.05
+            Game.GetUISystem():QueueEvent(ForceCloseHubMenuEvent.new())
+        else
+            self.forceRunCron = false
+            timer:Halt()
+        end
+	end)
 
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()

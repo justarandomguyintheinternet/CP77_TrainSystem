@@ -168,12 +168,18 @@ function observers.start(ts)
     end)
 
     Override("DataTerm", "OnOpenWorldMapAction", function(this)
+        if observers.noFastTravel then return end
+
+        this:EnableFastTravelOnMap()
+        this:TriggerMenuEvent("OnOpenFastTravel")
+        this:ProcessFastTravelTutorial()
+    end)
+
+    Override("DataTermControllerPS", "ActionOpenWorldMap", function(_, wrapped)
         if observers.noFastTravel then
-            observers.activatedGate = true
+            return OpenWorldMapDeviceAction.new()
         else
-            this:EnableFastTravelOnMap()
-            this:TriggerMenuEvent("OnOpenFastTravel")
-            this:ProcessFastTravelTutorial()
+            return wrapped()
         end
     end)
 
