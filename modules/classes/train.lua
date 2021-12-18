@@ -33,7 +33,7 @@ function train:new(stationSys)
 	o.radioStation = -1
 
 	o.busObject = object:new(0)
-	o.busOffset = Vector4.new(0, 0, 0.8, 0)
+	o.busOffset = Vector4.new(0, 0, 1.5, 0)
 	o.busLayer = 2012
 
 	o.playerMounted = false
@@ -155,12 +155,6 @@ function train:getDoneLength()
 end
 
 function train:update(deltaTime)
-	if self.justArrived and self.playerMounted then -- Once new station is reached, despawn the previous one
-		if self.stationSys.stations[self.stationSys.previousStationID] then
-			self.stationSys.stations[self.stationSys.previousStationID]:despawn()
-		end
-	end
-
 	if self.driving then
 		--print("driving, pos", self.pos, "point index: ", self.pointIndex, "points: ", #self.activePath)
 		if self:getDoneLength() < 25 and self.routeDir == "exit" then
@@ -187,6 +181,8 @@ function train:update(deltaTime)
 				--print("todo bigger 0" , todo)
 				if (self.pointIndex + 1 > #self.activePath) then
 					todo = 0
+					self.justArrived = true
+					self.driving = false
 				elseif (utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos) < todo) then
 					--print("would get over to next one, current point index", self.pointIndex)
 					todo = todo - utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
@@ -214,6 +210,12 @@ function train:update(deltaTime)
 					self.rot = (utils.addEuler(utils.multEuler(newEuler, factor), self.rot:ToEulerAngles())):ToQuat()
 					todo = 0
 				end
+			end
+		end
+
+		if self.justArrived and self.playerMounted then -- Once new station is reached, despawn the previous one
+			if self.stationSys.stations[self.stationSys.previousStationID] then
+				self.stationSys.stations[self.stationSys.previousStationID]:despawn()
 			end
 		end
 		--print(self.activePath[self.pointIndex].rot:ToEulerAngles(), self.rot:ToEulerAngles())

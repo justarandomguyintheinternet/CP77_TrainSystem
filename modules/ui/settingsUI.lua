@@ -11,7 +11,7 @@ function settings.setupNative(ts)
     local nativeSettings = GetMod("nativeSettings")
     settings.nativeSettings = nativeSettings
     if not nativeSettings then
-        print("[TrainSystem] Error: NativeSettings lib not found!")
+        print("[MetroSystem] Error: NativeSettings lib not found!")
         return
     end
 
@@ -20,14 +20,14 @@ function settings.setupNative(ts)
     end)))
 
     if cetVer < 1.18 then
-        print("[TrainSystem] Error: CET version below recommended, switched to ImGui settings UI!")
+        print("[MetroSystem] Error: CET version below recommended, switched to ImGui settings UI!")
         ts.settings.showImGui = true
         ts.settings.minCETMet = false
         config.saveFile("data/config.json", ts.settings)
         return
     end
 
-    nativeSettings.addTab("/trainSystem", "Train System")
+    nativeSettings.addTab("/trainSystem", "Metro System")
     nativeSettings.addSubcategory("/trainSystem/train", "Train Settings")
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
@@ -91,7 +91,7 @@ end
 
 function settings.draw(ts)
     ts.CPS:setThemeBegin()
-    ImGui.Begin("Train System Config", ImGuiWindowFlags.AlwaysAutoResize)
+    ImGui.Begin("Metro System Config", ImGuiWindowFlags.AlwaysAutoResize)
 
     if ts.observers.noSave then
         ImGui.PushStyleColor(ImGuiCol.Button, 0xff777777)
