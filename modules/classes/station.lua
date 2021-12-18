@@ -57,7 +57,7 @@ function station:exitToGround(ts)
             Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         end)
         Cron.After(self.ts.settings.elevatorTime, function ()
-            Game.FindEntityByID(secondID):GetEntity():Destroy()
+			exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
             secondID = nil
         end)
     else
@@ -71,7 +71,7 @@ function station:exitToGround(ts)
 
     Cron.After(self.ts.settings.elevatorTime, function ()
         ts.observers.noSave = false
-		ts.runtimeData.noTrains = false
+		ts.observers.noTrains = false
 		ts.observers.noKnockdown = false
 		local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
 		rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
@@ -79,7 +79,7 @@ function station:exitToGround(ts)
 		Game.ChangeZoneIndicatorPublic()
 		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
 
-		Game.FindEntityByID(self.soundID):GetEntity():Destroy()
+		exEntitySpawner.Despawn(Game.FindEntityByID(self.soundID))
 		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
 		settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
     end)
@@ -96,9 +96,10 @@ end
 function station:despawn()
 	for _, id in pairs(self.objectIDS) do
 		if Game.FindEntityByID(id) ~= nil then
-			Game.FindEntityByID(id):GetEntity():Destroy()
+			exEntitySpawner.Despawn(Game.FindEntityByID(id))
 		end
 	end
+	self.objectIDS = {}
 	self.loaded = false
 end
 

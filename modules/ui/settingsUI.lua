@@ -78,6 +78,11 @@ function settings.setupNative(ts)
         end
     end)
 
+    settings.nativeOptions["tppOffset"] = nativeSettings.addRangeFloat("/trainSystem/misc", "TPP Player Offset", "For the very rare case that the players head sticks out during TPP mode, lower this value to lower the players position", 1, 2, 0.1, "%.1f", ts.settings.tppOffset, ts.defaultSettings.tppOffset, function(value)
+        ts.settings.tppOffset = value
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
     settings.nativeOptions["showImGui"] = nativeSettings.addSwitch("/trainSystem/misc", "Show ImGui settings UI", "Show all the settings here in a seperate ImGui window, visible when the CET overlay is opened. This option gets turned on when the CET version is too low for NativeSettings", ts.settings.showImGui, ts.defaultSettings.showImGui, function(state)
         ts.settings.showImGui = state
         config.saveFile("data/config.json", ts.settings)
@@ -106,8 +111,6 @@ function settings.draw(ts)
         config.saveFile("data/config.json", ts.settings)
         settings.nativeSettings.setOption(settings.nativeOptions["trainTPPDist"], ts.settings.camDist)
     end
-
-    ImGui.Separator()
 
     ImGui.Text("Default Seat:")
 
@@ -141,6 +144,12 @@ function settings.draw(ts)
         config.saveFile("data/config.json", ts.settings)
     end
 
+    ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
+    if changed then
+        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly)
+        config.saveFile("data/config.json", ts.settings)
+    end
+
     ImGui.Separator()
 
     ts.settings.holdMult, changed = ImGui.InputFloat("Station Hold Time Multiplier", ts.settings.holdMult, 1, 1000, "%.2f")
@@ -163,9 +172,12 @@ function settings.draw(ts)
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
+    ImGui.Separator()
+
+    ts.settings.tppOffset, changed = ImGui.InputFloat("TPP Player height offset", ts.settings.tppOffset, 1, 2, "%.1f")
+    ts.settings.tppOffset = math.min(math.max(ts.settings.tppOffset, 1), 2)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly)
+        settings.nativeSettings.setOption(settings.nativeOptions["tppOffset"], ts.settings.tppOffset)
         config.saveFile("data/config.json", ts.settings)
     end
 

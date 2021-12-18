@@ -28,10 +28,12 @@ function input.startInputObserver(ts)
             end
         elseif actionName == 'NextWeapon' then
             if actionType == 'BUTTON_PRESSED' then
+                if ts.observers.radioPopupActive then return end
                 input.down = true
             end
         elseif actionName == 'PreviousWeapon' then
             if actionType == 'BUTTON_PRESSED' then
+                if ts.observers.radioPopupActive then return end
                 input.up = true
             end
         elseif actionName == 'dpad_left' then
@@ -46,6 +48,17 @@ function input.startInputObserver(ts)
                 end
             elseif actionType == 'BUTTON_RELEASED' then
                 input.interactKey = false
+            end
+        elseif actionName == 'Choice2_Release' then
+            if actionType == 'BUTTON_PRESSED' then
+                if not ts.stationSys.activeTrain then return end
+                if not ts.stationSys.activeTrain.playerMounted then return end
+                if ts.stationSys.activeTrain.perspective ~= "fpp" then return end
+                if ts.stationSys.activeTrain.currentSeat == 4 then return end
+                if ts.observers.popupManager then
+                    ts.observers.popupManager:SpawnVehicleRadioPopup()
+                    ts.observers.radioPopupActive = true
+                end
             end
         end
     end)

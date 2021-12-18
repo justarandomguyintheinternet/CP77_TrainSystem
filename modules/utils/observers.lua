@@ -3,6 +3,7 @@ utils = require("modules/utils/utils")
 
 observers = {
     noFastTravel = false,
+    noTrains = false,
     activatedGate = false,
     noSave = false,
     noKnockdown = false,
@@ -11,7 +12,11 @@ observers = {
     ts = nil,
     hudText = nil,
     onMap = false,
-    worldMap = nil
+    worldMap = nil,
+    timeDilation = 1,
+    radioIndex = -1,
+    popupManager = nil,
+    radioPopupActive = false
 }
 
 function observers.start(ts)
@@ -42,6 +47,26 @@ function observers.start(ts)
     --         wrapped(titel, desc, guide, image)
     --     end
     -- end)
+
+    Observe('VehicleRadioPopupGameController', 'OnClose', function()
+		observers.radioPopupActive = false
+	end)
+
+    Observe('PopupsManager', 'OnPlayerAttach', function(self)
+		observers.popupManager = self
+	end)
+
+	Observe('PopupsManager', 'OnPlayerDetach', function()
+		observers.popupManager = nil
+	end)
+
+    Observe("TimeSystem", "SetTimeDilation", function (_, _, value)
+        observers.timeDilation = value
+    end)
+
+    Observe("TimeSystem", "UnsetTimeDilation", function ()
+        observers.timeDilation = 1
+    end)
 
     Override("FakeDoor", "CreateFakeDoorChoice", function(_, wrapped)
         if observers.noSave then return end
@@ -112,7 +137,7 @@ function observers.start(ts)
     end)
 
     Observe("VehicleComponent", "OnGameAttach", function(self)
-        if observers.ts.runtimeData.noTrains then
+        if observers.noTrains then
             if "vehicleAVBaseObject" == self:GetVehicle():GetClassName().value then
                 if ts.stationSys.backUpTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.backUpTrain.entID.hash then
                     if (ts.stationSys.activeTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.activeTrain.trainObject.entID.hash) or ts.stationSys.activeTrain.trainObject.spawned == false then
@@ -131,16 +156,10 @@ function observers.start(ts)
         end
     end)
 
-    -- Observe("VehicleRadioPopupGameController", "Activate", function(this)
-    --     local data = this.selectedItem:GetStationData()
-    --     local i = data.record:Index()
-    --     if ts.stationSys.activeTrain.perspective == "tpp" then
-    --         utils.setRadioStation(ts.stationSys.activeTrain.busObject.entity, i)
-    --     else
-    --         utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, i)
-    --     end
-    --     ts.stationSys.activeTrain.radioStation = i
-    -- end)
+    Observe("VehicleRadioPopupGameController", "Activate", function(this)
+        if not observers.noSave then return end
+        observers.radioIndex = this.selectedItem:GetStationData().record:Index()
+    end)
 
     Override("CollisionExitingEvents", "OnEnter", function (this, stateContext, scriptInterface)
         if not observers.noKnockdown then
@@ -228,7 +247,7 @@ function observers.start(ts)
 end
 
 function observers.update()
-    if observers.ts.runtimeData.noTrains then
+    if observers.noTrains then
         for _, id in pairs(observers.trainIDS) do
             local ent = Game.FindEntityByID(id)
             if ent ~= nil then

@@ -73,7 +73,7 @@ end
 function entrySys:enter(entry)
     self.ts.observers.noSave = true
     self.ts.observers.noKnockdown = true
-    self.ts.runtimeData.noTrains = true
+    self.ts.observers.noTrains = true
 
     if self.mappinID then
         pcall(function ()
@@ -115,7 +115,7 @@ function entrySys:enter(entry)
             Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         end)
         Cron.After(0.5, function ()
-            Game.FindEntityByID(secondID):GetEntity():Destroy()
+            exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
             secondID = nil
         end)
     else
@@ -124,7 +124,7 @@ function entrySys:enter(entry)
 
     Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more
         self.ts.stationSys:enter()
-        Game.FindEntityByID(self.soundID):GetEntity():Destroy()
+        exEntitySpawner.Despawn(Game.FindEntityByID(self.soundID))
     end)
 
     Cron.After(self.ts.settings.elevatorTime * 0.7, function () -- Spawn station objects
@@ -174,7 +174,7 @@ function entrySys:handleElevators()
         else
             if self.elevatorIDS[e.stationID] ~= nil then
                 if Game.FindEntityByID(self.elevatorIDS[e.stationID]) ~= nil then
-                    Game.FindEntityByID(self.elevatorIDS[e.stationID]):GetEntity():Destroy()
+                    exEntitySpawner.Despawn(Game.FindEntityByID(self.elevatorIDS[e.stationID]))
                     self.elevatorIDS[e.stationID] = nil
                 end
             end
@@ -185,7 +185,7 @@ end
 function entrySys:despawnElevators()
     for _, id in pairs(self.elevatorIDS) do
         if id and Game.FindEntityByID(id) ~= nil then
-            Game.FindEntityByID(id):GetEntity():Destroy()
+            exEntitySpawner.Despawn(Game.FindEntityByID(id))
         end
     end
     self.elevatorIDS = {}

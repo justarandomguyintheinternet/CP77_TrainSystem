@@ -195,9 +195,8 @@ end
 
 function miscUtils.setRadioStation(vehicle, stationID) -- -1 means off
     if stationID ~= -1 then
-        vehicle:ToggleRadioReceiver(false)
-        -- vehicle:ToggleRadioReceiver(true)
-        -- vehicle:SetRadioReceiverStation(stationID)
+        vehicle:ToggleRadioReceiver(true)
+        vehicle:SetRadioReceiverStation(stationID)
     else
         vehicle:ToggleRadioReceiver(false)
     end
@@ -365,6 +364,11 @@ function miscUtils.forceStop(ts)
     miscUtils.removeTPPTweaks()
 
     if ts.observers.noSave then
+        ts.stationSys.currentStation:despawn()
+        if ts.stationSys.previousStationID then
+            ts.stationSys.stations[ts.stationSys.previousStationID]:despawn()
+        end
+
         if ts.stationSys.activeTrain then
             ts.observers.noSave = false
             ts.observers.noKnockdown = false
@@ -382,10 +386,6 @@ function miscUtils.forceStop(ts)
             settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
             miscUtils.togglePin(ts.stationSys, "exit", false)
-            ts.stationSys.currentStation:despawn()
-            if ts.stationSys.previousStationID then
-                ts.stationSys.stations[ts.stationSys.previousStationID]:despawn()
-            end
             Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
 
             ts.entrySys = require("modules/entrySystem"):new(ts)

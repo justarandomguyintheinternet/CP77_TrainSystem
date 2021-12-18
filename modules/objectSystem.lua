@@ -16,7 +16,6 @@ objects = {
 
 function objects.run()
     objects.handleEntries()
-    objects.updateRemoval()
 end
 
 function objects.initialize()
@@ -48,22 +47,12 @@ function objects.handleEntries()
         elseif utils.distanceVector(Game.GetPlayer():GetWorldPosition(), entry.pos) > entry.range + 2 and #entry.ids ~= 0 then
             for _, id in pairs(entry.ids) do
                 if Game.FindEntityByID(id) then
-                    Game.FindEntityByID(id):GetEntity():Destroy()
+                    exEntitySpawner.Despawn(Game.FindEntityByID(id))
                 end
             end
             entry.ids = {}
         end
     end
-end
-
-function objects.updateRemoval(ss)
-    -- for _, id in pairs(objects.rmToDo) do
-    --     if Game.FindEntityByID(id) ~= nil then
-    --         Game.FindEntityByID(id):Dispose()
-    --     else
-    --         utils.removeItem(objects.rmToDo, id)
-    --     end
-    -- end
 end
 
 function objects.despawnAll()
@@ -73,6 +62,7 @@ function objects.despawnAll()
                 exEntitySpawner.Despawn(Game.FindEntityByID(id))
             end
         end
+        e.ids = {}
     end
 end
 

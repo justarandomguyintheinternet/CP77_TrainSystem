@@ -27,8 +27,8 @@ end
 
 function object:spawn()
     local transform = Game.GetPlayer():GetWorldTransform()
-    transform.SetPosition(transform, self.pos) --transform.SetPosition(transform, self.pos) for next cet
-    transform.SetOrientation(transform, self.rot) --transform.SetOrientation(transform, self.rot)
+    transform.SetPosition(transform, self.pos)
+    transform.SetOrientation(transform, self.rot)
     self.entID = Game.GetPreventionSpawnSystem():RequestSpawn(TweakDBID.new(self.name), self.level, transform)
 
     Cron.Every(0.25, {tick = 0}, function(timer)
@@ -83,7 +83,6 @@ function object:respawn()
         if self.entity == nil then
 			timer:Halt()
             self:spawn()
-            -- print("new spawned")
 		end
 	end)
 end

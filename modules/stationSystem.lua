@@ -345,7 +345,7 @@ function stationSys:startExitTimer()
 	self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
 	self.activeTrain:startDrive("exit")
 
-	self.ts.observers.timetableValue = exitTime + arriveTime
+	self.ts.observers.timetableValue = exitTime + arriveTime + 2 -- 2 for the time where the train dissapears
 
 	Cron.Every(1, {tick = 0}, function(timer)
 		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
@@ -355,9 +355,6 @@ function stationSys:startExitTimer()
 		if self.activeTrain == nil then
 			timer:Halt()
 			return
-		end
-		if not self.activeTrain.driving then
-			timer:Halt()
 		end
 	end)
 end

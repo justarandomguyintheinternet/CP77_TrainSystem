@@ -4,8 +4,7 @@ ts = {
     runtimeData = {
         cetOpen = false,
         inMenu = false,
-        inGame = false,
-        noTrains = false
+        inGame = false
     },
 
     defaultSettings = {
@@ -17,7 +16,8 @@ ts = {
         tppOnly = false,
         showImGui = false,
         elevatorTime = 7,
-        uiLayout = 1 -- 1 = Vanilla, 2 = E3, 3 = Superior
+        uiLayout = 1, -- 1 = Vanilla, 2 = E3, 3 = Superior
+        tppOffset = 2
     },
 
     settings = {},
@@ -80,12 +80,13 @@ function ts:new()
     end)
 
     registerForEvent("onUpdate", function(deltaTime)
-        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) then
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
+            ts.input.interactKey = false -- Fix "sticky" input
             -- ts.debug.baseUI.utilUI.update()
         elseif ts.entrySys.forceRunCron then
             ts.Cron.Update(deltaTime)
