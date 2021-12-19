@@ -308,14 +308,14 @@ function train:updateLocation(obj)
 			self.carObject.pos = utils.addVector(self.pos, self.carOffset)
 			self.carObject.rot = self.rot
 		else
-			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 16, 0))
+			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 24, 0))
 		end
 	elseif obj == "train" then
 		if self.perspective == "tpp" then
 			self.trainObject.pos = self.pos
 			self.trainObject.rot = self.rot
 		else
-			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 16, 0))
+			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 24, 0))
 		end
 	else
 		if self.perspective == "tpp" then
