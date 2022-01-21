@@ -165,9 +165,12 @@ end
 
 function entrySys:handleElevators()
     for _, e in pairs(self.entries) do
-        local x = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), e.center)
         local station = self.ts.stationSys.stations[e.stationID]
-        if (x < utils.distanceVector(e.center, station.center) + station.radius) then
+
+        local entryDist = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), e.center)
+        local stationDist = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), station.center)
+
+        if ((entryDist < 100) or (stationDist < 100)) then
             if self.elevatorIDS[e.stationID] == nil then
                 self.elevatorIDS[e.stationID] = utils.spawnObject(e.elevatorPath, e.elevatorPosition, EulerAngles.new(0, 0, 0):ToQuat())
             end

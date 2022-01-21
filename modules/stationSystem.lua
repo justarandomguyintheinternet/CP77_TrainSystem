@@ -31,6 +31,8 @@ function stationSys:new(ts)
 	o.inputHintsOriginal = nil
 	o.jobTrackerOriginal = nil
 
+	o.audioTimer = nil
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -136,6 +138,8 @@ function stationSys:leave() -- Leave to ground level
 	self.currentStation:exitToGround(self.ts)
 	self.currentStation = nil
 	self.onStation = false
+	Cron.Halt(self.audioTimer)
+	self.audioTimer = nil
 	self.trainInStation = false
 	self.previousStationID = nil
 	if self.activeTrain ~= nil then
@@ -215,6 +219,22 @@ function stationSys:checkBus()
 	end
 end
 
+function stationSys:handleAudio() -- Station announcement timer
+	if self.audioTimer == nil then
+		self.audioTimer = Cron.After(math.random(25, 85), function () --math.random(20, 75)
+			if not self.currentStation then return end
+			self.currentStation:playAudio("amb_g_city_el_adverts_watson_01_medium_metro_f_1_01", 7)
+			self.audioTimer = nil
+		end)
+	end
+
+	if self.onStation then
+		Cron.Resume(self.audioTimer)
+	else
+		Cron.Pause(self.audioTimer)
+	end
+end
+
 function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
@@ -235,6 +255,8 @@ function stationSys:update(deltaTime)
 				self:leave()
             end
 		end
+
+		self:handleAudio()
 	end
 
 	if self.onStation then
@@ -309,6 +331,14 @@ function stationSys:update(deltaTime)
 	if self.ts.observers.noSave then -- aka mod is active
 		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
 		Game.ChangeZoneIndicatorSafe()
+
+		local gtaTravel = GetMod("gtaTravel") -- Disable gtaTravel
+		if gtaTravel then
+			if gtaTravel.flyPath then
+				gtaTravel.flyPath = false
+				gtaTravel.resetPitch = true
+			end
+		end
 	end
 end
 

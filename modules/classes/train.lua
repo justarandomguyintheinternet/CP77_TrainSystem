@@ -33,7 +33,7 @@ function train:new(stationSys)
 	o.radioStation = -1
 
 	o.busObject = object:new(0)
-	o.busOffset = Vector4.new(0, 0, 1.5, 0)
+	o.busOffset = Vector4.new(0, 0, 2, 0)
 	o.busLayer = 2012
 
 	o.playerMounted = false
@@ -46,6 +46,8 @@ function train:new(stationSys)
 	o.ts = stationSys.ts
 	o.stationSys = stationSys
 	o.spawnStationID = nil
+
+	o.audioTimer = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -97,12 +99,6 @@ function train:loadRoute(route)
 	self.arrivalPath = route.arrivalPath
 	self.exitPath = route.exitPath
 	self.targetID = route.targetID
-	-- for k, p in pairs(self.exitPath) do
-	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
-	-- end
-	-- for k, p in pairs(self.arrivalPath) do
-	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "arrivalPath")
-	-- end
 end
 
 function train:startDrive(route)
@@ -299,6 +295,7 @@ function train:update(deltaTime)
 
 	if not self.playerMounted then Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.busLayer) end
 	self:updateCam()
+	self:handleAudio()
 end
 
 function train:updateLocation(obj)
@@ -367,6 +364,19 @@ function train:updateCam()
 	end
 end
 
+function train:handleAudio()
+	if self.audioTimer == nil then
+		if not self.trainObject.entity then return end
+		utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+		utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+
+		self.audioTimer = Cron.Every(20, function ()
+			utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+			utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+		end)
+	end
+end
+
 function train:mount()
 	self.perspective = "tpp"
 	self.currentSeat = self.ts.settings.defaultSeat
@@ -385,6 +395,8 @@ function train:mount()
 	Cron.After(0.1, function()
 		utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
 	end)
+
+	if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
 end
 
 function train:unmount()
@@ -406,6 +418,8 @@ function train:unmount()
 	evt.source = "Debug"
 	evt.targetHintContainer = "GameplayInputHelper"
 	Game.GetUISystem():QueueEvent(evt)
+
+	utils.toggleHUD(true)
 end
 
 return train

@@ -16,11 +16,33 @@ observers = {
     timeDilation = 1,
     radioIndex = -1,
     popupManager = nil,
-    radioPopupActive = false
+    radioPopupActive = false,
+    ftKeys = {}
 }
 
 function observers.start(ts)
     observers.ts = ts
+
+    observers.setupMapTDB()
+
+    ---@param nodeData FastTravelPointData
+    Override("FastTravelSystem", "RegisterMappin", function(_, nodeData)
+        local mappinData = MappinData.new()
+        if not nodeData:ShouldShowMappinOnWorldMap() then
+            return
+        end
+
+        if utils.has_value(observers.ftKeys, nodeData:GetPointDisplayName()) then
+            mappinData.mappinType = TweakDBID.new("Mappins.MetroDefinition")
+            mappinData.variant = gamedataMappinVariant.GetInVariant
+            mappinData.visibleThroughWalls = false
+        else
+            mappinData.mappinType = TweakDBID.new("Mappins.FastTravelStaticMappin")
+            mappinData.variant = gamedataMappinVariant.FastTravelVariant
+        end
+        mappinData.active = true
+        nodeData.mappinID = Game.GetMappinSystem():RegisterFastTravelMappin(mappinData, nodeData)
+    end)
 
     -- ObserveAfter("DlcMenuGameController", "OnInitialize", function(this) -- Funny but stupid
     --     local data = DlcDescriptionData.new()
@@ -186,19 +208,25 @@ function observers.start(ts)
         end
     end)
 
-    Override("DataTerm", "OnOpenWorldMapAction", function(this)
-        if observers.noFastTravel then return end
+    -- Override("DataTerm", "OnOpenWorldMapAction", function(this)
+    --     if observers.noFastTravel then return end
 
-        this:EnableFastTravelOnMap()
-        this:TriggerMenuEvent("OnOpenFastTravel")
-        this:ProcessFastTravelTutorial()
-    end)
+    --     this:EnableFastTravelOnMap()
+    --     this:TriggerMenuEvent("OnOpenFastTravel")
+    --     this:ProcessFastTravelTutorial()
+    -- end)
 
-    Override("DataTermControllerPS", "ActionOpenWorldMap", function(_, wrapped)
+    Override("DataTermControllerPS", "ActionOpenWorldMap", function(this)
         if observers.noFastTravel then
             return OpenWorldMapDeviceAction.new()
         else
-            return wrapped()
+            local action = OpenWorldMapDeviceAction.new()
+            action:SetUp(this)
+            action:SetProperties()
+            action:AddDeviceName(this.deviceName)
+            action:CreateActionWidgetPackage()
+            action:CreateInteraction()
+            return action
         end
     end)
 
@@ -244,6 +272,87 @@ function observers.start(ts)
         self.animProxyShow:Pause()
         self:SetTimeout(self.simpleMessage.duration)
     end)
+end
+
+function observers.setupMapTDB() -- Made by scissors
+	TweakDB:SetFlat("WorldMap.FastTravelFilterGroup.mappins", {"Mappins.PointOfInterest_FastTravelVariant", "Mappins.MetroVariant"})
+
+	TweakDB:CreateRecord("Mappins.MetroVariant", "gamedataMappinVariant_Record")
+	TweakDB:SetFlat("Mappins.MetroVariant.enumName", "GetInVariant")
+
+	TweakDB:CloneRecord("Mappins.MetroDefinition", "Mappins.QuestStaticMappinDefinition")
+	TweakDB:SetFlat("Mappins.MetroDefinition.possibleVariants", {"Mappins.MetroVariant"})
+
+    observers.ftKeys = {
+        "LocKey#52585",
+        "LocKey#52587",
+        "LocKey#44728",
+        "LocKey#44727",
+        "LocKey#44731",
+        "LocKey#44675",
+        "LocKey#44700",
+        "LocKey#44683",
+        "LocKey#44695",
+        "LocKey#44715",
+        "LocKey#52554",
+        "LocKey#44716",
+        "LocKey#44676",
+        "LocKey#44707",
+        "LocKey#44687",
+        "LocKey#52574",
+        "LocKey#44679",
+        "LocKey#52540",
+        "LocKey#52546",
+        "LocKey#52547",
+        "LocKey#44701",
+        "LocKey#52531",
+        "LocKey#52582",
+        "LocKey#52588",
+        "LocKey#52587",
+        "LocKey#52585",
+        "LocKey#52586",
+        "LocKey#52537",
+        "LocKey#52538",
+        "LocKey#52539",
+        "LocKey#52536",
+        "LocKey#52535",
+        "LocKey#52534",
+        "LocKey#52589",
+        "LocKey#52555",
+        "LocKey#52558",
+        "LocKey#52557",
+        "LocKey#52556",
+        "LocKey#44705",
+        "LocKey#44688",
+        "LocKey#52568",
+        "LocKey#52569",
+        "LocKey#52571",
+        "LocKey#52561",
+        "LocKey#52570",
+        "LocKey#52563",
+        "LocKey#52562",
+        "LocKey#52565",
+        "LocKey#52564",
+        "LocKey#52572",
+        "LocKey#52573",
+        "LocKey#52560",
+        "LocKey#52559",
+        "LocKey#52567",
+        "LocKey#52566",
+        "LocKey#52575",
+        "LocKey#52577",
+        "LocKey#52578",
+        "LocKey#44713",
+        "LocKey#52576",
+        "LocKey#52584",
+        "LocKey#52588",
+        "LocKey#52583",
+        "LocKey#52529",
+        "LocKey#52530",
+        "LocKey#52580",
+        "LocKey#52581",
+        "LocKey#52579"
+    }
 end
 
 function observers.update()

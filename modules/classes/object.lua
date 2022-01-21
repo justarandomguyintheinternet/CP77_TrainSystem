@@ -19,8 +19,6 @@ function object:new(level, station)
     o.app = ""
     o.radioStation = station or 0
 
-    o.id = math.random(1, 100000) -- Id for imgui child
-
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -33,7 +31,6 @@ function object:spawn()
 
     Cron.Every(0.25, {tick = 0}, function(timer)
         self.entity = Game.FindEntityByID(self.entID)
-        -- print("try spawn", self.name)
         if self.entity ~= nil then
 			timer:Halt()
             self.spawned = true
@@ -64,7 +61,7 @@ function object:update() -- Required to run each frame for frozen and invincible
 
     if self.spawned then
         if self.frozen then
-            Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.rot))
+            Game.GetTeleportationFacility():Teleport(self.entity, self.pos,  self.rot:ToEulerAngles())
         end
         self:godMode()
         self.entity:GetVehicleComponent():DestroyMappin()
@@ -73,7 +70,6 @@ end
 
 function object:despawn()
     Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.level)
-    --self.spawned = false
 end
 
 function object:respawn()
@@ -85,28 +81,6 @@ function object:respawn()
             self:spawn()
 		end
 	end)
-end
-
-function object:load(data)
-    self.frozen = data.frozen
-    self.invincible = data.invincible
-    self.name = data.name
-    self.app = data.app
-    self.pos = utils.getVector(data.pos)
-    self.rot = utils.getQuaternion(data.rot)
-end
-
-function object:getData()
-    local data = {}
-
-    data.frozen = self.frozen
-    data.invincible = self.invincible
-    data.name = self.name
-    data.app = self.app
-    data.pos = utils.fromVector(self.pos)
-    data.rot = utils.fromQuaternion(self.rot)
-
-    return data
 end
 
 return object
