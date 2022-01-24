@@ -277,11 +277,15 @@ end
 function observers.setupMapTDB() -- Made by scissors
 	TweakDB:SetFlat("WorldMap.FastTravelFilterGroup.mappins", {"Mappins.PointOfInterest_FastTravelVariant", "Mappins.MetroVariant"})
 
-	TweakDB:CreateRecord("Mappins.MetroVariant", "gamedataMappinVariant_Record")
-	TweakDB:SetFlat("Mappins.MetroVariant.enumName", "GetInVariant")
+    if not TweakDB:GetRecord("Mappins.MetroVariant") then
+        TweakDB:CreateRecord("Mappins.MetroVariant", "gamedataMappinVariant_Record")
+        TweakDB:SetFlat("Mappins.MetroVariant.enumName", "GetInVariant")
+    end
 
-	TweakDB:CloneRecord("Mappins.MetroDefinition", "Mappins.QuestStaticMappinDefinition")
-	TweakDB:SetFlat("Mappins.MetroDefinition.possibleVariants", {"Mappins.MetroVariant"})
+    if not TweakDB:GetRecord("Mappins.MetroDefinition") then
+	    TweakDB:CloneRecord("Mappins.MetroDefinition", "Mappins.QuestStaticMappinDefinition")
+        TweakDB:SetFlat("Mappins.MetroDefinition.possibleVariants", {"Mappins.MetroVariant"})
+    end
 
     observers.ftKeys = {
         "LocKey#52585",

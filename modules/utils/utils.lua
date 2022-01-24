@@ -412,6 +412,8 @@ function miscUtils.stopAudio(target, clipName)
 end
 
 function miscUtils.toggleHUD(state)
+    if not Game.GetPlayer() then return end
+
     if state then
         local blackboardDefs = Game.GetAllBlackboardDefs()
         local blackboardPSM = Game.GetBlackboardSystem():GetLocalInstanced(Game.GetPlayer():GetEntityID(), blackboardDefs.PlayerStateMachine)
