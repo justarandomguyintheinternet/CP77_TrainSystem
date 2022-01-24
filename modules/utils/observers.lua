@@ -33,9 +33,8 @@ function observers.start(ts)
         end
 
         if utils.has_value(observers.ftKeys, nodeData:GetPointDisplayName()) then
-            mappinData.mappinType = TweakDBID.new("Mappins.MetroDefinition")
+            mappinData.mappinType = TweakDBID.new("Mappins.FastTravelStaticMappin")
             mappinData.variant = gamedataMappinVariant.GetInVariant
-            mappinData.visibleThroughWalls = false
         else
             mappinData.mappinType = TweakDBID.new("Mappins.FastTravelStaticMappin")
             mappinData.variant = gamedataMappinVariant.FastTravelVariant
@@ -208,13 +207,13 @@ function observers.start(ts)
         end
     end)
 
-    -- Override("DataTerm", "OnOpenWorldMapAction", function(this)
-    --     if observers.noFastTravel then return end
+    Override("DataTerm", "OnOpenWorldMapAction", function(this)
+        if observers.noFastTravel then return end
 
-    --     this:EnableFastTravelOnMap()
-    --     this:TriggerMenuEvent("OnOpenFastTravel")
-    --     this:ProcessFastTravelTutorial()
-    -- end)
+        this:EnableFastTravelOnMap()
+        this:TriggerMenuEvent("OnOpenFastTravel")
+        this:ProcessFastTravelTutorial()
+    end)
 
     Override("DataTermControllerPS", "ActionOpenWorldMap", function(this)
         if observers.noFastTravel then
@@ -274,19 +273,7 @@ function observers.start(ts)
     end)
 end
 
-function observers.setupMapTDB() -- Made by scissors
-	TweakDB:SetFlat("WorldMap.FastTravelFilterGroup.mappins", {"Mappins.PointOfInterest_FastTravelVariant", "Mappins.MetroVariant"})
-
-    if not TweakDB:GetRecord("Mappins.MetroVariant") then
-        TweakDB:CreateRecord("Mappins.MetroVariant", "gamedataMappinVariant_Record")
-        TweakDB:SetFlat("Mappins.MetroVariant.enumName", "GetInVariant")
-    end
-
-    if not TweakDB:GetRecord("Mappins.MetroDefinition") then
-	    TweakDB:CloneRecord("Mappins.MetroDefinition", "Mappins.QuestStaticMappinDefinition")
-        TweakDB:SetFlat("Mappins.MetroDefinition.possibleVariants", {"Mappins.MetroVariant"})
-    end
-
+function observers.setupMapTDB()
     observers.ftKeys = {
         "LocKey#52585",
         "LocKey#52587",
