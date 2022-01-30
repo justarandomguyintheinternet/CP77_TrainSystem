@@ -33,7 +33,7 @@ function train:new(stationSys)
 	o.radioStation = -1
 
 	o.busObject = object:new(0)
-	o.busOffset = Vector4.new(0, 0, 2, 0)
+	o.busOffset = Vector4.new(0, 0, 1.5, 0)
 	o.busLayer = 2012
 
 	o.playerMounted = false
