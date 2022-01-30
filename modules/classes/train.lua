@@ -283,14 +283,17 @@ function train:update(deltaTime)
 	if self.carObject.spawned then
 		self:updateLocation("car")
 		self.carObject:update()
+		self.carObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 	if self.trainObject.spawned then
 		self:updateLocation("train")
 		self.trainObject:update()
+		self.trainObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 	if self.busObject.spawned then
 		self:updateLocation("bus")
 		self.busObject:update()
+		self.busObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 
 	if not self.playerMounted then Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.busLayer) end
@@ -323,6 +326,7 @@ function train:updateLocation(obj)
 			self.busObject.pos = pos
 		else
 			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
+			--self.busObject.pos = utils.addVector(self.pos, Vector4.new(0, 0, self.ts.debug.baseUI.utilUI.busOffset, 0))
 			self.busObject.rot = self.rot
 		end
 	end
@@ -338,7 +342,7 @@ function train:handlePoint(point)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
-			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 20, 0))
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 25, 0))
 			Cron.After(2.0, function ()
 				self.stationSys:requestNewTrain()
 			end)

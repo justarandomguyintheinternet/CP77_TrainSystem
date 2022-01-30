@@ -3,7 +3,8 @@ utilUI = {
     sticky = false,
     target = nil,
     speedUp = false,
-    speed = 5
+    speed = 5,
+    busOffset = 2
 }
 
 function utilUI.draw()
@@ -36,6 +37,8 @@ function utilUI.draw()
     if changed and utilUI.speedUp then
         Game.SetTimeDilation(utilUI.speed)
     end
+
+    utilUI.busOffset, changed = ImGui.DragFloat("Bus offset", utilUI.busOffset, 0.02, -9999, 9999, "%.2f")
 end
 
 function utilUI.update()
