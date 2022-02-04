@@ -221,7 +221,7 @@ end
 
 function stationSys:handleAudio() -- Station announcement timer
 	if self.audioTimer == nil then
-		self.audioTimer = Cron.After(math.random(25, 85), function () --math.random(20, 75)
+		self.audioTimer = Cron.After(math.random(22, 70), function ()
 			if not self.currentStation then return end
 			self.currentStation:playAudio("amb_g_city_el_adverts_watson_01_medium_metro_f_1_01", 7)
 			self.audioTimer = nil
