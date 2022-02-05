@@ -4,7 +4,8 @@ ts = {
     runtimeData = {
         cetOpen = false,
         inMenu = false,
-        inGame = false
+        inGame = false,
+        archiveInstalled = false
     },
 
     defaultSettings = {
@@ -17,7 +18,8 @@ ts = {
         showImGui = false,
         elevatorTime = 7,
         uiLayout = 1, -- 1 = Vanilla, 2 = E3, 3 = Superior
-        tppOffset = 2
+        tppOffset = 2,
+        noHudTrain = false
     },
 
     settings = {},
@@ -31,12 +33,18 @@ ts = {
     GameUI = require("modules/utils/GameUI"),
 
     utils = require("modules/utils/utils"),
-    config = require("modules/utils/config"),
-    debug = require("debug/logic/debug")
+    config = require("modules/utils/config")
+    --debug = require("debug/logic/debug")
 }
 
 function ts:new()
     registerForEvent("onInit", function()
+        ts.archiveInstalled = ModArchiveExists("trainSystem.archive")
+        if not ts.archiveInstalled then
+            print("[MetroSystem] Error: \"trainSystem.archive\" file could not be found inside \"archive/pc/mod\". Mod has been disabled to avoid crashes.")
+            return
+        end
+
         ts.config.tryCreateConfig("data/config.json", ts.defaultSettings)
         ts.config.backwardComp("data/config.json", ts.defaultSettings)
         ts.settings = ts.config.loadFile("data/config.json")
@@ -61,6 +69,7 @@ function ts:new()
 
         ts.GameUI.OnSessionStart(function()
             ts.runtimeData.inGame = true
+            ts.trackSys:load() -- Load again to handle Act 1
         end)
 
         ts.GameUI.OnSessionEnd(function()
@@ -80,15 +89,17 @@ function ts:new()
     end)
 
     registerForEvent("onUpdate", function(deltaTime)
-        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) then
+        if not ts.archiveInstalled then return end
+
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled then
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
             ts.input.interactKey = false -- Fix "sticky" input
-            -- ts.debug.baseUI.utilUI.update()
-        elseif ts.entrySys.forceRunCron then
+            --ts.debug.baseUI.utilUI.update()
+        elseif ts.entrySys.forceRunCron and ts.archiveInstalled then
             ts.Cron.Update(deltaTime)
         end
     end)
@@ -98,11 +109,13 @@ function ts:new()
     end)
 
     registerForEvent("onDraw", function()
+        if not ts.archiveInstalled then return end
+
         if ts.runtimeData.cetOpen then
             if ts.settings.showImGui then
                 ts.settingsUI.draw(ts)
             end
-            -- ts.debug.run(ts)
+            --ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)

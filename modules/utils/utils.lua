@@ -167,13 +167,12 @@ function miscUtils.reversePoint(point)
     newPoint.loadStation = point.loadStation
     newPoint.pos = point.pos
 
-    local rot = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
+    local rot = point.rot:ToEulerAngles()
     rot.roll = rot.roll * -1
     rot.pitch = rot.pitch * -1
     rot.yaw = rot.yaw + 180
 
-    newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
-    -- print("reverse point: ", GetSingleton('Quaternion'):ToEulerAngles(point.rot), rot)
+    newPoint.rot = rot:ToQuat()
     return newPoint
 end
 
@@ -185,11 +184,10 @@ function miscUtils.reversePointPitch(point)
     newPoint.loadStation = point.loadStation
     newPoint.pos = point.pos
 
-    local rot = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
+    local rot = point.rot:ToEulerAngles()
     rot.roll = rot.roll * -1
     rot.pitch = rot.pitch * -1
-    newPoint.rot = GetSingleton('EulerAngles'):ToQuat(rot)
-    -- print("reverse point pitch: ", GetSingleton('Quaternion'):ToEulerAngles(point.rot), rot)
+    newPoint.rot = rot:ToQuat()
     return newPoint
 end
 
@@ -362,6 +360,7 @@ function miscUtils.forceStop(ts)
     ts.entrySys:despawnElevators()
     ts.objectSys.despawnAll()
     miscUtils.removeTPPTweaks()
+    miscUtils.toggleHUD(true)
 
     if ts.observers.noSave then
         ts.stationSys.currentStation:despawn()
@@ -397,6 +396,32 @@ function miscUtils.forceStop(ts)
             ts.stationSys:load()
             ts.objectSys.initialize()
         end
+    end
+end
+
+function miscUtils.playAudio(target, clipName)
+    local audioEvent = SoundPlayEvent.new()
+    audioEvent.soundName = clipName
+    target:QueueEvent(audioEvent)
+end
+
+function miscUtils.stopAudio(target, clipName)
+    local audioEvent = SoundStopEvent.new()
+    audioEvent.soundName = clipName
+    target:QueueEvent(audioEvent)
+end
+
+function miscUtils.toggleHUD(state)
+    if not Game.GetPlayer() then return end
+
+    if state then
+        local blackboardDefs = Game.GetAllBlackboardDefs()
+        local blackboardPSM = Game.GetBlackboardSystem():GetLocalInstanced(Game.GetPlayer():GetEntityID(), blackboardDefs.PlayerStateMachine)
+        blackboardPSM:SetInt(blackboardDefs.PlayerStateMachine.SceneTier, 1, true)
+    else
+        local blackboardDefs = Game.GetAllBlackboardDefs()
+        local blackboardPSM = Game.GetBlackboardSystem():GetLocalInstanced(Game.GetPlayer():GetEntityID(), blackboardDefs.PlayerStateMachine)
+        blackboardPSM:SetInt(blackboardDefs.PlayerStateMachine.SceneTier, 3, true)
     end
 end
 

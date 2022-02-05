@@ -144,7 +144,7 @@ function editUI.drawStation()
     editUI.drawPinBox("Pin", station, "exit", station.trainExit.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to exit") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.trainExit.pos,  GetSingleton('Quaternion'):ToEulerAngles(station.trainExit.rot))
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.trainExit.pos,  station.trainExit.rot:ToEulerAngles())
     end
 -- Portal
     ImGui.Text("PortalPoint:")
@@ -159,7 +159,7 @@ function editUI.drawStation()
     editUI.drawPinBox("Pin", station, "portal", station.portalPoint.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to portal") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.portalPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(station.portalPoint.rot))
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.portalPoint.pos,  station.portalPoint.rot:ToEulerAngles())
     end
 -- Ground
     ImGui.Text("GroundPoint:")
@@ -174,7 +174,7 @@ function editUI.drawStation()
     editUI.drawPinBox("Pin", station, "ground", station.groundPoint.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to ground") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(station.groundPoint.rot))
+        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.groundPoint.pos,  station.groundPoint.rot:ToEulerAngles())
     end
 -- Objects
     ImGui.Separator()
@@ -191,141 +191,6 @@ function editUI.drawStation()
     if ImGui.Button("Despawn") then
         station:despawn()
     end
-end
-
-function editUI.drawStationObject(obj, station)
-    CPS.colorBegin("Border", editUI.color)
-    ImGui.BeginChild("obj_" .. obj.id, editUI.box.object.x, editUI.box.object.y, true)
-
--- Settings
-    ImGui.PushItemWidth(500)
-    obj.name =  ImGui.InputTextWithHint("Vehicle Name", "Name...", obj.name, 100)
-    obj.app =  ImGui.InputTextWithHint("Appearance Name", "Name...", obj.app, 100)
-    ImGui.PopItemWidth()
-    obj.frozen = ImGui.Checkbox("Frozen", obj.frozen)
-    obj.invincible = ImGui.Checkbox("Invincible", obj.invincible)
-    ImGui.Text("Spawned: " .. tostring(obj.spawned))
--- Position
-    ImGui.PushItemWidth(100)
-    obj.pos.x, changed = ImGui.DragFloat("##x", obj.pos.x, 0.01, -9999, 9999, "%.3f X")
-    if changed then
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    obj.pos.y, changed = ImGui.DragFloat("##y", obj.pos.y, 0.01, -9999, 9999, "%.3f Y")
-    if changed then
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    obj.pos.z, changed = ImGui.DragFloat("##z", obj.pos.z, 0.01, -9999, 9999, "%.3f Z")
-    if changed then
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    ImGui.PopItemWidth()
-    if ImGui.Button("To player") then
-        obj.pos = Game.GetPlayer():GetWorldPosition()
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    editUI.drawPinBox("Pin", obj, "obj_pos", obj.pos)
-
-    ImGui.PushItemWidth(150)
-    local x, changed = ImGui.DragFloat("##r_x", 0, 0.01, -9999, 9999, "%.3f Relativ X")
-    if changed then
-        if obj.spawned then
-            local v = obj.entity:GetWorldRight()
-            obj.pos.x = obj.pos.x + (v.x * x)
-            obj.pos.y = obj.pos.y + (v.y * x)
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-        x = 0
-    end
-    ImGui.SameLine()
-    local y, changed = ImGui.DragFloat("##r_y", 0, 0.01, -9999, 9999, "%.3f Relativ Y")
-    if changed then
-        if obj.spawned then
-            local v = obj.entity:GetWorldForward()
-            obj.pos.x = obj.pos.x + (v.x * y)
-            obj.pos.y = obj.pos.y + (v.y * y)
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-        y = 0
-    end
-    ImGui.PopItemWidth()
-
--- Rotation
-    if obj.euler == nil then
-        obj.euler = GetSingleton('Quaternion'):ToEulerAngles(obj.rot)
-    end
-    ImGui.PushItemWidth(100)
-    obj.euler.roll, changed = ImGui.DragFloat("##roll", obj.euler.roll, 0.01, -9999, 9999, "%.3f Roll")
-    if changed then
-        obj.rot = GetSingleton('EulerAngles'):ToQuat(obj.euler)
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    obj.euler.pitch, changed = ImGui.DragFloat("##pitch", obj.euler.pitch, 0.01, -9999, 9999, "%.3f Pitch")
-    if changed then
-        obj.rot = GetSingleton('EulerAngles'):ToQuat(obj.euler)
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    obj.euler.yaw, changed = ImGui.DragFloat("##yaw", obj.euler.yaw, 0.01, -9999, 9999, "%.3f Yaw")
-    if changed then
-        obj.rot = GetSingleton('EulerAngles'):ToQuat(obj.euler)
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-    ImGui.SameLine()
-    ImGui.PopItemWidth()
-    if ImGui.Button("Player rot") then
-        obj.rot = Game.GetPlayer():GetWorldOrientation()
-        obj.euler = GetSingleton('Quaternion'):ToEulerAngles(obj.rot)
-        if obj.spawned then
-            Game.GetTeleportationFacility():Teleport(obj.entity, obj.pos,  GetSingleton('Quaternion'):ToEulerAngles(obj.rot))
-        end
-    end
-
-    if ImGui.Button("Spawn") then
-        obj:spawn()
-    end
-    ImGui.SameLine()
-    if ImGui.Button("Despawn") then
-        obj:despawn()
-    end
-    ImGui.SameLine()
-    if ImGui.Button("Clone") then
-        local clone = object:new(2002)
-        clone.app = obj.app
-        clone.invincible = obj.invincible
-        clone.name = obj.name
-        clone.frozen = obj.frozen
-        clone.rot = utils.getQuaternion(utils.fromQuaternion(obj.rot)) -- not sure why but hey it works right
-        clone.pos = utils.getVector(utils.fromVector(obj.pos))
-        table.insert(station.objects, clone)
-    end
-    ImGui.SameLine()
-    if ImGui.Button("Delete") then
-        utils.removeItem(station.objects, obj)
-        obj:despawn()
-    end
-
-    ImGui.EndChild()
-    CPS.colorEnd(1)
 end
 
 function editUI.drawTrack()
@@ -522,23 +387,23 @@ function editUI.drawPoint(point, track)
     ImGui.PopItemWidth()
 -- Rotation
     if point.euler == nil then
-        point.euler = GetSingleton('Quaternion'):ToEulerAngles(point.rot)
+        point.euler = point.rot:ToEulerAngles()
     end
 
     ImGui.PushItemWidth(100)
     point.euler.roll, changed = ImGui.DragFloat("##roll", point.euler.roll, 0.01, -9999, 9999, "%.3f Roll")
     if changed then
-        point.rot = GetSingleton('EulerAngles'):ToQuat(point.euler)
+        point.rot = point.euler:ToQuat()
     end
     ImGui.SameLine()
     point.euler.pitch, changed = ImGui.DragFloat("##pitch", point.euler.pitch, 0.01, -9999, 9999, "%.3f Pitch")
     if changed then
-        point.rot = GetSingleton('EulerAngles'):ToQuat(point.euler)
+        point.rot = point.euler:ToQuat()
     end
     ImGui.SameLine()
     point.euler.yaw, changed = ImGui.DragFloat("##yaw", point.euler.yaw, 0.01, -9999, 9999, "%.3f Yaw")
     if changed then
-        point.rot = GetSingleton('EulerAngles'):ToQuat(point.euler)
+        point.rot = point.euler:ToQuat()
     end
     ImGui.PopItemWidth()
 

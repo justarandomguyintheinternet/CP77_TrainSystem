@@ -47,6 +47,8 @@ function train:new(stationSys)
 	o.stationSys = stationSys
 	o.spawnStationID = nil
 
+	o.audioTimer = nil
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -97,12 +99,6 @@ function train:loadRoute(route)
 	self.arrivalPath = route.arrivalPath
 	self.exitPath = route.exitPath
 	self.targetID = route.targetID
-	-- for k, p in pairs(self.exitPath) do
-	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "exitPath")
-	-- end
-	-- for k, p in pairs(self.arrivalPath) do
-	-- 	print(k, GetSingleton('Quaternion'):ToEulerAngles(p.rot), "arrivalPath")
-	-- end
 end
 
 function train:startDrive(route)
@@ -287,18 +283,22 @@ function train:update(deltaTime)
 	if self.carObject.spawned then
 		self:updateLocation("car")
 		self.carObject:update()
+		self.carObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 	if self.trainObject.spawned then
 		self:updateLocation("train")
 		self.trainObject:update()
+		self.trainObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 	if self.busObject.spawned then
 		self:updateLocation("bus")
 		self.busObject:update()
+		self.busObject.entity:FindComponentByName("Chassis"):Toggle(false)
 	end
 
 	if not self.playerMounted then Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.busLayer) end
 	self:updateCam()
+	self:handleAudio()
 end
 
 function train:updateLocation(obj)
@@ -341,7 +341,7 @@ function train:handlePoint(point)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
-			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 20, 0))
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 25, 0))
 			Cron.After(2.0, function ()
 				self.stationSys:requestNewTrain()
 			end)
@@ -367,6 +367,19 @@ function train:updateCam()
 	end
 end
 
+function train:handleAudio()
+	if self.audioTimer == nil then
+		if not self.trainObject.entity then return end
+		utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+		utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+
+		self.audioTimer = Cron.Every(20, function ()
+			utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+			utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+		end)
+	end
+end
+
 function train:mount()
 	self.perspective = "tpp"
 	self.currentSeat = self.ts.settings.defaultSeat
@@ -385,6 +398,8 @@ function train:mount()
 	Cron.After(0.1, function()
 		utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
 	end)
+
+	if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
 end
 
 function train:unmount()
@@ -406,6 +421,8 @@ function train:unmount()
 	evt.source = "Debug"
 	evt.targetHintContainer = "GameplayInputHelper"
 	Game.GetUISystem():QueueEvent(evt)
+
+	utils.toggleHUD(true)
 end
 
 return train

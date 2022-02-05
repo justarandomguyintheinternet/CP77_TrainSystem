@@ -77,7 +77,7 @@ function station:exitToGround(ts)
 		rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
 
 		Game.ChangeZoneIndicatorPublic()
-		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  GetSingleton('Quaternion'):ToEulerAngles(self.groundPoint.rot))
+		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  self.groundPoint.rot:ToEulerAngles())
 
 		exEntitySpawner.Despawn(Game.FindEntityByID(self.soundID))
 		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
@@ -157,6 +157,21 @@ function station:handleFakeDoor(target)
 				Game.GetTeleportationFacility():Teleport(player, pos1, player:GetWorldOrientation():ToEulerAngles())
 			else
 				Game.GetTeleportationFacility():Teleport(player, pos2,  player:GetWorldOrientation():ToEulerAngles())
+			end
+		end
+	end
+end
+
+function station:playAudio(clipName, length)
+	for _, o in pairs(self.objectIDS) do
+		local obj = Game.FindEntityByID(o)
+		if obj then
+			local name = obj:GetClassName().value
+			if name ~= "entEntity" and name ~= "gameObject" then
+				utils.playAudio(obj, clipName)
+				Cron.After(length, function ()
+					utils.stopAudio(obj, clipName)
+				end)
 			end
 		end
 	end

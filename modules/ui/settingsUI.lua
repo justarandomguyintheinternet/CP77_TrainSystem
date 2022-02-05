@@ -1,9 +1,8 @@
 local config = require("modules/utils/config")
-utils = require("modules/utils/utils")
+local utils = require("modules/utils/utils")
 
 settings = {
     nativeOptions = {},
-    minCETMet = true,
     nativeSettings = nil
 }
 
@@ -11,7 +10,9 @@ function settings.setupNative(ts)
     local nativeSettings = GetMod("nativeSettings")
     settings.nativeSettings = nativeSettings
     if not nativeSettings then
-        print("[MetroSystem] Error: NativeSettings lib not found!")
+        print("[MetroSystem] Error: NativeSettings lib not found, switching to ImGui UI!")
+        ts.settings.showImGui = true
+        config.saveFile("data/config.json", ts.settings)
         return
     end
 
@@ -22,12 +23,11 @@ function settings.setupNative(ts)
     if cetVer < 1.18 then
         print("[MetroSystem] Error: CET version below recommended, switched to ImGui settings UI!")
         ts.settings.showImGui = true
-        ts.settings.minCETMet = false
         config.saveFile("data/config.json", ts.settings)
         return
     end
 
-    nativeSettings.addTab("/trainSystem", "Metro System")
+    nativeSettings.addTab("/trainSystem", "Metro")
     nativeSettings.addSubcategory("/trainSystem/train", "Train Settings")
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
@@ -46,6 +46,17 @@ function settings.setupNative(ts)
     settings.nativeOptions["trainSeat"] = nativeSettings.addSelectorString("/trainSystem/train", "Default FPP Seat", "Decides what seat the player is in by default, after switching to FPV", list, ts.settings.defaultSeat, ts.defaultSettings.defaultSeat, function(value)
         ts.settings.defaultSeat = value
         config.saveFile("data/config.json", ts.settings)
+    end)
+
+    settings.nativeOptions["noHudTrain"] = nativeSettings.addSwitch("/trainSystem/train", "Hide HUD when in train", "This option hides the entire HUD when mounted to the train", ts.settings.noHudTrain, ts.defaultSettings.noHudTrain, function(state)
+        ts.settings.noHudTrain = state
+        config.saveFile("data/config.json", ts.settings)
+
+        if ts.stationSys.activeTrain then
+            if ts.stationSys.activeTrain.playerMounted then
+                utils.toggleHUD(not state)
+            end
+        end
     end)
 
     settings.nativeOptions["trainTPPOnly"] = nativeSettings.addSwitch("/trainSystem/train", "TPP Cam only", "This disables the first person mode. Use it when you experience issues with FPV", ts.settings.tppOnly, ts.defaultSettings.tppOnly, function(state)
@@ -89,7 +100,7 @@ function settings.setupNative(ts)
     end)
 end
 
-function settings.draw(ts)
+function settings.draw(ts) -- Draw alternative ImGui window
     ts.CPS:setThemeBegin()
     ImGui.Begin("Metro System Config", ImGuiWindowFlags.AlwaysAutoResize)
 
@@ -101,7 +112,7 @@ function settings.draw(ts)
         ImGui.PopStyleColor(3)
     else
         ts.settings.trainSpeed, changed = ImGui.InputInt("Train Speed", ts.settings.trainSpeed)
-        settings.nativeSettings.setOption(settings.nativeOptions["trainSpeed"], ts.settings.trainSpeed)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSpeed"], ts.settings.trainSpeed) end
         if changed then config.saveFile("data/config.json", ts.settings) end
     end
 
@@ -109,14 +120,14 @@ function settings.draw(ts)
     ts.settings.camDist = math.min(math.max(ts.settings.camDist, 6), 22)
     if changed then
         config.saveFile("data/config.json", ts.settings)
-        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPDist"], ts.settings.camDist)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainTPPDist"], ts.settings.camDist) end
     end
 
     ImGui.Text("Default Seat:")
 
     if ImGui.RadioButton("Front Right", ts.settings.defaultSeat == 1) then
         ts.settings.defaultSeat = 1
-        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -124,7 +135,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Back Right", ts.settings.defaultSeat == 2) then
         ts.settings.defaultSeat = 2
-        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -132,7 +143,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Back Left", ts.settings.defaultSeat == 3) then
         ts.settings.defaultSeat = 3
-        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -140,13 +151,25 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Front Left", ts.settings.defaultSeat == 4) then
         ts.settings.defaultSeat = 4
-        settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
+    end
+
+    ts.settings.noHudTrain, changed = ImGui.Checkbox("Hide HUD when in train", ts.settings.noHudTrain)
+    if changed then
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["noHudTrain"], ts.settings.noHudTrain) end
+        config.saveFile("data/config.json", ts.settings)
+
+        if ts.stationSys.activeTrain then
+            if ts.stationSys.activeTrain.playerMounted then
+                utils.toggleHUD(not ts.settings.noHudTrain)
+            end
+        end
     end
 
     ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -155,20 +178,20 @@ function settings.draw(ts)
     ts.settings.holdMult, changed = ImGui.InputFloat("Station Hold Time Multiplier", ts.settings.holdMult, 1, 1000, "%.2f")
     ts.settings.holdMult = math.min(math.max(ts.settings.holdMult, 0.2), 5)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["stationHold"], ts.settings.holdMult)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["stationHold"], ts.settings.holdMult) end
         config.saveFile("data/config.json", ts.settings)
     end
 
     ts.settings.moneyPerStation, changed = ImGui.InputInt("Price per Station", ts.settings.moneyPerStation)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["stationPrice"], ts.settings.moneyPerStation)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["stationPrice"], ts.settings.moneyPerStation) end
         config.saveFile("data/config.json", ts.settings)
     end
 
     ts.settings.elevatorTime, changed = ImGui.InputFloat("Elevator duration", ts.settings.elevatorTime, 3, 15, "%.1f")
     ts.settings.elevatorTime = math.min(math.max(ts.settings.elevatorTime, 3), 15)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["elevatorTime"], ts.settings.elevatorTime)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["elevatorTime"], ts.settings.elevatorTime) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -177,7 +200,7 @@ function settings.draw(ts)
     ts.settings.tppOffset, changed = ImGui.InputFloat("TPP Player height offset", ts.settings.tppOffset, 1, 2, "%.1f")
     ts.settings.tppOffset = math.min(math.max(ts.settings.tppOffset, 1), 2)
     if changed then
-        settings.nativeSettings.setOption(settings.nativeOptions["tppOffset"], ts.settings.tppOffset)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["tppOffset"], ts.settings.tppOffset) end
         config.saveFile("data/config.json", ts.settings)
     end
 
@@ -185,7 +208,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Vanilla", ts.settings.uiLayout == 1) then
         ts.settings.uiLayout = 1
-        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
             ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
@@ -197,7 +220,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Spicy's E3 HUD", ts.settings.uiLayout == 2) then
         ts.settings.uiLayout = 2
-        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
             ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
@@ -209,7 +232,7 @@ function settings.draw(ts)
 
     if ImGui.RadioButton("Superior UI", ts.settings.uiLayout == 3) then
         ts.settings.uiLayout = 3
-        settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout)
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
             ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))

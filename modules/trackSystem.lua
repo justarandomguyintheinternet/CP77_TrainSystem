@@ -1,5 +1,11 @@
 local track = require("modules/classes/track")
 local utils = require("modules/utils/utils")
+local actOneData = {
+	[7] = "next",
+	[11] = "next",
+	[4] = "last_second",
+	[5] = "next"
+} -- Hardcoded info on what tracks to disable for Act 1
 
 trackSys = {}
 
@@ -26,6 +32,23 @@ function trackSys:load()
             self.tracks[t.id] = t
         end
     end
+
+	self:handleActOne()
+end
+
+function trackSys:handleActOne() -- Remove certain tracks connections to limit the metro to the Act 1 area
+	if not (Game.GetQuestsSystem():GetFact("q005_jackie_to_hospital") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_to_mama") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_stay_notell") == 0) then return end
+
+	for id, t in pairs(self.tracks) do
+		if actOneData[id] ~= nil then
+			if actOneData[id] == "next" then
+				t.connectedID.first.next = -1
+				t.connectedID.second.next = -1
+			elseif actOneData[id] == "last_second" then
+				t.connectedID.second.last = -1
+			end
+		end
+	end
 end
 
 function trackSys:getStationTrack(station) -- Get the track where this station sits on
@@ -356,7 +379,7 @@ function trackSys:mainGeneratePathData(station) -- Main function to call to calc
 	local connectedTrack = self:getStationTrack(station)
 	self:generatePaths(connectedTrack, station)
 
-	for k, path in pairs(self.paths) do
+	for _, path in pairs(self.paths) do
 		self:calcDirs(path, station)
 		local data = self:unpackPath(path, station)
 		table.insert(self.pathsData, data)
