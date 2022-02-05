@@ -326,7 +326,6 @@ function train:updateLocation(obj)
 			self.busObject.pos = pos
 		else
 			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
-			--self.busObject.pos = utils.addVector(self.pos, Vector4.new(0, 0, self.ts.debug.baseUI.utilUI.busOffset, 0))
 			self.busObject.rot = self.rot
 		end
 	end

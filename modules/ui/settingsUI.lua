@@ -27,7 +27,7 @@ function settings.setupNative(ts)
         return
     end
 
-    nativeSettings.addTab("/trainSystem", "Metro System")
+    nativeSettings.addTab("/trainSystem", "Metro")
     nativeSettings.addSubcategory("/trainSystem/train", "Train Settings")
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
@@ -51,6 +51,12 @@ function settings.setupNative(ts)
     settings.nativeOptions["noHudTrain"] = nativeSettings.addSwitch("/trainSystem/train", "Hide HUD when in train", "This option hides the entire HUD when mounted to the train", ts.settings.noHudTrain, ts.defaultSettings.noHudTrain, function(state)
         ts.settings.noHudTrain = state
         config.saveFile("data/config.json", ts.settings)
+
+        if ts.stationSys.activeTrain then
+            if ts.stationSys.activeTrain.playerMounted then
+                utils.toggleHUD(not state)
+            end
+        end
     end)
 
     settings.nativeOptions["trainTPPOnly"] = nativeSettings.addSwitch("/trainSystem/train", "TPP Cam only", "This disables the first person mode. Use it when you experience issues with FPV", ts.settings.tppOnly, ts.defaultSettings.tppOnly, function(state)
@@ -153,6 +159,12 @@ function settings.draw(ts) -- Draw alternative ImGui window
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["noHudTrain"], ts.settings.noHudTrain) end
         config.saveFile("data/config.json", ts.settings)
+
+        if ts.stationSys.activeTrain then
+            if ts.stationSys.activeTrain.playerMounted then
+                utils.toggleHUD(not ts.settings.noHudTrain)
+            end
+        end
     end
 
     ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)

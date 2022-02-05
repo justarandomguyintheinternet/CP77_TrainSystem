@@ -33,8 +33,8 @@ ts = {
     GameUI = require("modules/utils/GameUI"),
 
     utils = require("modules/utils/utils"),
-    config = require("modules/utils/config"),
-    debug = require("debug/logic/debug")
+    config = require("modules/utils/config")
+    --debug = require("debug/logic/debug")
 }
 
 function ts:new()
@@ -98,7 +98,7 @@ function ts:new()
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
             ts.input.interactKey = false -- Fix "sticky" input
-            ts.debug.baseUI.utilUI.update()
+            --ts.debug.baseUI.utilUI.update()
         elseif ts.entrySys.forceRunCron and ts.archiveInstalled then
             ts.Cron.Update(deltaTime)
         end
@@ -115,7 +115,7 @@ function ts:new()
             if ts.settings.showImGui then
                 ts.settingsUI.draw(ts)
             end
-            ts.debug.run(ts)
+            --ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)
