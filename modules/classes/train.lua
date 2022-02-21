@@ -38,7 +38,6 @@ function train:new(stationSys)
 
 	o.playerMounted = false
 	o.justArrived = false
-	o.requestBackupTrain = false
 
 	o.pos = Vector4.new(0, 0, 0, 0)
 	o.rot = Quaternion.new(0.1, 0, 0, 0)
@@ -62,9 +61,9 @@ function train:spawn()
 	self.carObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0))
 	self.carObject.rot = point.rot
 
-	self.trainObject = object:new(self.trainLayer)
+	self.trainObject = object:new(self.trainLayer, nil, "ent")
 	self.trainObject.name = "Vehicle.av_public_train_b"
-	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0)) -- Prevention system seems to spawn more likely the bigger the angle between the player view dir and the object
+	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0))
 	self.trainObject.rot = point.rot
 
 	point = self.arrivalPath[1]
@@ -341,8 +340,8 @@ function train:handlePoint(point)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
-			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 25, 0))
-			Cron.After(2.0, function ()
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 45, 0))
+			Cron.After(2.0, function()
 				self.stationSys:requestNewTrain()
 			end)
 		end
@@ -399,7 +398,9 @@ function train:mount()
 		utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
 	end)
 
-	if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
+	Cron.After(0.5, function ()
+		if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
+	end)
 end
 
 function train:unmount()
@@ -419,6 +420,11 @@ function train:unmount()
 
 	local evt = DeleteInputHintBySourceEvent.new()
 	evt.source = "Debug"
+	evt.targetHintContainer = "GameplayInputHelper"
+	Game.GetUISystem():QueueEvent(evt)
+
+	local evt = DeleteInputHintBySourceEvent.new()
+	evt.source = "evcHints"
 	evt.targetHintContainer = "GameplayInputHelper"
 	Game.GetUISystem():QueueEvent(evt)
 

@@ -415,13 +415,19 @@ function miscUtils.toggleHUD(state)
     if not Game.GetPlayer() then return end
 
     if state then
-        local blackboardDefs = Game.GetAllBlackboardDefs()
-        local blackboardPSM = Game.GetBlackboardSystem():GetLocalInstanced(Game.GetPlayer():GetEntityID(), blackboardDefs.PlayerStateMachine)
-        blackboardPSM:SetInt(blackboardDefs.PlayerStateMachine.SceneTier, 1, true)
+        Game.GetUISystem():ResetGameContext()
     else
-        local blackboardDefs = Game.GetAllBlackboardDefs()
-        local blackboardPSM = Game.GetBlackboardSystem():GetLocalInstanced(Game.GetPlayer():GetEntityID(), blackboardDefs.PlayerStateMachine)
-        blackboardPSM:SetInt(blackboardDefs.PlayerStateMachine.SceneTier, 3, true)
+        Game.GetUISystem():PushGameContext(UIGameContext.RadialWheel)
+    end
+end
+
+function miscUtils.fixNoFastTravel()
+    if not Game.GetMountedVehicle(GetPlayer()) then
+        for _, reason in pairs(Game.GetUISystem():GetFastTravelSystem().fastTravelLocks) do
+            if reason.lockReason.value == "InVehicle" then
+                Game.GetUISystem():GetFastTravelSystem():OnRemoveAllFastTravelLocksRequest(RemoveAllFastTravelLocksRequest.new())
+            end
+        end
     end
 end
 

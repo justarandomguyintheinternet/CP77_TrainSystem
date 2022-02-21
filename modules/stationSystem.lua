@@ -24,7 +24,6 @@ function stationSys:new(ts)
 	o.totalPaths = nil
 
 	o.previousStationID = nil
-	o.backUpTrain = nil
 
 	o.cronStopID = nil
 
@@ -145,10 +144,6 @@ function stationSys:leave() -- Leave to ground level
 	if self.activeTrain ~= nil then
 		self.activeTrain:despawn()
 		self.activeTrain = nil
-	end
-	if self.backUpTrain ~= nil then
-		self.backUpTrain:despawn()
-		self.backUpTrain = nil
 	end
 	utils.removeTPPTweaks()
 end

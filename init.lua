@@ -63,6 +63,10 @@ function ts:new()
         ts.input.startInputObserver(ts)
         ts.input.startListeners(Game.GetPlayer())
 
+        ts.Cron.Every(1.0, function ()
+            ts.utils.fixNoFastTravel()
+        end)
+
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             ts.runtimeData.inMenu = isInMenu
         end)
