@@ -25,6 +25,12 @@ function observers.start(ts)
 
     observers.setupMapTDB()
 
+    Observe("gameuiWorldMapMenuGameController", "TryFastTravel", function(this)
+        if this.selectedMappin:GetMappinVariant().value == "GetInVariant" then
+            this:FastTravel()
+        end
+    end)
+
     ---@param nodeData FastTravelPointData
     Override("FastTravelSystem", "RegisterMappin", function(_, nodeData)
         local mappinData = MappinData.new()
@@ -39,35 +45,28 @@ function observers.start(ts)
             mappinData.mappinType = TweakDBID.new("Mappins.FastTravelStaticMappin")
             mappinData.variant = gamedataMappinVariant.FastTravelVariant
         end
+
         mappinData.active = true
         nodeData.mappinID = Game.GetMappinSystem():RegisterFastTravelMappin(mappinData, nodeData)
     end)
 
-    -- ObserveAfter("DlcMenuGameController", "OnInitialize", function(this) -- Funny but stupid
-    --     local data = DlcDescriptionData.new()
-    --     CName.add("trainSystem")
-    --     data.guide = "trainSystem"
-    --     this:AsyncSpawnFromLocal(inkWidgetRef.Get(this.containersRef), "dlcDescription", this, "OnDescriptionSpawned", data)
-    -- end)
+    ObserveAfter("DlcMenuGameController", "OnInitialize", function(this)
+        local data = DlcDescriptionData.new()
+        CName.add("trainSystem")
+        data.guide = "trainSystem"
+        this:AsyncSpawnFromLocal(inkWidgetRef.Get(this.containersRef), "dlcDescription", this, "OnDescriptionSpawned", data)
+    end)
 
-    -- Override("DlcDescriptionController", "SetData", function (this, data, wrapped)
-    --     if data.guide.value == "trainSystem" then
-    --         inkTextRef.SetText(this.titleRef, "Train System")
-    --         inkTextRef.SetText(this.descriptionRef, "This adds a fully useable NCART System, with 19 Stations and tons of tracks to explore")
-    --         inkTextRef.SetText(this.guideRef, "Go to any of the \"Metro: ...\" fast travel points to use it")
-    --         inkImageRef.SetTexturePart(this.imageRef, "none")
-    --     else
-    --         wrapped(data)
-    --     end
-    -- end)
-
-    -- Override("DlcMenuGameController", "SpawnDescriptions", function (_, titel, desc, guide, image, wrapped)
-    --     if guide.value == "UI-DLC-JohnnyAltApp_Guide" then -- Im sorry...
-    --         return
-    --     else
-    --         wrapped(titel, desc, guide, image)
-    --     end
-    -- end)
+    Override("DlcDescriptionController", "SetData", function (this, data, wrapped)
+        if data.guide.value == "trainSystem" then
+            inkTextRef.SetText(this.titleRef, "Metro System")
+            inkTextRef.SetText(this.descriptionRef, "This adds a fully useable NCART System, with 19 Stations and tons of tracks to explore")
+            inkTextRef.SetText(this.guideRef, "Go to any of the \"Metro: ...\" fast travel points to use it")
+            inkImageRef.SetTexturePart(this.imageRef, "none")
+        else
+            wrapped(data)
+        end
+    end)
 
     Observe('VehicleRadioPopupGameController', 'OnClose', function()
 		observers.radioPopupActive = false
@@ -135,10 +134,10 @@ function observers.start(ts)
             this.driver = VehicleComponent.IsDriver(GetPlayer())
             this:RegisterToVehicle(true)
             this:Reset()
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'maindashcontainer'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'holder_code'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'flufftext'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({ 'speed_fluff'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(false)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(false)
         else
             this.activeVehicle = GetMountedVehicle(GetPlayer())
             this.driver = VehicleComponent.IsDriver(GetPlayer())
@@ -160,17 +159,10 @@ function observers.start(ts)
     Observe("VehicleComponent", "OnGameAttach", function(self)
         if observers.noTrains then
             if "vehicleAVBaseObject" == self:GetVehicle():GetClassName().value then
-                if ts.stationSys.backUpTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.backUpTrain.entID.hash then
-                    if (ts.stationSys.activeTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.activeTrain.trainObject.entID.hash) or ts.stationSys.activeTrain.trainObject.spawned == false then
-                        table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
-                    end
+                if ts.stationSys.activeTrain ~= nil and ts.stationSys.activeTrain.trainObject.spawned and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.activeTrain.trainObject.entID.hash then
+                    table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
                 end
-                if ts.stationSys.activeTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.activeTrain.trainObject.entID.hash then
-                    if (ts.stationSys.backUpTrain ~= nil and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.backUpTrain.entID.hash) or ts.stationSys.backUpTrain == nil then
-                        table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
-                    end
-                end
-                if ts.stationSys.activeTrain == nil and ts.stationSys.backUpTrain == nil then
+                if ts.stationSys.activeTrain == nil then
                     table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
                 end
             end
@@ -207,25 +199,17 @@ function observers.start(ts)
         end
     end)
 
-    Override("DataTerm", "OnOpenWorldMapAction", function(this)
+    Override("DataTerm", "OnOpenWorldMapAction", function(_, evt, wrapped)
         if observers.noFastTravel then return end
 
-        this:EnableFastTravelOnMap()
-        this:TriggerMenuEvent("OnOpenFastTravel")
-        this:ProcessFastTravelTutorial()
+        wrapped(evt)
     end)
 
-    Override("DataTermControllerPS", "ActionOpenWorldMap", function(this)
+    Override("DataTermControllerPS", "ActionOpenWorldMap", function(_, wrapped)
         if observers.noFastTravel then
             return OpenWorldMapDeviceAction.new()
         else
-            local action = OpenWorldMapDeviceAction.new()
-            action:SetUp(this)
-            action:SetProperties()
-            action:AddDeviceName(this.deviceName)
-            action:CreateActionWidgetPackage()
-            action:CreateInteraction()
-            return action
+            return wrapped()
         end
     end)
 

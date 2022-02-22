@@ -92,8 +92,8 @@
     {
         "path": "base\\train_system\\walls\\metro_wall_300.ent",
         "pos": {
-            "y": -1203.5615234375,
-            "x": 193.76078796387,
+            "y": -1203.5366210938,
+            "x": 193.77770996094,
             "z": 39.617462158203,
             "w": 0
         },
@@ -107,8 +107,8 @@
     {
         "path": "base\\train_system\\walls\\metro_wall_300.ent",
         "pos": {
-            "y": -1206.0399169922,
-            "x": 192.07194519043,
+            "y": -1206.0150146484,
+            "x": 192.0888671875,
             "z": 47.20719909668,
             "w": 0
         },
@@ -212,8 +212,8 @@
     {
         "path": "base\\train_system\\walls\\metro_wall_300.ent",
         "pos": {
-            "y": -1201.0887451172,
-            "x": 195.44387817383,
+            "y": -1201.0721435547,
+            "x": 195.45515441895,
             "z": 39.617462158203,
             "w": 0
         },
@@ -227,8 +227,8 @@
     {
         "path": "base\\train_system\\walls\\metro_wall_300.ent",
         "pos": {
-            "y": -1203.5679931641,
-            "x": 193.75430297852,
+            "y": -1203.5513916016,
+            "x": 193.76557922363,
             "z": 47.20719909668,
             "w": 0
         },
@@ -4977,6 +4977,66 @@
             "yaw": -123.80799865723,
             "roll": 0,
             "pitch": -90
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\frame\\billboard_frame_3_3x1_f.ent",
+        "pos": {
+            "y": -1198.5902099609,
+            "x": 197.35101318359,
+            "z": 41.735500335693,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 55.746864318848,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\frame\\billboard_frame_3_3x1_f.ent",
+        "pos": {
+            "y": -1198.5902099609,
+            "x": 197.35101318359,
+            "z": 44.930500030518,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 55.746864318848,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\frame\\billboard_frame_3_3x1_f.ent",
+        "pos": {
+            "y": -1191.9598388672,
+            "x": 201.86837768555,
+            "z": 41.735500335693,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 55.746864318848,
+            "roll": 0,
+            "pitch": 0
+        }
+    },
+    {
+        "path": "base\\gameplay\\devices\\advertising\\digital\\frame\\billboard_frame_3_3x1_f.ent",
+        "pos": {
+            "y": -1191.9598388672,
+            "x": 201.86837768555,
+            "z": 44.930500030518,
+            "w": 0
+        },
+        "app": "",
+        "rot": {
+            "yaw": 55.746864318848,
+            "roll": 0,
+            "pitch": 0
         }
     },
     {
