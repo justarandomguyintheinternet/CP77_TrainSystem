@@ -342,6 +342,11 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
 
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireRadius", 0.460000)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireRadius", 0.460000)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.wheelOffset", 0)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.wheelOffset", -0.070000)
+
     TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireRadius", 0.305000)
     TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireRadius", 0.305000)
     TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.wheelOffset", 0)
