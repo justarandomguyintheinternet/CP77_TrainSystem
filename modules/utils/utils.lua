@@ -323,6 +323,24 @@ function miscUtils.setupTPPCam(dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 150000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 150000)
+
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireRadius", 0.08)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireRadius", 0.08)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.wheelOffset", 16)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.wheelOffset", 16)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.rimRadius", 0.05)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.rimRadius", 0.05)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireWidth", 0.05)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireWidth", 0.05)
+
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireRadius", 0.08)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireRadius", 0.08)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.wheelOffset", 16)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.wheelOffset", 16)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.rimRadius", 0.05)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.rimRadius", 0.05)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireWidth", 0.05)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireWidth", 0.05)
 end
 
 function miscUtils.removeTPPTweaks()
@@ -331,6 +349,24 @@ function miscUtils.removeTPPTweaks()
     TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", 4.500000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
     TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
+
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireRadius", 0.460000)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireRadius", 0.460000)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.wheelOffset", 0)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.wheelOffset", -0.070000)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.rimRadius", 0.24)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.rimRadius", 0.24)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireWidth", 0.33)
+    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireWidth", 0.47)
+
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireRadius", 0.305000)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireRadius", 0.305000)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.wheelOffset", 0)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.wheelOffset", 0)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.rimRadius", 0.3)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.rimRadius", 0.3)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireWidth", 0.13)
+    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireWidth", 0.15)
 end
 
 function miscUtils.showInputHint(key, text, container, prio, holdAnimation)
@@ -417,7 +453,7 @@ function miscUtils.toggleHUD(state)
     if state then
         Game.GetUISystem():ResetGameContext()
     else
-        Game.GetUISystem():PushGameContext(UIGameContext.RadialWheel)
+        Game.GetUISystem():PushGameContext(UIGameContext.ModalPopup)
     end
 end
 

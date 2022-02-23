@@ -398,7 +398,7 @@ function train:mount()
 		utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
 	end)
 
-	Cron.After(0.5, function ()
+	Cron.After(0.4, function ()
 		if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
 	end)
 end
