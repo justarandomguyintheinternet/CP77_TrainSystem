@@ -37,7 +37,11 @@ function trackSys:load()
 end
 
 function trackSys:handleActOne() -- Remove certain tracks connections to limit the metro to the Act 1 area
-	if not (Game.GetQuestsSystem():GetFact("q005_jackie_to_hospital") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_to_mama") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_stay_notell") == 0) then return end
+	local hasSentJackie = not (Game.GetQuestsSystem():GetFact("q005_jackie_to_hospital") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_to_mama") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_stay_notell") == 0)
+	local q101Done = Game.GetQuestsSystem():GetFactStr('q101_done') == 1
+	local sideContentUnlocked = Game.GetQuestsSystem():GetFactStr('q101_enable_side_content') == 1
+
+	if hasSentJackie or q101Done or sideContentUnlocked or self.ts.settings.unlockAllTracks then return end
 
 	for id, t in pairs(self.tracks) do
 		if actOneData[id] ~= nil then

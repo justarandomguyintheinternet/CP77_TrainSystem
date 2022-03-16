@@ -471,15 +471,17 @@ function miscUtils.generateHUDMargin(type)
     if type == 1 then -- Vanilla
         return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })
     elseif type == 2 then -- E3
-        return inkMargin.new({ left = 355.0, top = 1250.0, right = 0.0, bottom = 0.0 })
+        return inkMargin.new({ left = 355.0, top = 1750.0, right = 0.0, bottom = 0.0 })
     elseif type == 3 then -- Superior
-        return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 }) -- Its the same lol, but i`ll leave it cuz its cool
+        return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })
     end
 end
 
 function miscUtils.generateHUDColor(type)
-    if type == 1 or type == 2 then -- Vanilla and E3
+    if type == 1 then -- Vanilla
         return HDRColor.new({ Red = 1.1761, Green = 0.3809, Blue = 0.3476, Alpha = 1.0 })
+    elseif type == 2 then -- E3
+        return HDRColor.new({ Red = 0.905, Green = 0.227, Blue = 0.431, Alpha = 1.0 })
     elseif type == 3 then -- Superior
         return HDRColor.new({ Red = 1, Green = 1, Blue = 1, Alpha = 0.95 })
     end

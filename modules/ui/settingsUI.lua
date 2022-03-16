@@ -89,6 +89,12 @@ function settings.setupNative(ts)
         end
     end)
 
+    settings.nativeOptions["unlockAllTracks"] = nativeSettings.addSwitch("/trainSystem/misc", "Force unlock all tracks", "This option can be used to unlock the entire track network even before act 1 has finished.", ts.settings.unlockAllTracks, ts.defaultSettings.unlockAllTracks, function(state)
+        ts.settings.unlockAllTracks = state
+        ts.trackSys:load()
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
     settings.nativeOptions["tppOffset"] = nativeSettings.addRangeFloat("/trainSystem/misc", "TPP Player Offset", "For the very rare case that the players head sticks out during TPP mode, lower this value to lower the players position", 1, 2, 0.1, "%.1f", ts.settings.tppOffset, ts.defaultSettings.tppOffset, function(value)
         ts.settings.tppOffset = value
         config.saveFile("data/config.json", ts.settings)

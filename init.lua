@@ -19,7 +19,8 @@ ts = {
         elevatorTime = 7,
         uiLayout = 1, -- 1 = Vanilla, 2 = E3, 3 = Superior
         tppOffset = 2,
-        noHudTrain = false
+        noHudTrain = false,
+        unlockAllTracks = false
     },
 
     settings = {},
