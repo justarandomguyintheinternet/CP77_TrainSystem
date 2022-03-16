@@ -22,7 +22,7 @@ ts = {
         noHudTrain = false,
         unlockAllTracks = false,
         elevatorGlitch = true,
-        trainGlitch = true
+        trainGlitch = false
     },
 
     settings = {},
