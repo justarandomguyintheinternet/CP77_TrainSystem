@@ -53,7 +53,11 @@ function entrySys:update()
                 if self.ts.input.interactKey then
                     self.ts.input.interactKey = false
                     if self.ts.stationSys.currentStation == nil then
-                        self:enter(closest)
+                        utils.playEffect("fast_travel_glitch", GetPlayer())
+
+                        Cron.After(0.6, function ()
+                            self:enter(closest)
+                        end)
                     end
                 end
             end
@@ -129,6 +133,10 @@ function entrySys:enter(entry)
 
     Cron.After(self.ts.settings.elevatorTime * 0.7, function () -- Spawn station objects
         self.ts.stationSys:loadStation(entry.stationID)
+    end)
+
+    Cron.After(self.ts.settings.elevatorTime - 0.6, function()
+        utils.playEffect("fast_travel_glitch", GetPlayer())
     end)
 end
 

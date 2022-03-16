@@ -133,19 +133,23 @@ function stationSys:requestNewTrain()
 end
 
 function stationSys:leave() -- Leave to ground level
-	utils.togglePin(self, "exit", false)
-	self.currentStation:exitToGround(self.ts)
-	self.currentStation = nil
-	self.onStation = false
-	Cron.Halt(self.audioTimer)
-	self.audioTimer = nil
-	self.trainInStation = false
-	self.previousStationID = nil
-	if self.activeTrain ~= nil then
-		self.activeTrain:despawn()
-		self.activeTrain = nil
-	end
-	utils.removeTPPTweaks()
+	utils.playEffect("fast_travel_glitch", GetPlayer())
+
+	Cron.After(0.6, function ()
+		utils.togglePin(self, "exit", false)
+		self.currentStation:exitToGround(self.ts)
+		self.currentStation = nil
+		self.onStation = false
+		Cron.Halt(self.audioTimer)
+		self.audioTimer = nil
+		self.trainInStation = false
+		self.previousStationID = nil
+		if self.activeTrain ~= nil then
+			self.activeTrain:despawn()
+			self.activeTrain = nil
+		end
+		utils.removeTPPTweaks()
+	end)
 end
 
 function stationSys:nearTrain()

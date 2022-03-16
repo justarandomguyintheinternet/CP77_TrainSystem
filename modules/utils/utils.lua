@@ -467,6 +467,11 @@ function miscUtils.fixNoFastTravel()
     end
 end
 
+function miscUtils.playEffect(name, target)
+    local bb = worldEffectBlackboard.new()
+    GameObjectEffectHelper.StartEffectEvent(target, name, true, bb)
+end
+
 function miscUtils.generateHUDMargin(type)
     if type == 1 then -- Vanilla
         return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })

@@ -83,6 +83,10 @@ function station:exitToGround(ts)
 		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
 		settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
     end)
+
+	Cron.After(self.ts.settings.elevatorTime - 0.6, function()
+        utils.playEffect("fast_travel_glitch", GetPlayer())
+    end)
 end
 
 function station:spawn()

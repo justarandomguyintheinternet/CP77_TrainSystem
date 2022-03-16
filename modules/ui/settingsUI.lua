@@ -246,6 +246,13 @@ function settings.draw(ts) -- Draw alternative ImGui window
         end
     end
 
+    ts.settings.unlockAllTracks, changed = ImGui.Checkbox("Force unlock all tracks", ts.settings.unlockAllTracks)
+    if changed then
+        ts.trackSys:load()
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["unlockAllTracks"], ts.settings.unlockAllTracks) end
+        config.saveFile("data/config.json", ts.settings)
+    end
+
     ImGui.End()
     ts.CPS:setThemeEnd()
 end
