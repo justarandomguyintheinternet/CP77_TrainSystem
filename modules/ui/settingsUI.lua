@@ -95,12 +95,12 @@ function settings.setupNative(ts)
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["elevatorGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Elevator Glitch Effect", "Use this to toggle the enable / disable the glitch effect that plays when entering / leaving an elevator", ts.settings.elevatorGlitch, ts.defaultSettings.elevatorGlitch, function(state)
+    settings.nativeOptions["elevatorGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Elevator Glitch Effect", "Use this to enable / disable the glitch effect that plays when entering / exiting an elevator", ts.settings.elevatorGlitch, ts.defaultSettings.elevatorGlitch, function(state)
         ts.settings.elevatorGlitch = state
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Train Glitch Effect", "Use this to toggle the enable / disable the glitch effect that plays when entering / leaving the train", ts.settings.trainGlitch, ts.defaultSettings.trainGlitch, function(state)
+    settings.nativeOptions["trainGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Train Glitch Effect", "Use this to enable / disable the glitch effect that plays when entering / exiting the train", ts.settings.trainGlitch, ts.defaultSettings.trainGlitch, function(state)
         ts.settings.trainGlitch = state
         config.saveFile("data/config.json", ts.settings)
     end)
