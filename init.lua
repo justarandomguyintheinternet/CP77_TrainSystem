@@ -20,7 +20,9 @@ ts = {
         uiLayout = 1, -- 1 = Vanilla, 2 = E3, 3 = Superior
         tppOffset = 2,
         noHudTrain = false,
-        unlockAllTracks = false
+        unlockAllTracks = false,
+        elevatorGlitch = true,
+        trainGlitch = true
     },
 
     settings = {},

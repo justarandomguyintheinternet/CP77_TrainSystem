@@ -133,9 +133,13 @@ function stationSys:requestNewTrain()
 end
 
 function stationSys:leave() -- Leave to ground level
-	utils.playEffect("fast_travel_glitch", GetPlayer())
+	local t = 0
+	if self.ts.settings.elevatorGlitch then
+		t = 0.6
+		utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+	end
 
-	Cron.After(0.6, function ()
+	Cron.After(t, function ()
 		utils.togglePin(self, "exit", false)
 		self.currentStation:exitToGround(self.ts)
 		self.currentStation = nil
@@ -193,9 +197,13 @@ end
 function stationSys:handleExitTrain()
 	if self.ts.input.exit then
 		if self.activeTrain.playerMounted and self.trainInStation then
-			utils.playEffect("fast_travel_glitch", GetPlayer())
+			local t = 0
+			if self.ts.settings.trainGlitch then
+				t = 0.6
+				utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+			end
 
-			Cron.After(0.6, function()
+			Cron.After(t, function()
 				self.mountLocked = true
 				self.activeTrain:unmount()
 				utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
@@ -319,9 +327,13 @@ function stationSys:update(deltaTime)
 		if self:nearTrain() and (not self.activeTrain.playerMounted) then
 			self.ts.hud.trainVisible = true
 			if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
-				utils.playEffect("fast_travel_glitch", GetPlayer())
+				local t = 0
+				if self.ts.settings.trainGlitch then
+					t = 0.6
+					utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+				end
 
-				Cron.After(0.6, function()
+				Cron.After(t, function()
 					self.ts.input.interactKey = false
 					self.activeTrain:mount()
 					utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant

@@ -32,12 +32,12 @@ function settings.setupNative(ts)
     nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
     nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
 
-    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controlls the speed of the train. Gets applied next time you enter / leave a station", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
+    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controls the speed of the train. Gets applied next time you enter / leave a station", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
         ts.settings.trainSpeed = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controlls the distance of the TPP camera. Gets applied next time you enter / leave a station", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
+    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controls the distance of the TPP camera. Gets applied next time you enter / leave a station", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
         ts.settings.camDist = value
         config.saveFile("data/config.json", ts.settings)
     end)
@@ -69,12 +69,12 @@ function settings.setupNative(ts)
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["stationPrice"] = nativeSettings.addRangeInt("/trainSystem/station", "Money per station", "This controlls how much you have to pay per station travelled", 1, 50, 1, ts.settings.moneyPerStation, ts.defaultSettings.moneyPerStation, function(value)
+    settings.nativeOptions["stationPrice"] = nativeSettings.addRangeInt("/trainSystem/station", "Money per station", "This controls how much you have to pay per station travelled", 1, 50, 1, ts.settings.moneyPerStation, ts.defaultSettings.moneyPerStation, function(value)
         ts.settings.moneyPerStation = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", "Elevator Duration", "This controlls how long the elevator ride takes, in seconds", 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
+    settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", "Elevator Duration", "This controls how long the elevator ride takes, in seconds", 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
         ts.settings.elevatorTime = value
         config.saveFile("data/config.json", ts.settings)
     end)
@@ -92,6 +92,16 @@ function settings.setupNative(ts)
     settings.nativeOptions["unlockAllTracks"] = nativeSettings.addSwitch("/trainSystem/misc", "Force unlock all tracks", "This option can be used to unlock the entire track network even before act 1 has finished.", ts.settings.unlockAllTracks, ts.defaultSettings.unlockAllTracks, function(state)
         ts.settings.unlockAllTracks = state
         ts.trackSys:load()
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
+    settings.nativeOptions["elevatorGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Elevator Glitch Effect", "Use this to toggle the enable / disable the glitch effect that plays when entering / leaving an elevator", ts.settings.elevatorGlitch, ts.defaultSettings.elevatorGlitch, function(state)
+        ts.settings.elevatorGlitch = state
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
+    settings.nativeOptions["trainGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Train Glitch Effect", "Use this to toggle the enable / disable the glitch effect that plays when entering / leaving the train", ts.settings.trainGlitch, ts.defaultSettings.trainGlitch, function(state)
+        ts.settings.trainGlitch = state
         config.saveFile("data/config.json", ts.settings)
     end)
 
@@ -250,6 +260,18 @@ function settings.draw(ts) -- Draw alternative ImGui window
     if changed then
         ts.trackSys:load()
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["unlockAllTracks"], ts.settings.unlockAllTracks) end
+        config.saveFile("data/config.json", ts.settings)
+    end
+
+    ts.settings.elevatorGlitch, changed = ImGui.Checkbox("Elevator enter/exit glitch", ts.settings.elevatorGlitch)
+    if changed then
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["elevatorGlitch"], ts.settings.elevatorGlitch) end
+        config.saveFile("data/config.json", ts.settings)
+    end
+
+    ts.settings.trainGlitch, changed = ImGui.Checkbox("Train enter/exit glitch", ts.settings.trainGlitch)
+    if changed then
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainGlitch"], ts.settings.trainGlitch) end
         config.saveFile("data/config.json", ts.settings)
     end
 

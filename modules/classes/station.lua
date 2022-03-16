@@ -85,7 +85,8 @@ function station:exitToGround(ts)
     end)
 
 	Cron.After(self.ts.settings.elevatorTime - 0.6, function()
-        utils.playEffect("fast_travel_glitch", GetPlayer())
+		if not self.ts.settings.elevatorGlitch then return end
+        utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
     end)
 end
 

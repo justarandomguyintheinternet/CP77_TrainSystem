@@ -467,7 +467,7 @@ function miscUtils.fixNoFastTravel()
     end
 end
 
-function miscUtils.playEffect(name, target)
+function miscUtils.playGlitchEffect(name, target)
     local bb = worldEffectBlackboard.new()
     GameObjectEffectHelper.StartEffectEvent(target, name, true, bb)
 end
