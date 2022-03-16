@@ -193,13 +193,18 @@ end
 function stationSys:handleExitTrain()
 	if self.ts.input.exit then
 		if self.activeTrain.playerMounted and self.trainInStation then
-			self.mountLocked = true
-			self.activeTrain:unmount()
-			utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-			Cron.After(0.25, function ()
-				self.mountLocked = false
+			utils.playEffect("fast_travel_glitch", GetPlayer())
+
+			Cron.After(0.6, function()
+				self.mountLocked = true
+				self.activeTrain:unmount()
+				utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+				Cron.After(0.25, function ()
+					self.mountLocked = false
+				end)
+				self.currentStation:tpTo(self.currentStation.trainExit)
 			end)
-			self.currentStation:tpTo(self.currentStation.trainExit)
+
 		elseif self.activeTrain.playerMounted and not self.trainInStation then
 			Game.GetPlayer():SetWarningMessage("Can't do that now!")
 		end
@@ -314,9 +319,13 @@ function stationSys:update(deltaTime)
 		if self:nearTrain() and (not self.activeTrain.playerMounted) then
 			self.ts.hud.trainVisible = true
 			if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
-				self.ts.input.interactKey = false
-				self.activeTrain:mount()
-				utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+				utils.playEffect("fast_travel_glitch", GetPlayer())
+
+				Cron.After(0.6, function()
+					self.ts.input.interactKey = false
+					self.activeTrain:mount()
+					utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+				end)
 			end
 		end
 	end
