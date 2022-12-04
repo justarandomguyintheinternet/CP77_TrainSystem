@@ -1,5 +1,6 @@
 local CPS = require("CPStyling")
 local utils = require("modules/utils/utils")
+local I18N = require("modules/utils/I18N")
 local theme = CPS.theme
 
 hud = {
@@ -38,11 +39,11 @@ end
 function hud.drawEntry()
     if hud.entryVisible then
         hud.entryVisible = false
-        utils.createInteractionHub("Enter NCART Station", "UI_Apply", true)
+        utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", true)
         hud.interactionHUDEntry = true
     else
         if hud.interactionHUDEntry then
-            utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
+            utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", false)
         end
         hud.interactionHUDEntry = false
     end
@@ -51,11 +52,11 @@ end
 function hud.drawExit()
     if hud.exitVisible then
         hud.exitVisible = false
-        utils.createInteractionHub("Exit Station", "UI_Apply", true)
+        utils.createInteractionHub(I18N.OnScreen("ingame_exit_station_msg"), "UI_Apply", true)
         hud.interactionHUDExit = true
     else
         if hud.interactionHUDExit then
-            utils.createInteractionHub("Exit Station", "UI_Apply", false)
+            utils.createInteractionHub(I18N.OnScreen("ingame_exit_station_msg"), "UI_Apply", false)
         end
         hud.interactionHUDExit = false
     end
@@ -64,11 +65,11 @@ end
 function hud.drawDoor()
     if hud.doorVisible then
         hud.doorVisible = false
-        utils.createInteractionHub("Use Door", "UI_Apply", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
+        utils.createInteractionHub(I18N.OnScreen("ingame_use_door_msg"), "UI_Apply", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
         hud.interactionHUDDoor = true
     else
         if hud.interactionHUDDoor then
-            utils.createInteractionHub("Use Door", "UI_Apply", false)
+            utils.createInteractionHub(I18N.OnScreen("ingame_use_door_msg"), "UI_Apply", false)
         end
         hud.interactionHUDDoor = false
     end
@@ -77,31 +78,32 @@ end
 function hud.drawTrain()
     if hud.trainVisible then
         hud.trainVisible = false
-        utils.createInteractionHub("Enter Train", "UI_Apply", true)
+        utils.createInteractionHub(I18N.OnScreen("ingame_enter_train_msg"), "UI_Apply", true)
         hud.interactionHUDTrain = true
     else
         if hud.interactionHUDTrain then
-            utils.createInteractionHub("Enter Train", "UI_Apply", false)
+            utils.createInteractionHub(I18N.OnScreen("ingame_enter_train_msg"), "UI_Apply", false)
         end
         hud.interactionHUDTrain = false
     end
 end
 
 function hud.drawDestinations(sys)
-    local text = "Next NCART Station:\n"
+    local text = I18N.OnScreen("ingame_next_station_msg") ..":\n"
 
     for k, d in pairs(sys.pathsData) do
+        local stationText = I18N.OnScreen(sys.stations[d.targetID].displayName)
         if k == sys.currentPathsIndex then
-            text = text .. tostring(" [X] " .. sys.stations[d.targetID].displayName .. "\n")
+            text = text .. tostring(" [X] " .. stationText .. "\n")
 
-            if observers.nextStationText ~= sys.stations[d.targetID].displayName then
+            if observers.nextStationText ~= stationText then
                 Game.GetMappinSystem():UnregisterMappin(observers.nextStationPoint)
-                observers.nextStationText = sys.stations[d.targetID].displayName
+                observers.nextStationText = stationText
                 observers.nextStationPoint = Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), sys.stations[d.targetID].trainExit.pos)
             end
 
         else
-            text = text .. tostring(" [  ] " .. sys.stations[d.targetID].displayName .. "\n")
+            text = text .. tostring(" [  ] " .. stationText .. "\n")
         end
     end
 

@@ -1,5 +1,6 @@
 local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
+local I18N = require("modules/utils/I18N")
 
 settings = {
     nativeOptions = {},
@@ -27,28 +28,28 @@ function settings.setupNative(ts)
         return
     end
 
-    nativeSettings.addTab("/trainSystem", "Metro")
-    nativeSettings.addSubcategory("/trainSystem/train", "Train Settings")
-    nativeSettings.addSubcategory("/trainSystem/station", "Station Settings")
-    nativeSettings.addSubcategory("/trainSystem/misc", "Misc Settings")
+    nativeSettings.addTab("/trainSystem", I18N.OnScreen("ns_tab_name"))
+    nativeSettings.addSubcategory("/trainSystem/train", I18N.OnScreen("ns_category_train"))
+    nativeSettings.addSubcategory("/trainSystem/station", I18N.OnScreen("ns_category_station"))
+    nativeSettings.addSubcategory("/trainSystem/misc", I18N.OnScreen("ns_category_misc"))
 
-    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", "Train Speed", "This controls the speed of the train. Gets applied next time you enter / leave a station", 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
+    settings.nativeOptions["trainSpeed"] = nativeSettings.addRangeInt("/trainSystem/train", I18N.OnScreen("no_train_speed_title"),I18N.OnScreen("no_train_speed_desc"), 1, 50, 1, ts.settings.trainSpeed, ts.defaultSettings.trainSpeed, function(value)
         ts.settings.trainSpeed = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", "Train TPP Cam Distance", "This controls the distance of the TPP camera. Gets applied next time you enter / leave a station", 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
+    settings.nativeOptions["trainTPPDist"] = nativeSettings.addRangeInt("/trainSystem/train", I18N.OnScreen("no_train_tppcam_title"),I18N.OnScreen("no_train_tppcam_desc"), 6, 30, 1, ts.settings.camDist, ts.defaultSettings.camDist, function(value)
         ts.settings.camDist = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    local list = {[1] = "Front Right", [2] = "Back Right", [3] = "Back Left", [4] = "Front Left"}
-    settings.nativeOptions["trainSeat"] = nativeSettings.addSelectorString("/trainSystem/train", "Default FPP Seat", "Decides what seat the player is in by default, after switching to FPV", list, ts.settings.defaultSeat, ts.defaultSettings.defaultSeat, function(value)
+    local list = {[1] = I18N.OnScreen("no_train_fppview_op1"), [2] = I18N.OnScreen("no_train_fppview_op2"), [3] = I18N.OnScreen("no_train_fppview_op3"), [4] = I18N.OnScreen("no_train_fppview_op4")}
+    settings.nativeOptions["trainSeat"] = nativeSettings.addSelectorString("/trainSystem/train", I18N.OnScreen("no_train_fppview_title"),I18N.OnScreen("no_train_fppview_desc"), list, ts.settings.defaultSeat, ts.defaultSettings.defaultSeat, function(value)
         ts.settings.defaultSeat = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["noHudTrain"] = nativeSettings.addSwitch("/trainSystem/train", "Hide HUD when in train", "This option hides the entire HUD when mounted to the train", ts.settings.noHudTrain, ts.defaultSettings.noHudTrain, function(state)
+    settings.nativeOptions["noHudTrain"] = nativeSettings.addSwitch("/trainSystem/train", I18N.OnScreen("no_train_hidehud_title"),I18N.OnScreen("no_train_hidehud_desc"), ts.settings.noHudTrain, ts.defaultSettings.noHudTrain, function(state)
         ts.settings.noHudTrain = state
         config.saveFile("data/config.json", ts.settings)
 
@@ -59,28 +60,28 @@ function settings.setupNative(ts)
         end
     end)
 
-    settings.nativeOptions["trainTPPOnly"] = nativeSettings.addSwitch("/trainSystem/train", "TPP Cam only", "This disables the first person mode. Use it when you experience issues with FPV", ts.settings.tppOnly, ts.defaultSettings.tppOnly, function(state)
+    settings.nativeOptions["trainTPPOnly"] = nativeSettings.addSwitch("/trainSystem/train", I18N.OnScreen("no_train_tpponly_title"),I18N.OnScreen("no_train_tpponly_desc"), ts.settings.tppOnly, ts.defaultSettings.tppOnly, function(state)
         ts.settings.tppOnly = state
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["stationHold"] = nativeSettings.addRangeFloat("/trainSystem/station", "Station Hold Time Multiplier", "Use this to in/decrease the time trains wait at stations", 0.05, 5, 0.05, "%.2f", ts.settings.holdMult, 1, function(value)
+    settings.nativeOptions["stationHold"] = nativeSettings.addRangeFloat("/trainSystem/station", I18N.OnScreen("no_station_hold_title"),I18N.OnScreen("no_station_hold_desc"), 0.05, 5, 0.05, "%.2f", ts.settings.holdMult, 1, function(value)
         ts.settings.holdMult = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["stationPrice"] = nativeSettings.addRangeInt("/trainSystem/station", "Money per station", "This controls how much you have to pay per station travelled", 1, 50, 1, ts.settings.moneyPerStation, ts.defaultSettings.moneyPerStation, function(value)
+    settings.nativeOptions["stationPrice"] = nativeSettings.addRangeInt("/trainSystem/station", I18N.OnScreen("no_station_money_title"),I18N.OnScreen("no_station_money_desc"), 1, 50, 1, ts.settings.moneyPerStation, ts.defaultSettings.moneyPerStation, function(value)
         ts.settings.moneyPerStation = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", "Elevator Duration", "This controls how long the elevator ride takes, in seconds", 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
+    settings.nativeOptions["elevatorTime"] = nativeSettings.addRangeFloat("/trainSystem/station", I18N.OnScreen("no_station_elevator_time_title"),I18N.OnScreen("no_station_elevator_time_desc"), 3, 15, 0.5, "%.2f", ts.settings.elevatorTime, ts.defaultSettings.elevatorTime, function(value)
         ts.settings.elevatorTime = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
     local list = {[1] = "Vanilla", [2] = "Spicy's E3 HUD", [3] = "Superior UI"}
-    settings.nativeOptions["uiLayout"] = nativeSettings.addSelectorString("/trainSystem/misc", "HUD Mod Fix", "If you are using the E3 HUD mod or the Superior UI mod, select them here, to make sure the \"Next Station\" text gets properly positioned and colored", list, ts.settings.uiLayout, ts.defaultSettings.uiLayout, function(value)
+    settings.nativeOptions["uiLayout"] = nativeSettings.addSelectorString("/trainSystem/misc", I18N.OnScreen("no_misc_hudfix_title"),I18N.OnScreen("no_misc_hudfix_desc"), list, ts.settings.uiLayout, ts.defaultSettings.uiLayout, function(value)
         ts.settings.uiLayout = value
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
@@ -89,28 +90,28 @@ function settings.setupNative(ts)
         end
     end)
 
-    settings.nativeOptions["unlockAllTracks"] = nativeSettings.addSwitch("/trainSystem/misc", "Force unlock all tracks", "This option can be used to unlock the entire track network even before act 1 has finished.", ts.settings.unlockAllTracks, ts.defaultSettings.unlockAllTracks, function(state)
+    settings.nativeOptions["unlockAllTracks"] = nativeSettings.addSwitch("/trainSystem/misc", I18N.OnScreen("no_misc_unlockall_title"),I18N.OnScreen("no_misc_unlockall_desc"), ts.settings.unlockAllTracks, ts.defaultSettings.unlockAllTracks, function(state)
         ts.settings.unlockAllTracks = state
         ts.trackSys:load()
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["elevatorGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Elevator Glitch Effect", "Use this to enable / disable the glitch effect that plays when entering / exiting an elevator", ts.settings.elevatorGlitch, ts.defaultSettings.elevatorGlitch, function(state)
+    settings.nativeOptions["elevatorGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", I18N.OnScreen("no_misc_elevator_glitch_title"),I18N.OnScreen("no_misc_elevator_glitch_desc"), ts.settings.elevatorGlitch, ts.defaultSettings.elevatorGlitch, function(state)
         ts.settings.elevatorGlitch = state
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["trainGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", "Train Glitch Effect", "Use this to enable / disable the glitch effect that plays when entering / exiting the train", ts.settings.trainGlitch, ts.defaultSettings.trainGlitch, function(state)
+    settings.nativeOptions["trainGlitch"] = nativeSettings.addSwitch("/trainSystem/misc", I18N.OnScreen("no_misc_train_glitch_title"),I18N.OnScreen("no_misc_train_glitch_desc"), ts.settings.trainGlitch, ts.defaultSettings.trainGlitch, function(state)
         ts.settings.trainGlitch = state
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["tppOffset"] = nativeSettings.addRangeFloat("/trainSystem/misc", "TPP Player Offset", "For the very rare case that the players head sticks out during TPP mode, lower this value to lower the players position", 1, 2, 0.1, "%.1f", ts.settings.tppOffset, ts.defaultSettings.tppOffset, function(value)
+    settings.nativeOptions["tppOffset"] = nativeSettings.addRangeFloat("/trainSystem/misc", I18N.OnScreen("no_misc_tpp_offset_title"),I18N.OnScreen("no_misc_tpp_offset_desc"), 1, 2, 0.1, "%.1f", ts.settings.tppOffset, ts.defaultSettings.tppOffset, function(value)
         ts.settings.tppOffset = value
         config.saveFile("data/config.json", ts.settings)
     end)
 
-    settings.nativeOptions["showImGui"] = nativeSettings.addSwitch("/trainSystem/misc", "Show ImGui settings UI", "Show all the settings here in a seperate ImGui window, visible when the CET overlay is opened. This option gets turned on when the CET version is too low for NativeSettings", ts.settings.showImGui, ts.defaultSettings.showImGui, function(state)
+    settings.nativeOptions["showImGui"] = nativeSettings.addSwitch("/trainSystem/misc", I18N.OnScreen("no_misc_imgui_set_title"),I18N.OnScreen("no_misc_imgui_set_desc"), ts.settings.showImGui, ts.defaultSettings.showImGui, function(state)
         ts.settings.showImGui = state
         config.saveFile("data/config.json", ts.settings)
     end)
@@ -118,21 +119,21 @@ end
 
 function settings.draw(ts) -- Draw alternative ImGui window
     ts.CPS:setThemeBegin()
-    ImGui.Begin("Metro System Config", ImGuiWindowFlags.AlwaysAutoResize)
+    ImGui.Begin(I18N.OnScreen("imgui_metro_system"), ImGuiWindowFlags.AlwaysAutoResize)
 
     if ts.observers.noSave then
         ImGui.PushStyleColor(ImGuiCol.Button, 0xff777777)
         ImGui.PushStyleColor(ImGuiCol.ButtonHovered, 0xff777777)
         ImGui.PushStyleColor(ImGuiCol.ButtonActive, 0xff777777)
-        ImGui.Button("Train Speed Not Available Right Now")
+        ImGui.Button(I18N.OnScreen("imgui_train_speed_button"))
         ImGui.PopStyleColor(3)
     else
-        ts.settings.trainSpeed, changed = ImGui.InputInt("Train Speed", ts.settings.trainSpeed)
+        ts.settings.trainSpeed, changed = ImGui.InputInt(I18N.OnScreen("no_train_speed_title"), ts.settings.trainSpeed)
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSpeed"], ts.settings.trainSpeed) end
         if changed then config.saveFile("data/config.json", ts.settings) end
     end
 
-    ts.settings.camDist, changed = ImGui.InputInt("Train TPP Cam Dist", ts.settings.camDist)
+    ts.settings.camDist, changed = ImGui.InputInt(I18N.OnScreen("no_train_tppcam_title"), ts.settings.camDist)
     ts.settings.camDist = math.min(math.max(ts.settings.camDist, 6), 22)
     if changed then
         config.saveFile("data/config.json", ts.settings)
@@ -141,7 +142,7 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.Text("Default Seat:")
 
-    if ImGui.RadioButton("Front Right", ts.settings.defaultSeat == 1) then
+    if ImGui.RadioButton(I18N.OnScreen("no_train_fppview_op1"), ts.settings.defaultSeat == 1) then
         ts.settings.defaultSeat = 1
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
@@ -149,7 +150,7 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.SameLine()
 
-    if ImGui.RadioButton("Back Right", ts.settings.defaultSeat == 2) then
+    if ImGui.RadioButton(I18N.OnScreen("no_train_fppview_op2"), ts.settings.defaultSeat == 2) then
         ts.settings.defaultSeat = 2
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
@@ -157,7 +158,7 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.SameLine()
 
-    if ImGui.RadioButton("Back Left", ts.settings.defaultSeat == 3) then
+    if ImGui.RadioButton(I18N.OnScreen("no_train_fppview_op3"), ts.settings.defaultSeat == 3) then
         ts.settings.defaultSeat = 3
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
@@ -165,13 +166,13 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.SameLine()
 
-    if ImGui.RadioButton("Front Left", ts.settings.defaultSeat == 4) then
+    if ImGui.RadioButton(I18N.OnScreen("no_train_fppview_op4"), ts.settings.defaultSeat == 4) then
         ts.settings.defaultSeat = 4
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainSeat"], ts.settings.defaultSeat) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.noHudTrain, changed = ImGui.Checkbox("Hide HUD when in train", ts.settings.noHudTrain)
+    ts.settings.noHudTrain, changed = ImGui.Checkbox(I18N.OnScreen("no_train_hidehud_title"), ts.settings.noHudTrain)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["noHudTrain"], ts.settings.noHudTrain) end
         config.saveFile("data/config.json", ts.settings)
@@ -183,7 +184,7 @@ function settings.draw(ts) -- Draw alternative ImGui window
         end
     end
 
-    ts.settings.tppOnly, changed = ImGui.Checkbox("TPP Camera only", ts.settings.tppOnly)
+    ts.settings.tppOnly, changed = ImGui.Checkbox(I18N.OnScreen("no_train_tpponly_title"), ts.settings.tppOnly)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainTPPOnly"], ts.settings.tppOnly) end
         config.saveFile("data/config.json", ts.settings)
@@ -191,20 +192,20 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.Separator()
 
-    ts.settings.holdMult, changed = ImGui.InputFloat("Station Hold Time Multiplier", ts.settings.holdMult, 1, 1000, "%.2f")
+    ts.settings.holdMult, changed = ImGui.InputFloat(I18N.OnScreen("no_station_hold_title"), ts.settings.holdMult, 1, 1000, "%.2f")
     ts.settings.holdMult = math.min(math.max(ts.settings.holdMult, 0.2), 5)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["stationHold"], ts.settings.holdMult) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.moneyPerStation, changed = ImGui.InputInt("Price per Station", ts.settings.moneyPerStation)
+    ts.settings.moneyPerStation, changed = ImGui.InputInt(I18N.OnScreen("no_station_money_title"), ts.settings.moneyPerStation)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["stationPrice"], ts.settings.moneyPerStation) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.elevatorTime, changed = ImGui.InputFloat("Elevator duration", ts.settings.elevatorTime, 3, 15, "%.1f")
+    ts.settings.elevatorTime, changed = ImGui.InputFloat(I18N.OnScreen("no_station_elevator_time_title"), ts.settings.elevatorTime, 3, 15, "%.1f")
     ts.settings.elevatorTime = math.min(math.max(ts.settings.elevatorTime, 3), 15)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["elevatorTime"], ts.settings.elevatorTime) end
@@ -213,14 +214,14 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ImGui.Separator()
 
-    ts.settings.tppOffset, changed = ImGui.InputFloat("TPP Player height offset", ts.settings.tppOffset, 1, 2, "%.1f")
+    ts.settings.tppOffset, changed = ImGui.InputFloat(I18N.OnScreen("no_misc_tpp_offset_title"), ts.settings.tppOffset, 1, 2, "%.1f")
     ts.settings.tppOffset = math.min(math.max(ts.settings.tppOffset, 1), 2)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["tppOffset"], ts.settings.tppOffset) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ImGui.Text("HUD Mod Fix:")
+    ImGui.Text(I18N.OnScreen("no_misc_hudfix_title")..":")
 
     if ImGui.RadioButton("Vanilla", ts.settings.uiLayout == 1) then
         ts.settings.uiLayout = 1
@@ -256,20 +257,20 @@ function settings.draw(ts) -- Draw alternative ImGui window
         end
     end
 
-    ts.settings.unlockAllTracks, changed = ImGui.Checkbox("Force unlock all tracks", ts.settings.unlockAllTracks)
+    ts.settings.unlockAllTracks, changed = ImGui.Checkbox(I18N.OnScreen("no_misc_unlockall_title"), ts.settings.unlockAllTracks)
     if changed then
         ts.trackSys:load()
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["unlockAllTracks"], ts.settings.unlockAllTracks) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.elevatorGlitch, changed = ImGui.Checkbox("Elevator enter/exit glitch", ts.settings.elevatorGlitch)
+    ts.settings.elevatorGlitch, changed = ImGui.Checkbox(I18N.OnScreen("no_misc_elevator_glitch_msg"), ts.settings.elevatorGlitch)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["elevatorGlitch"], ts.settings.elevatorGlitch) end
         config.saveFile("data/config.json", ts.settings)
     end
 
-    ts.settings.trainGlitch, changed = ImGui.Checkbox("Train enter/exit glitch", ts.settings.trainGlitch)
+    ts.settings.trainGlitch, changed = ImGui.Checkbox(I18N.OnScreen("no_misc_train_glitch_msg"), ts.settings.trainGlitch)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["trainGlitch"], ts.settings.trainGlitch) end
         config.saveFile("data/config.json", ts.settings)
