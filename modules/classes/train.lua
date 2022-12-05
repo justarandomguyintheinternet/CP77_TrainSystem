@@ -1,6 +1,7 @@
 local object = require("modules/classes/object")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
+local I18N = require("module/utils/I18N")
 
 train = {}
 
@@ -242,7 +243,7 @@ function train:update(deltaTime)
 						utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
 					end)
 				else
-					Game.GetPlayer():SetWarningMessage("Can't switch when in this seat!")
+					Game.GetPlayer():SetWarningMessage(I18N.OnScreen("warn_cant_switch_seats"))
 				end
 			end
 		end

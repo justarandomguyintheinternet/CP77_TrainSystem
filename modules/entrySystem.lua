@@ -2,6 +2,7 @@ local entry = require("modules/classes/entry")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
 local settings = require("modules/utils/GameSettings")
+local I18N = require("modules/utils/I18N")
 
 entrySys = {}
 
@@ -105,7 +106,7 @@ function entrySys:enter(entry)
     Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
     Game.ChangeZoneIndicatorSafe()
 
-    utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
+    utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", false)
     self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")
     settings.Set("/interface/hud/input_hints", false)
 
@@ -153,13 +154,13 @@ function entrySys:looksAtEntry(closest)
         if (target:GetClassName().value == "DataTerm" and not closest.useDoors) or (target:GetClassName().value == "FakeDoor" and closest.useDoors) then
             if utils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < self.maxDistToEntry then
                 looksAt = true
-                utils.createInteractionHub("Enter NCART Station", "UI_Apply", true)
+                utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", true)
             else
-                utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
+                utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", false)
             end
         end
     else
-        utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
+        utils.createInteractionHub(I18N.OnScreen("ingame_enter_station_msg"), "UI_Apply", false)
     end
     return looksAt
 end
