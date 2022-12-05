@@ -1,12 +1,11 @@
 --[[
 I18n.lua
-Internationalization Library
-A tool to allow translators to create 
+Internationalization Manager
 
 Copyright (c) 2022 llicursi
 ]]
 
-local I18N = { version = "1.0.0" }
+local I18N = { version = "1.0.1" }
 
 ---@class LanguageOption
 local LanguageOption = {
@@ -40,12 +39,15 @@ end
 
 local settingsLanguage = {}
 local options = {}
-for name, index in pairs(LanguageOption) do
-    settingsLanguage[index] = GetCurrentLanguage(index)
-    options[index] = {
-        default = LoadLanguageFile(name),
-        lang = LoadLanguageFile(name, settingsLanguage[index])
-    }
+-- Loads the configurations when Game is available
+function I18N.Load()
+    for name, index in pairs(LanguageOption) do
+        settingsLanguage[index] = GetCurrentLanguage(index)
+        options[index] = {
+            default = LoadLanguageFile(name),
+            lang = LoadLanguageFile(name, settingsLanguage[index])
+        }
+    end
 end
 
 ---@param languageLibrary any
@@ -58,10 +60,19 @@ end
 ---@param langKey String
 ---@return String 
 local function GetCurrLangOrDefault(languageOption, langKey)
+    if options == nil or next(options) == nil then
+        if Game then
+            I18N.Load()
+        else 
+            return langKey
+        end
+    end
     local i18nValue = GetI18NValue(options[languageOption].lang, langKey)
     if not i18nValue then
         -- Checks default language
         i18nValue = GetI18NValue(options[languageOption].default, langKey)
+    else 
+        print("[I18N] GetCurrLangOrDefault(".. languageOption.."," .. langKey..")" )
     end
     return i18nValue and i18nValue or langKey
 end

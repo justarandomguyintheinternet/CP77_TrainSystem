@@ -46,5 +46,8 @@
     "ingame_use_door_msg": "Usar Porta",
     "ingame_enter_train_msg": "Entrar no trem",
     "ingame_next_station_msg": "Próxima Estação",
+    "--------------Other-------------------":"",
+    "warn_cant_switch_seats": "Impossivel trocar de banco agora!",
+    "warn_cant_do_that": "Não pode fazer isso agora!",
     "":""
 }

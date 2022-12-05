@@ -2,6 +2,7 @@ local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
 local train = require("modules/classes/train")
+local I18N = require("modules/classes/I18N")
 
 stationSys = {}
 
@@ -214,7 +215,7 @@ function stationSys:handleExitTrain()
 			end)
 
 		elseif self.activeTrain.playerMounted and not self.trainInStation then
-			Game.GetPlayer():SetWarningMessage("Can't do that now!")
+			Game.GetPlayer():SetWarningMessage(I18N.OnScreen("warn_cant_do_that"))
 		end
 	end
 end

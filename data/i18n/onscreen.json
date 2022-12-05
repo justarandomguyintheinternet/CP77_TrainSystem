@@ -49,5 +49,8 @@
     "ingame_use_door_msg": "Use Door",
     "ingame_enter_train_msg": "Enter Train",
     "ingame_next_station_msg": "Next NCART Station",
+    "--------------Other-------------------":"",
+    "warn_cant_switch_seats": "Can't switch when in this seat!",
+    "warn_cant_do_that": "Can't do that now!",
     "": ""
 }
