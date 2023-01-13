@@ -79,10 +79,10 @@ end
 
 function miscUtils.looksAtDoor(dist)
     local looksAt = false
-    local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
+    local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, false)
     if target then
         if target:GetClassName().value == "FakeDoor" then
-            if miscUtils.distanceVector(target:GetWorldPosition(), Game.GetPlayer():GetWorldPosition()) < dist then
+            if miscUtils.distanceVector(target:GetWorldPosition(), GetPlayer():GetWorldPosition()) < dist then
                 looksAt = true
             end
         end
@@ -119,8 +119,6 @@ function miscUtils.togglePin(data, name, state, pos, variant)
 end
 
 function miscUtils.mount(entID, seat)
-    local player = Game.GetPlayer()
-
     local data = NewObject('handle:gameMountEventData')
     data.isInstant = true
     data.slotName = seat
@@ -131,7 +129,7 @@ function miscUtils.mount(entID, seat)
     slotID.id = seat
 
     local mountingInfo = NewObject('gamemountingMountingInfo')
-    mountingInfo.childId = player:GetEntityID()
+    mountingInfo.childId = GetPlayer():GetEntityID()
     mountingInfo.parentId = entID
     mountingInfo.slotId = slotID
 
@@ -145,7 +143,7 @@ end
 function miscUtils.unmount()
     local event = gamemountingUnmountingRequest.new()
     local info = gamemountingMountingInfo.new()
-    info.childId = Game.GetPlayer():GetEntityID()
+    info.childId = GetPlayer():GetEntityID()
     event.lowLevelMountingInfo = info
     event.mountData = gameMountEventData.new()
     event.mountData.isInstant = true
@@ -156,7 +154,7 @@ end
 function miscUtils.switchCarCam(perspectiveEnum)
     local event = NewObject("handle:vehicleRequestCameraPerspectiveEvent")
     event.cameraPerspective = Enum.new("vehicleCameraPerspective", perspectiveEnum)
-    Game.GetPlayer():QueueEvent(event)
+    GetPlayer():QueueEvent(event)
 end
 
 function miscUtils.reversePoint(point)
@@ -191,15 +189,6 @@ function miscUtils.reversePointPitch(point)
     return newPoint
 end
 
-function miscUtils.setRadioStation(vehicle, stationID) -- -1 means off
-    if stationID ~= -1 then
-        vehicle:ToggleRadioReceiver(true)
-        vehicle:SetRadioReceiverStation(stationID)
-    else
-        vehicle:ToggleRadioReceiver(false)
-    end
-end
-
 function miscUtils.addVector(v1, v2)
     return Vector4.new(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z, v1.w + v2.w)
 end
@@ -229,47 +218,12 @@ function miscUtils.isVector(v1, v2) -- Returns true if two vectors are the same
 end
 
 function miscUtils.calcDeltaEuler(eul1, eul2)
-    local delta = EulerAngles.new(0, 0, 0)
-
-    local deltaRoll = eul1.roll - eul2.roll
-    local altDeltaRoll = (180 - math.abs(eul1.roll)) + (180 - math.abs(eul2.roll))
-    if eul1.roll > eul2.roll then
-        altDeltaRoll = - altDeltaRoll
-    end
-    if math.abs(deltaRoll) < math.abs(altDeltaRoll) then
-        delta.roll = deltaRoll
-    else
-        delta.roll = altDeltaRoll
-    end
-
-    local deltaPitch = eul1.pitch - eul2.pitch
-    local altDeltaPitch = (180 - math.abs(eul1.pitch)) + (180 - math.abs(eul2.pitch))
-    if eul1.pitch > eul2.pitch then
-        altDeltaPitch = - altDeltaPitch
-    end
-    if math.abs(deltaPitch) < math.abs(altDeltaPitch) then
-        delta.pitch = deltaPitch
-    else
-        delta.pitch = altDeltaPitch
-    end
-
-    local deltaYaw = eul1.yaw - eul2.yaw
-    local altDeltaYaw = (180 - math.abs(eul1.yaw)) + (180 - math.abs(eul2.yaw))
-    if eul1.yaw > eul2.yaw then
-        altDeltaYaw = - altDeltaYaw
-    end
-    if math.abs(deltaYaw) < math.abs(altDeltaYaw) then
-        delta.yaw = deltaYaw
-    else
-        delta.yaw = altDeltaYaw
-    end
-
-    return delta
+    return EulerAngles.new(AngleDistance(eul1.roll, eul2.roll), AngleDistance(eul1.pitch, eul2.pitch), AngleDistance(eul1.yaw, eul2.yaw))
 end
 
 function miscUtils.spawnObject(path, pos, rot, appearance)
     local app = appearance or ""
-    local transform = Game.GetPlayer():GetWorldTransform()
+    local transform = GetPlayer():GetWorldTransform()
     transform:SetOrientation(rot)
     transform:SetPosition(pos)
     local entityID = exEntitySpawner.Spawn(path, transform, app)
@@ -317,56 +271,22 @@ function miscUtils.createInteractionHub(titel, action, active)
 end
 -- ^^^^ All this code has been created by psiberx ^^^^
 
-function miscUtils.setupTPPCam(dist)
-    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_High_Far.boomLength", dist)
+function miscUtils.setupTPPCam(dist, autoCenter)
+    TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_High_Far.boomLength", dist)
+    TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_Low_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", dist)
-    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", dist)
-    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 150000)
-    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 150000)
 
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireRadius", 0.08)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireRadius", 0.08)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.wheelOffset", 16)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.wheelOffset", 16)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.rimRadius", 0.05)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.rimRadius", 0.05)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireWidth", 0.05)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireWidth", 0.05)
-
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireRadius", 0.08)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireRadius", 0.08)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.wheelOffset", 16)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.wheelOffset", 16)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.rimRadius", 0.05)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.rimRadius", 0.05)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireWidth", 0.05)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireWidth", 0.05)
+    if autoCenter then return end
+    TweakDB:SetFlat("Camera.VehicleTPP_DefaultParams.autoCenterStartTimeMouse", 999999999)
+    TweakDB:SetFlat("Camera.VehicleTPP_DefaultParams.autoCenterStartTimeGamepad", 999999999)
 end
 
 function miscUtils.removeTPPTweaks()
-    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_High_Far.boomLength", 4.500000)
-    TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", 4.500000)
-    TweakDB:SetFlat("Camera.VehicleTPP_Brennan_Preset_Low_Far.boomLength", 4.500000)
-    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeMouse", 2.000000)
-    TweakDB:SetFlat("Camera.VehicleTPP_2w_DefaultParams.autoCenterStartTimeGamepad", 0.5)
-
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireRadius", 0.460000)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireRadius", 0.460000)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.wheelOffset", 0)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.wheelOffset", -0.070000)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.rimRadius", 0.24)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.rimRadius", 0.24)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline6.tireWidth", 0.33)
-    TweakDB:SetFlat("Vehicle.v_mahir_mt28_coach_inline7.tireWidth", 0.47)
-
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireRadius", 0.305000)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireRadius", 0.305000)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.wheelOffset", 0)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.wheelOffset", 0)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.rimRadius", 0.3)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.rimRadius", 0.3)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline3.tireWidth", 0.13)
-    TweakDB:SetFlat("Vehicle.v_sportbike3_brennan_apollo_inline4.tireWidth", 0.15)
+    TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_High_Far.boomLength", 4.5)
+    TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_Low_Far.boomLength", 4.5)
+    TweakDB:SetFlat("Camera.VehicleTPP_Default_Preset_Low_Far.boomLength", 4.5)
+    TweakDB:SetFlat("Camera.VehicleTPP_DefaultParams.autoCenterStartTimeMouse", 2)
+    TweakDB:SetFlat("Camera.VehicleTPP_DefaultParams.autoCenterStartTimeGamepad", 0.5)
 end
 
 function miscUtils.showInputHint(key, text, container, prio, holdAnimation)
@@ -406,7 +326,6 @@ function miscUtils.forceStop(ts)
 
         if ts.stationSys.activeTrain then
             ts.observers.noSave = false
-            ts.observers.noKnockdown = false
             ts.observers.noFastTravel = false
             ts.observers.activatedGate = false
             pcall(function()
@@ -421,7 +340,7 @@ function miscUtils.forceStop(ts)
             settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
             miscUtils.togglePin(ts.stationSys, "exit", false)
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
+            Game.GetTeleportationFacility():Teleport(GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
 
             ts.entrySys = require("modules/entrySystem"):new(ts)
             ts.stationSys = require("modules/stationSystem"):new(ts)
@@ -435,10 +354,17 @@ function miscUtils.forceStop(ts)
     end
 end
 
-function miscUtils.playAudio(target, clipName)
-    local audioEvent = SoundPlayEvent.new()
-    audioEvent.soundName = clipName
-    target:QueueEvent(audioEvent)
+function miscUtils.playAudio(target, name, mult)
+    local m = mult or 1
+    local t = target or GetPlayer()
+
+    for _ = 1, m do
+        local audioEvent = SoundPlayEvent.new ()
+        audioEvent.soundName = name
+        t:QueueEvent(audioEvent)
+    end
+
+    t = nil
 end
 
 function miscUtils.stopAudio(target, clipName)
@@ -448,7 +374,7 @@ function miscUtils.stopAudio(target, clipName)
 end
 
 function miscUtils.toggleHUD(state)
-    if not Game.GetPlayer() then return end
+    if not GetPlayer() then return end
 
     if state then
         Game.GetUISystem():ResetGameContext()
@@ -490,6 +416,17 @@ function miscUtils.generateHUDColor(type)
     elseif type == 3 then -- Superior
         return HDRColor.new({ Red = 1, Green = 1, Blue = 1, Alpha = 0.95 })
     end
+end
+
+function miscUtils.addTrainVehicle()
+    TweakDB:CloneRecord("Vehicle.train", "Vehicle.cs_savable_mahir_mt28_coach")
+    TweakDB:SetFlat("Vehicle.train.entityTemplatePath", "base\\vehicles\\special\\custom_coach.ent")
+
+    local vehicles = TweakDB:GetFlat('Vehicle.vehicle_list.list')
+	table.insert(vehicles, "Vehicle.train")
+	TweakDB:SetFlat('Vehicle.vehicle_list.list', vehicles)
+
+    Game.GetVehicleSystem():EnablePlayerVehicle("Vehicle.train", true, false)
 end
 
 return miscUtils

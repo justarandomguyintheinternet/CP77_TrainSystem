@@ -79,7 +79,6 @@ function loadedUI.drawData(data, id, debug)
         end
         loadedUI[type][id] = nil
         debug.baseUI.editUI.deleteAllPins(data)
-        debug.baseUI.editUI.deleteAllObjects(data)
     end
 
     ImGui.EndChild()

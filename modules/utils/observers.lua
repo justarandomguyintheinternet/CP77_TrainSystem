@@ -1,12 +1,11 @@
-Cron = require("modules/utils/Cron")
-utils = require("modules/utils/utils")
+local utils = require("modules/utils/utils")
+local lang = require("modules/utils/lang")
 
 observers = {
     noFastTravel = false,
     noTrains = false,
     activatedGate = false,
     noSave = false,
-    noKnockdown = false,
     timetableValue = 0,
     trainIDS = {},
     ts = nil,
@@ -14,7 +13,6 @@ observers = {
     onMap = false,
     worldMap = nil,
     timeDilation = 1,
-    radioIndex = -1,
     popupManager = nil,
     radioPopupActive = false,
     ftKeys = {}
@@ -103,7 +101,7 @@ function observers.start(ts)
     end)
 
     Observe("WorldMapMenuGameController", "RefreshInputHints", function ()
-        utils.showInputHint("UI_Apply", "Track closest NCART Station", "WorldMapInputHints", 10)
+        utils.showInputHint("UI_Apply", lang.getText("track_closest_station"), "WorldMapInputHints", 10)
     end)
 
     Observe('QuestTrackerGameController', 'OnInitialize', function(self)
@@ -128,24 +126,18 @@ function observers.start(ts)
         observers.hudText = label
     end)
 
-    Override('hudCarController', 'OnMountingEvent', function(this)
+    ObserveAfter('hudCarController', 'OnMountingEvent', function(this)
         if observers.noSave then
-            this.activeVehicle = GetMountedVehicle(GetPlayer())
-            this.driver = VehicleComponent.IsDriver(GetPlayer())
-            this:RegisterToVehicle(true)
-            this:Reset()
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(false)
         else
-            this.activeVehicle = GetMountedVehicle(GetPlayer())
-            this.driver = VehicleComponent.IsDriver(GetPlayer())
-            this:GetRootWidget():SetVisible(false)
-            this:RegisterToVehicle(true)
-            this:Reset()
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(true)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(true)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(true)
+            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(true)
         end
-        collectgarbage()
     end)
 
     Override("gameScriptableSystem", "IsSavingLocked", function(_, wrapped)
@@ -158,45 +150,24 @@ function observers.start(ts)
 
     Observe("VehicleComponent", "OnGameAttach", function(self)
         if observers.noTrains then
-            if "vehicleAVBaseObject" == self:GetVehicle():GetClassName().value then
-                if ts.stationSys.activeTrain ~= nil and ts.stationSys.activeTrain.trainObject.spawned and self:GetVehicle():GetEntityID().hash ~= ts.stationSys.activeTrain.trainObject.entID.hash then
-                    table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
-                end
-                if ts.stationSys.activeTrain == nil then
-                    table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
-                end
+            if self:FindComponentByName("public_train_a") then
+                table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
             end
         end
     end)
 
-    Observe("VehicleRadioPopupGameController", "Activate", function(this)
-        if not observers.noSave then return end
-        observers.radioIndex = this.selectedItem:GetStationData().record:Index()
+    Override("VehicleComponent", "CreateMappin", function(this, wrapped)
+        if LocKeyToString(this:GetVehicle():GetRecord():DisplayName()) == "LocKey#23422" then
+            return
+        end
+        wrapped()
     end)
 
-    Override("CollisionExitingEvents", "OnEnter", function (this, stateContext, scriptInterface)
-        if not observers.noKnockdown then
-            local collisionDirection = Vector4.new(0.00, 0.00, 0.00, 0.00)
-            local stackcount = 1
-
-            ImmediateExitWithForceEvents.OnEnter(this, stateContext, scriptInterface)
-            local impulse = stateContext:GetTemporaryVectorParameter("ExitForce")
-            if impulse.valid then
-                collisionDirection = -impulse.value
-            end
-
-            local statusEffectRecord = TweakDBInterface.GetStatusEffectRecord("BaseStatusEffect.BikeKnockdown")
-            Game.GetStatusEffectSystem():ApplyStatusEffect(scriptInterface.executionOwner:GetEntityID(), statusEffectRecord:GetID(), scriptInterface.owner:GetTDBID(), scriptInterface.owner:GetEntityID(), stackcount, collisionDirection)
-            this.animFeatureStatusEffect = AnimFeature_StatusEffect.new()
-            StatusEffectHelper.PopulateStatusEffectAnimData(scriptInterface.executionOwner, statusEffectRecord, EKnockdownStates.Start, collisionDirection)
-            scriptInterface:SetAnimationParameterFeature("StatusEffect", this.animFeatureStatusEffect, scriptInterface.executionOwner)
-            stateContext:SetPermanentFloatParameter(StatusEffectHelper.GetStateStartTimeKey(), EngineTime.ToFloat(Game.GetPlayer()), true)
-            stateContext:SetPermanentScriptableParameter(StatusEffectHelper.GetForceKnockdownKey(), statusEffectRecord, true)
-            if this.exitForce.valid then
-                stateContext:SetPermanentVectorParameter(StatusEffectHelper.GetForcedKnockdownImpulseKey(), this.exitForce.value, true)
-            end
-            this:PlaySound("v_mbike_dst_crash_fall", scriptInterface)
+    Override("VehicleComponent", "OnSummonFinishedEvent", function(this, wrapped)
+        if LocKeyToString(this:GetVehicle():GetRecord():DisplayName()) == "LocKey#23422" then
+            return
         end
+        wrapped()
     end)
 
     Override("DataTerm", "OnOpenWorldMapAction", function(_, evt, wrapped)

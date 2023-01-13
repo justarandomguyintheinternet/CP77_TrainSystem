@@ -17,7 +17,6 @@ function stationSys:new(ts)
 	o.holdTime = 10
 	o.activeTrain = nil
 	o.trainInStation = false
-	o.canRespawnBus = true
 
 	o.pathsData = {}
 	o.currentPathsIndex = 0
@@ -50,7 +49,7 @@ function stationSys:enter() -- TP to station, toggle pin
 	self.currentStation:tpTo(self.currentStation.portalPoint)
 	self.onStation = true
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-	utils.setupTPPCam(self.ts.settings.camDist)
+	utils.setupTPPCam(self.ts.settings.camDist, self.ts.settings.autoCenter)
 end
 
 function stationSys:loadStation(id) -- Load station objects, start train spawning
@@ -153,15 +152,17 @@ function stationSys:leave() -- Leave to ground level
 			self.activeTrain = nil
 		end
 		utils.removeTPPTweaks()
+		Game.GetVehicleSystem():TogglePlayerActiveVehicle(GarageVehicleID.Resolve("Vehicle.v_standard2_archer_hella_player"), gamedataVehicleType.Car, true)
 	end)
 end
 
 function stationSys:nearTrain()
-	if not Game.FindEntityByID(self.activeTrain.carObject.entID) then return end
+	local train = self.activeTrain:getEntity()
+	if not train then return end
 	local maxDiff = 45
 	local near = false
 
-	local offset = utils.multVector(Game.FindEntityByID(self.activeTrain.carObject.entID):GetWorldForward(), 2)
+	local offset = utils.multVector(train:GetWorldForward(), 2)
 	local diff1 = Vector4.GetAngleBetween(utils.subVector(self.activeTrain.pos, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
 	local pos2 = utils.addVector(self.activeTrain.pos, offset)
 	local diff2 = Vector4.GetAngleBetween(utils.subVector(pos2, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
@@ -169,29 +170,11 @@ function stationSys:nearTrain()
 	local diff3 = Vector4.GetAngleBetween(utils.subVector(pos3, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
 
 	if diff1 < maxDiff or diff2 < maxDiff or diff3 < maxDiff then
-		if utils.distanceVector(self.activeTrain.pos, Game.GetPlayer():GetWorldPosition()) < 6 then
+		if utils.distanceVector(self.activeTrain.pos, GetPlayer():GetWorldPosition()) < 6 then
 			near = true
 		end
 	end
 	return near
-end
-
-function stationSys:collidesWithTrain()
-	if not Game.FindEntityByID(self.activeTrain.carObject.entID) then return end
-	local maxDist = 2.4
-	local inside = false
-
-	local offset = utils.multVector(Game.FindEntityByID(self.activeTrain.carObject.entID):GetWorldForward(), 2)
-	local diff1 = utils.distanceVector(GetPlayer():GetWorldPosition(), self.activeTrain.pos)
-	local pos2 = utils.addVector(self.activeTrain.pos, offset)
-	local diff2 = utils.distanceVector(GetPlayer():GetWorldPosition(), pos2)
-	local pos3 = utils.subVector(self.activeTrain.pos, offset)
-	local diff3 = utils.distanceVector(GetPlayer():GetWorldPosition(), pos3)
-
-	if diff1 < maxDist or diff2 < maxDist or diff3 < maxDist then
-		inside = true
-	end
-	return inside
 end
 
 function stationSys:handleExitTrain()
@@ -204,9 +187,9 @@ function stationSys:handleExitTrain()
 			end
 
 			Cron.After(t, function()
-				self.mountLocked = true
 				self.activeTrain:unmount()
 				utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+				self.mountLocked = true
 				Cron.After(0.25, function ()
 					self.mountLocked = false
 				end)
@@ -214,19 +197,7 @@ function stationSys:handleExitTrain()
 			end)
 
 		elseif self.activeTrain.playerMounted and not self.trainInStation then
-			Game.GetPlayer():SetWarningMessage("Can't do that now!")
-		end
-	end
-end
-
-function stationSys:checkBus()
-	if not Game.FindEntityByID(self.activeTrain.busObject.entID) then
-		if self.canRespawnBus then
-			self.activeTrain:spawnBus()
-			self.canRespawnBus = false
-			Cron.After(1.0, function ()
-				self.canRespawnBus = true
-			end)
+			GetPlayer():SetWarningMessage(GetLocalizedText("LocKey#49538"))
 		end
 	end
 end
@@ -250,7 +221,7 @@ end
 function stationSys:update(deltaTime)
 	if self.currentStation then
 		self.currentStation:update()
-		if not self.currentStation:inStation() and not self.activeTrain.playerMounted and self.onStation then
+		if not self.currentStation:inStation() and not self.activeTrain.playerMounted and self.onStation then -- Wandered off
 			self.currentStation:tpTo(self.currentStation.portalPoint)
 		end
 		if self.currentStation:nearExit() then
@@ -275,23 +246,18 @@ function stationSys:update(deltaTime)
 		self.ts.hud.destVisible = true
 	end
 
-	if self.activeTrain ~= nil then
+	if self.activeTrain then
 		self.activeTrain:update(deltaTime)
 		if self.activeTrain.justArrived then
 			self.activeTrain.justArrived = false
 			self.trainInStation = true
 
 			if self.activeTrain.playerMounted then
-				local tdbid = TweakDBID.new("Items.money")
-				local moneyId = gameItemID.FromTDBID(tdbid)
-				Game.GetTransactionSystem():RemoveItem(Game.GetPlayer(), moneyId, self.ts.settings.moneyPerStation)
+				Game.GetTransactionSystem():RemoveItem(GetPlayer(), gameItemID.FromTDBID(TweakDBID.new("Items.money")), self.ts.settings.moneyPerStation)
 			end
-
-			--print("previous station id", self.previousStationID, " curren one is ", self.currentStation.id)
 
 			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
 				self.onStation = true
-				--print("previous station id was", self.previousStationID, "new curren one is ", self.currentStation.id)
 				self:requestPaths()
 				self.previousStationID = self.currentStation.id
 				self.currentPathsIndex = self.currentPathsIndex + 1
@@ -315,9 +281,8 @@ function stationSys:update(deltaTime)
 
 		if self.activeTrain.playerMounted and not self.trainInStation then
 			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
-			self:checkBus()
 		else
-			StatusEffectHelper.RemoveStatusEffect(Game.GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+			StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
 		end
 
 		self:handleExitTrain()
@@ -342,13 +307,7 @@ function stationSys:update(deltaTime)
 		end
 	end
 
-	if self.activeTrain ~= nil and not self.activeTrain.playerMounted then
-		if self:collidesWithTrain() then
-			self.currentStation:tpTo(self.currentStation.trainExit)
-		end
-	end
-
-	if self.ts.observers.noSave then -- aka mod is active
+	if self.ts.observers.noSave then -- Mod is active
 		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
 		Game.ChangeZoneIndicatorSafe()
 

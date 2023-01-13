@@ -17,7 +17,7 @@ function utilUI.draw()
     ImGui.Separator()
 
     if ImGui.Button("Set Sticky Target") then
-        utilUI.target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
+        utilUI.target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, false)
     end
     utilUI.sticky = ImGui.Checkbox("Sticky Player", utilUI.sticky)
     ImGui.SameLine()

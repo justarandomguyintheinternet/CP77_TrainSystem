@@ -7,7 +7,6 @@ function debug.run(ts)
         debug.baseUI.draw(debug)
     end
     debug.baseUI.loadedUI.update()
-    debug.baseUI.editUI.update()
     debug.baseUI.utilUI.update()
 end
 

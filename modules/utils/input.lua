@@ -54,22 +54,14 @@ function input.startInputObserver(ts)
                 if not ts.stationSys.activeTrain then return end
                 if not ts.stationSys.activeTrain.playerMounted then return end
                 if ts.stationSys.activeTrain.perspective ~= "fpp" then return end
-                if ts.stationSys.activeTrain.currentSeat == 4 then return end
-                if ts.observers.popupManager then
-                    ts.observers.popupManager:SpawnVehicleRadioPopup()
-                    ts.observers.radioPopupActive = true
-                end
+                ts.observers.radioPopupActive = true
             end
         elseif actionName == 'DescriptionChange' then
             if actionType == 'BUTTON_PRESSED' then
                 if not ts.stationSys.activeTrain then return end
                 if not ts.stationSys.activeTrain.playerMounted then return end
                 if ts.stationSys.activeTrain.perspective ~= "fpp" then return end
-                if ts.stationSys.activeTrain.currentSeat == 4 then return end
-                if ts.observers.popupManager then
-                    ts.observers.popupManager:SpawnVehicleRadioPopup()
-                    ts.observers.radioPopupActive = true
-                end
+                ts.observers.radioPopupActive = true
             end
         end
     end)

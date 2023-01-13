@@ -1,1 +1,37 @@
-{"elevatorPath":"base\\gameplay\\devices\\elevators\\appearances\\common_elevator_a_blue_1_entrance_hatch.ent","center":{"y":459.85015869141,"x":-1465.3981933594,"z":5.8168792724609,"w":1},"waypointPosition":{"y":442.60232543945,"x":-1453.8189697266,"z":6.8972854614258,"w":1},"elevatorTime":5,"secondaryPosition":{"y":0,"x":0,"z":0,"w":0},"stationID":4,"useSecondaryElevator":false,"useDoors":false,"elevatorPlayerRotation":{"yaw":-90.367240905762,"roll":0,"pitch":0},"radius":16,"elevatorPosition":{"y":469.66906738281,"x":-1449.9169921875,"z":43.649353027344,"w":1}}
+{
+    "elevatorPath": "base\\gameplay\\devices\\elevators\\appearances\\common_elevator_a_blue_1_entrance_hatch.ent",
+    "center": {
+        "y": 459.85015869141,
+        "x": -1465.3981933594,
+        "z": 5.8168792724609,
+        "w": 1
+    },
+    "waypointPosition": {
+        "y": 442.60232543945,
+        "x": -1453.8189697266,
+        "z": 6.8972854614258,
+        "w": 1
+    },
+    "elevatorTime": 5,
+    "secondaryPosition": {
+        "y": 0,
+        "x": 0,
+        "z": 0,
+        "w": 0
+    },
+    "stationID": 4,
+    "useSecondaryElevator": false,
+    "useDoors": false,
+    "elevatorPlayerRotation": {
+        "yaw": -90.367240905762,
+        "roll": 0,
+        "pitch": 0
+    },
+    "radius": 16,
+    "elevatorPosition": {
+        "y": 469.66906738281,
+        "x": -1449.9169921875,
+        "z": 43.649353027344,
+        "w": 1
+    }
+}

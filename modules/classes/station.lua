@@ -22,8 +22,6 @@ function station:new(ts)
 	o.exitDoorPosition = Vector4.new(0, 0, 0, 0)
 	o.exitDoorSealed = true
 
-	o.soundID = nil
-
 	o.spawnOffset = -10
 
 	o.radius = 0
@@ -38,48 +36,46 @@ function station:new(ts)
 end
 
 function station:tpTo(point)
-	Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), point.pos,  point.rot:ToEulerAngles()) -- Fuck this shit and its stoopid rotation / fuck unmount
-	Cron.After(0.25, function ()
-		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), point.pos,  point.rot:ToEulerAngles())
-	end)
+	Game.GetTeleportationFacility():Teleport(GetPlayer(), point.pos,  point.rot:ToEulerAngles()) -- Fuck this shit and its stoopid rotation / fuck unmount
 end
 
 function station:exitToGround(ts)
 	local entry = ts.entrySys:findEntryByID(self.id)
 
-	local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(1.1, 0, 0, 0))-- Adjusted to make the player stand less in front of the wall
-    local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(1.1, 0, 0, 0))
+	local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(0, 1.1, 0, 0))-- Adjusted to make the player stand less in front of the wall
+    local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(0, 1.1, 0, 0))
 
 	if entry.useSecondaryElevator then
-        local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
+        --local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
+            Game.GetTeleportationFacility():Teleport(GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         end)
-        Cron.After(self.ts.settings.elevatorTime, function ()
-			exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
-            secondID = nil
-        end)
+        -- Cron.After(self.ts.settings.elevatorTime, function ()
+		-- 	exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
+        --     secondID = nil
+        -- end)
     else
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end
 
 	self.loaded = false
 	self:despawn()
 
-	self.soundID = utils.spawnObject("base\\fx\\meshes\\cyberparticles\\q110_blackwall.ent", entry.elevatorPosition, Quaternion.new(0, 0, 0, 0))
+	utils.playAudio(GetPlayer(), "dev_elevator_02_movement_start", 3)
 
     Cron.After(self.ts.settings.elevatorTime, function ()
         ts.observers.noSave = false
 		ts.observers.noTrains = false
-		ts.observers.noKnockdown = false
 		local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
-		rmStatus(Game.GetPlayer(), "GameplayRestriction.NoCombat")
+		rmStatus(GetPlayer(), "GameplayRestriction.NoCombat")
 
 		Game.ChangeZoneIndicatorPublic()
-		Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), self.groundPoint.pos,  self.groundPoint.rot:ToEulerAngles())
+		Game.GetTeleportationFacility():Teleport(GetPlayer(), self.groundPoint.pos,  self.groundPoint.rot:ToEulerAngles())
 
-		exEntitySpawner.Despawn(Game.FindEntityByID(self.soundID))
+		utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
+        utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
+
 		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
 		settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
     end)
@@ -91,34 +87,34 @@ function station:exitToGround(ts)
 end
 
 function station:spawn()
-	for _, o in pairs(self.objects) do
-		local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat(), o.app)
-        table.insert(self.objectIDS, id)
-	end
-	self.loaded = true
+	-- for _, o in pairs(self.objects) do
+	-- 	local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat(), o.app)
+    --     table.insert(self.objectIDS, id)
+	-- end
+	-- self.loaded = true
 end
 
 function station:despawn()
-	for _, id in pairs(self.objectIDS) do
-		if Game.FindEntityByID(id) ~= nil then
-			exEntitySpawner.Despawn(Game.FindEntityByID(id))
-		end
-	end
-	self.objectIDS = {}
-	self.loaded = false
+	-- for _, id in pairs(self.objectIDS) do
+	-- 	if Game.FindEntityByID(id) ~= nil then
+	-- 		exEntitySpawner.Despawn(Game.FindEntityByID(id))
+	-- 	end
+	-- end
+	-- self.objectIDS = {}
+	-- self.loaded = false
 end
 
 function station:update()
 end
 
 function station:inStation() -- Is player in station
-	local radius = utils.distanceVector(Game.GetPlayer():GetWorldPosition(), self.center) < self.radius
-	local z = Game.GetPlayer():GetWorldPosition().z > self.minZ
+	local radius = utils.distanceVector(GetPlayer():GetWorldPosition(), self.center) < (self.radius * 1.5)
+	local z = GetPlayer():GetWorldPosition().z > self.minZ
 	return radius and z
 end
 
 function station:nearExit()
-	local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
+	local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true)
 	local near = false
 
 	if target and not (utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1) then -- Ugly hardcoded workaround for the force open door at rep way north :(
@@ -136,10 +132,10 @@ function station:nearExit()
 					if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
 				end)
 			end
-			if Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
+			if Vector4.Distance(GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 				near = true
 			end
-		elseif Vector4.Distance(Game.GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
+		elseif Vector4.Distance(GetPlayer():GetWorldPosition(), target:GetWorldPosition()) < 2.7 then
 			self:handleFakeDoor(target)
 		end
 	end
@@ -148,8 +144,6 @@ function station:nearExit()
 end
 
 function station:handleFakeDoor(target)
-	local player = Game.GetPlayer()
-
 	if (target:GetClassName().value == "FakeDoor" or target:GetClassName().value == "Door") and self.useDoors then
 		self.ts.hud.doorVisible = true
 		if self.ts.input.interactKey then
@@ -158,10 +152,10 @@ function station:handleFakeDoor(target)
 			local pos1 = utils.addVector(target:GetWorldPosition(), target:GetWorldForward())
 			local pos2 = utils.subVector(target:GetWorldPosition(), target:GetWorldForward())
 
-			if Vector4.Distance(player:GetWorldPosition(), pos1) > Vector4.Distance(player:GetWorldPosition(), pos2) then
-				Game.GetTeleportationFacility():Teleport(player, pos1, player:GetWorldOrientation():ToEulerAngles())
+			if Vector4.Distance(GetPlayer():GetWorldPosition(), pos1) > Vector4.Distance(GetPlayer():GetWorldPosition(), pos2) then
+				Game.GetTeleportationFacility():Teleport(GetPlayer(), pos1, GetPlayer():GetWorldOrientation():ToEulerAngles())
 			else
-				Game.GetTeleportationFacility():Teleport(player, pos2,  player:GetWorldOrientation():ToEulerAngles())
+				Game.GetTeleportationFacility():Teleport(GetPlayer(), pos2,  GetPlayer():GetWorldOrientation():ToEulerAngles())
 			end
 		end
 	end

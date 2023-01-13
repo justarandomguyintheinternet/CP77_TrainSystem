@@ -1,1 +1,37 @@
-{"elevatorPath":"base\\gameplay\\devices\\elevators\\appearances\\elevator_neomilitary_a_entropy_1_entrance.ent","center":{"y":1181.0396728516,"x":-1457.1828613281,"z":45.969619750977,"w":1},"waypointPosition":{"y":1197.1082763672,"x":-1444.3247070313,"z":23.060508728027,"w":1},"elevatorTime":5,"secondaryPosition":{"y":0,"x":0,"z":0,"w":0},"stationID":6,"useSecondaryElevator":false,"useDoors":false,"elevatorPlayerRotation":{"yaw":-90.155433654785,"roll":0,"pitch":0},"radius":7,"elevatorPosition":{"y":1164.3404541016,"x":-1442.2673339844,"z":53.906982421875,"w":1}}
+{
+    "elevatorPath": "base\\gameplay\\devices\\elevators\\appearances\\elevator_neomilitary_a_entropy_1_entrance.ent",
+    "center": {
+        "y": 1181.0396728516,
+        "x": -1457.1828613281,
+        "z": 45.969619750977,
+        "w": 1
+    },
+    "waypointPosition": {
+        "y": 1197.1082763672,
+        "x": -1444.3247070313,
+        "z": 23.060508728027,
+        "w": 1
+    },
+    "elevatorTime": 5,
+    "secondaryPosition": {
+        "y": 0,
+        "x": 0,
+        "z": 0,
+        "w": 0
+    },
+    "stationID": 6,
+    "useSecondaryElevator": false,
+    "useDoors": false,
+    "elevatorPlayerRotation": {
+        "yaw": -90.155433654785,
+        "roll": 0,
+        "pitch": 0
+    },
+    "radius": 7,
+    "elevatorPosition": {
+        "y": 1164.3404541016,
+        "x": -1442.2673339844,
+        "z": 53.906982421875,
+        "w": 1
+    }
+}

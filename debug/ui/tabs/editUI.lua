@@ -42,13 +42,13 @@ function editUI.drawEntry()
     entry.useDoors = ImGui.Checkbox("Use doors", entry.useDoors)
 
     entry.radius = ImGui.InputFloat('Radius', entry.radius, 0, 100, "%.2f")
-    local dist = utils.distanceVector(entry.center, Game.GetPlayer():GetWorldPosition())
+    local dist = utils.distanceVector(entry.center, GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to center: " .. tonumber(string.format("%.2f", dist)))
 
     ImGui.Text("Center: " .. tostring(entry.center))
     ImGui.SameLine()
     if ImGui.Button("Set to player pos") then
-        entry.center = Game.GetPlayer():GetWorldPosition()
+        entry.center = GetPlayer():GetWorldPosition()
     end
     ImGui.SameLine()
     editUI.drawPinBox("Pin", entry, "center", entry.center)
@@ -57,28 +57,28 @@ function editUI.drawEntry()
     ImGui.SameLine()
     ImGui.PushID("waypoint")
     if ImGui.Button("Set to player pos") then
-        entry.waypointPosition = Game.GetPlayer():GetWorldPosition()
+        entry.waypointPosition = GetPlayer():GetWorldPosition()
     end
     ImGui.PopID()
     ImGui.SameLine()
     editUI.drawPinBox("Pin", entry, "waypoint", entry.waypointPosition)
 
     if ImGui.Button("TP to center") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.waypointPosition, EulerAngles.new(0, 0, 0))
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), entry.waypointPosition, EulerAngles.new(0, 0, 0))
     end
 
     entry.elevatorPath = ImGui.InputTextWithHint("Elevator Path", "Path...", entry.elevatorPath, 100)
     entry.elevatorTime = ImGui.InputFloat('Elevator Time', entry.elevatorTime, 0, 100, "%.1f")
     if ImGui.Button("Set Elevator Position") then
-        entry.elevatorPosition = Game.GetPlayer():GetWorldPosition()
+        entry.elevatorPosition = GetPlayer():GetWorldPosition()
     end
     ImGui.SameLine()
     if ImGui.Button("Set Elevator Player Rotation") then
-        entry.elevatorPlayerRotation = Game.GetPlayer():GetWorldOrientation():ToEulerAngles()
+        entry.elevatorPlayerRotation = GetPlayer():GetWorldOrientation():ToEulerAngles()
     end
     ImGui.SameLine()
     if ImGui.Button("TP to") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.elevatorPosition,  entry.elevatorPlayerRotation)
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), entry.elevatorPosition,  entry.elevatorPlayerRotation)
     end
 
     if ImGui.Button("Spawn") then
@@ -93,11 +93,11 @@ function editUI.drawEntry()
     entry.useSecondaryElevator = ImGui.Checkbox("Use secondary Elevator", entry.useSecondaryElevator)
     if entry.useSecondaryElevator then
         if ImGui.Button("Set secondary Elevator Position") then
-            entry.secondaryPosition = Game.GetPlayer():GetWorldPosition()
+            entry.secondaryPosition = GetPlayer():GetWorldPosition()
         end
         ImGui.SameLine()
         if ImGui.Button("TP to 2") then
-            Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
+            Game.GetTeleportationFacility():Teleport(GetPlayer(), entry.secondaryPosition,  entry.elevatorPlayerRotation)
         end
     end
 end
@@ -110,11 +110,11 @@ function editUI.drawStation()
     station.id = ImGui.InputInt('ID', station.id)
 -- Radius
     station.radius = ImGui.InputFloat('Radius', station.radius, 0, 100, "%.2f")
-    local dist = utils.distanceVector(station.center, Game.GetPlayer():GetWorldPosition())
+    local dist = utils.distanceVector(station.center, GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to center: " .. tonumber(string.format("%.2f", dist)))
 
     station.minZ = ImGui.InputFloat('Min Z', station.minZ, 0, 500, "%.1f")
-    local distZ = utils.distanceVector(utils.subVector(Game.GetPlayer():GetWorldPosition(), Vector4.new(0, 0, Game.GetPlayer():GetWorldPosition().z - station.minZ, 0)), Game.GetPlayer():GetWorldPosition())
+    local distZ = utils.distanceVector(utils.subVector(GetPlayer():GetWorldPosition(), Vector4.new(0, 0, GetPlayer():GetWorldPosition().z - station.minZ, 0)), GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to Z: " .. tonumber(string.format("%.2f", distZ)))
 
     station.spawnOffset = ImGui.InputFloat('Train Spawn Offset', station.spawnOffset, -100, 100, "%.1f")
@@ -127,7 +127,7 @@ function editUI.drawStation()
     ImGui.Text("Center: ")
     ImGui.SameLine()
     if ImGui.Button("Set to player pos") then
-        station.center = Game.GetPlayer():GetWorldPosition()
+        station.center = GetPlayer():GetWorldPosition()
     end
     ImGui.SameLine()
     editUI.drawPinBox("Pin", station, "center", station.center)
@@ -136,51 +136,51 @@ function editUI.drawStation()
     ImGui.SameLine()
     ImGui.PushID("exit")
     if ImGui.Button("Set to player") then
-        station.trainExit.pos = Game.GetPlayer():GetWorldPosition()
-        station.trainExit.rot = Game.GetPlayer():GetWorldOrientation()
+        station.trainExit.pos = GetPlayer():GetWorldPosition()
+        station.trainExit.rot = GetPlayer():GetWorldOrientation()
     end
     ImGui.PopID()
     ImGui.SameLine()
     editUI.drawPinBox("Pin", station, "exit", station.trainExit.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to exit") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.trainExit.pos,  station.trainExit.rot:ToEulerAngles())
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), station.trainExit.pos,  station.trainExit.rot:ToEulerAngles())
     end
 -- Portal
     ImGui.Text("PortalPoint:")
     ImGui.SameLine()
     ImGui.PushID("portal")
     if ImGui.Button("Set to player") then
-        station.portalPoint.pos = Game.GetPlayer():GetWorldPosition()
-        station.portalPoint.rot = Game.GetPlayer():GetWorldOrientation()
+        station.portalPoint.pos = GetPlayer():GetWorldPosition()
+        station.portalPoint.rot = GetPlayer():GetWorldOrientation()
     end
     ImGui.PopID()
     ImGui.SameLine()
     editUI.drawPinBox("Pin", station, "portal", station.portalPoint.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to portal") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.portalPoint.pos,  station.portalPoint.rot:ToEulerAngles())
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), station.portalPoint.pos,  station.portalPoint.rot:ToEulerAngles())
     end
 -- Ground
     ImGui.Text("GroundPoint:")
     ImGui.SameLine()
     ImGui.PushID("ground")
     if ImGui.Button("Set to player") then
-        station.groundPoint.pos = Game.GetPlayer():GetWorldPosition()
-        station.groundPoint.rot = Game.GetPlayer():GetWorldOrientation()
+        station.groundPoint.pos = GetPlayer():GetWorldPosition()
+        station.groundPoint.rot = GetPlayer():GetWorldOrientation()
     end
     ImGui.PopID()
     ImGui.SameLine()
     editUI.drawPinBox("Pin", station, "ground", station.groundPoint.pos)
     ImGui.SameLine()
     if ImGui.Button("TP to ground") then
-        Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), station.groundPoint.pos,  station.groundPoint.rot:ToEulerAngles())
+        Game.GetTeleportationFacility():Teleport(GetPlayer(), station.groundPoint.pos,  station.groundPoint.rot:ToEulerAngles())
     end
 -- Objects
     ImGui.Separator()
     station.objectFileName = ImGui.InputTextWithHint("Objects File Name", "Name...", station.objectFileName, 100)
     if ImGui.Button("Set Exit Door") then
-        station.exitDoorPosition = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true):GetWorldPosition()
+        station.exitDoorPosition = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true):GetWorldPosition()
     end
     station.exitDoorSealed = ImGui.Checkbox("Exit Door Sealed", station.exitDoorSealed)
 
@@ -198,9 +198,8 @@ function editUI.drawTrack()
 -- Setup tmp variables
     if track.currentPointID == nil then track.currentPointID = 1 end
     if track.target == nil then track.target = nil end -- lol?
-    if track.trainObj == nil then
-        track.trainObj = object:new(1999)
-        track.trainObj.name = "Vehicle.av_public_train_b"
+    if track.trainID == nil then
+        track.trainID = entEntityID.new()
     end
 -- ID
     track.id = ImGui.InputInt("ID", track.id)
@@ -283,11 +282,11 @@ function editUI.drawTrack()
     ImGui.Separator()
 -- Target
     if ImGui.Button("Set target look") then
-        track.target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, false)
+        track.target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, false)
     end
     ImGui.SameLine()
     if ImGui.Button("Set target player") then
-        track.target = Game.GetPlayer()
+        track.target = GetPlayer()
     end
     ImGui.SameLine()
     ImGui.Text("Target: ".. tostring(track.target))
@@ -295,18 +294,22 @@ function editUI.drawTrack()
     ImGui.Separator()
 -- Spawn train
     if ImGui.Button("Spawn train") then
-        track.trainObj.pos = track.points[track.currentPointID].pos
-        track.trainObj.rot = track.points[track.currentPointID].rot
-        track.trainObj:spawn()
+        local transform = GetPlayer():GetWorldTransform()
+        transform.SetPosition(transform, track.points[track.currentPointID].pos)
+        transform.SetOrientation(transform, track.points[track.currentPointID].rot)
+        track.trainID = exEntitySpawner.SpawnRecord("Vehicle.av_public_train_b", transform)
     end
     ImGui.SameLine()
     if ImGui.Button("Despawn train") then
-        track.trainObj:despawn()
+        if Game.FindEntityByID(track.trainID) then
+            Game.FindEntityByID(track.trainID):Dispose()
+        end
     end
 
     if #track.points ~= 0 then
-        track.trainObj.pos = track.points[track.currentPointID].pos
-        track.trainObj.rot = track.points[track.currentPointID].rot
+        if Game.FindEntityByID(track.trainID) then
+            Game.GetTeleportationFacility():Teleport(Game.FindEntityByID(track.trainID), track.points[track.currentPointID].pos, track.points[track.currentPointID].rot:ToEulerAngles())
+        end
     end
 
     ImGui.Separator()
@@ -366,8 +369,8 @@ function editUI.drawPoint(point, track)
     ImGui.PushItemWidth(150)
     local x, changed = ImGui.DragFloat("##r_x", 0, 0.01, -9999, 9999, "%.3f Relativ X")
     if changed then
-        if track.trainObj.spawned then
-            local v = track.trainObj.entity:GetWorldRight()
+        if Game.FindEntityByID(track.trainID) then
+            local v = Game.FindEntityByID(track.trainID):GetWorldRight()
             point.pos.x = point.pos.x + (v.x * x)
             point.pos.y = point.pos.y + (v.y * x)
         end
@@ -376,8 +379,8 @@ function editUI.drawPoint(point, track)
     ImGui.SameLine()
     local y, changed = ImGui.DragFloat("##r_y", 0, 0.01, -9999, 9999, "%.3f Relativ Y")
     if changed then
-        if track.trainObj.spawned then
-            local v = track.trainObj.entity:GetWorldForward()
+        if Game.FindEntityByID(track.trainID) then
+            local v = Game.FindEntityByID(track.trainID):GetWorldForward()
             point.pos.x = point.pos.x + (v.x * y)
             point.pos.y = point.pos.y + (v.y * y)
             point.pos.z = point.pos.z + (v.z * y)
@@ -479,20 +482,6 @@ function editUI.deleteAllPins(data)
         for _, id in pairs(data.pinIDs) do
             Game.GetMappinSystem():UnregisterMappin(id)
         end
-    end
-end
-
-function editUI.deleteAllObjects(data)
-    -- if data.objects ~= nil then
-    --     for _, obj in pairs(data.objects) do
-    --         obj:despawn()
-    --     end
-    -- end
-end
-
-function editUI.update()
-    if editUI.type == "track" then
-        editUI.currentData.trainObj:update()
     end
 end
 

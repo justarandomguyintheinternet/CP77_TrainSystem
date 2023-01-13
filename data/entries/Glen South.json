@@ -1,1 +1,37 @@
-{"elevatorPath":"base\\gameplay\\devices\\elevators\\appearances\\common_elevator_a_valentinos_1_entrance.ent","center":{"y":-1303.3162841797,"x":-1595.8397216797,"z":48.01522064209,"w":1},"waypointPosition":{"y":-1291.1644287109,"x":-1600.5092773438,"z":49.886665344238,"w":1},"elevatorTime":5,"secondaryPosition":{"y":0,"x":0,"z":0,"w":0},"stationID":15,"useSecondaryElevator":false,"useDoors":false,"elevatorPlayerRotation":{"yaw":-90.313385009766,"roll":0,"pitch":0},"radius":12,"elevatorPosition":{"y":-1308.8098144531,"x":-1594.9537353516,"z":79.079086303711,"w":1}}
+{
+    "elevatorPath": "base\\gameplay\\devices\\elevators\\appearances\\common_elevator_a_valentinos_1_entrance.ent",
+    "center": {
+        "y": -1303.3162841797,
+        "x": -1595.8397216797,
+        "z": 48.01522064209,
+        "w": 1
+    },
+    "waypointPosition": {
+        "y": -1291.1644287109,
+        "x": -1600.5092773438,
+        "z": 49.886665344238,
+        "w": 1
+    },
+    "elevatorTime": 5,
+    "secondaryPosition": {
+        "y": 0,
+        "x": 0,
+        "z": 0,
+        "w": 0
+    },
+    "stationID": 15,
+    "useSecondaryElevator": false,
+    "useDoors": false,
+    "elevatorPlayerRotation": {
+        "yaw": -90.313385009766,
+        "roll": 0,
+        "pitch": 0
+    },
+    "radius": 12,
+    "elevatorPosition": {
+        "y": -1308.8098144531,
+        "x": -1594.9537353516,
+        "z": 79.079086303711,
+        "w": 1
+    }
+}

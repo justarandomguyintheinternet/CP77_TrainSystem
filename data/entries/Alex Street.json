@@ -1,1 +1,37 @@
-{"elevatorPath":"base\\gameplay\\devices\\elevators\\appearances\\common_elevator_japan_town_tv.ent","center":{"y":476.30218505859,"x":-2068.1428222656,"z":8.0526733398438,"w":1},"waypointPosition":{"y":471.26358032227,"x":-2076.0661621094,"z":9.991455078125,"w":1},"elevatorTime":5,"secondaryPosition":{"y":0,"x":0,"z":0,"w":0},"stationID":7,"useSecondaryElevator":false,"useDoors":false,"elevatorPlayerRotation":{"yaw":-90.186424255371,"roll":0,"pitch":0},"radius":9,"elevatorPosition":{"y":490.12106323242,"x":-2046.1296386719,"z":49.618370056152,"w":1}}
+{
+    "elevatorPath": "base\\gameplay\\devices\\elevators\\appearances\\common_elevator_japan_town_tv.ent",
+    "center": {
+        "y": 476.30218505859,
+        "x": -2068.1428222656,
+        "z": 8.0526733398438,
+        "w": 1
+    },
+    "waypointPosition": {
+        "y": 471.26358032227,
+        "x": -2076.0661621094,
+        "z": 9.991455078125,
+        "w": 1
+    },
+    "elevatorTime": 5,
+    "secondaryPosition": {
+        "y": 0,
+        "x": 0,
+        "z": 0,
+        "w": 0
+    },
+    "stationID": 7,
+    "useSecondaryElevator": false,
+    "useDoors": false,
+    "elevatorPlayerRotation": {
+        "yaw": -90.186424255371,
+        "roll": 0,
+        "pitch": 0
+    },
+    "radius": 9,
+    "elevatorPosition": {
+        "y": 490.12106323242,
+        "x": -2046.1296386719,
+        "z": 49.618370056152,
+        "w": 1
+    }
+}

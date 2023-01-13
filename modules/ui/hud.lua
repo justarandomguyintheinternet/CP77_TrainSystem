@@ -1,6 +1,5 @@
-local CPS = require("CPStyling")
 local utils = require("modules/utils/utils")
-local theme = CPS.theme
+local lang = require("modules/utils/lang")
 
 hud = {
     entryVisible = false,
@@ -38,11 +37,11 @@ end
 function hud.drawEntry()
     if hud.entryVisible then
         hud.entryVisible = false
-        utils.createInteractionHub("Enter NCART Station", "UI_Apply", true)
+        utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", true)
         hud.interactionHUDEntry = true
     else
         if hud.interactionHUDEntry then
-            utils.createInteractionHub("Enter NCART Station", "UI_Apply", false)
+            utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
         end
         hud.interactionHUDEntry = false
     end
@@ -51,11 +50,11 @@ end
 function hud.drawExit()
     if hud.exitVisible then
         hud.exitVisible = false
-        utils.createInteractionHub("Exit Station", "UI_Apply", true)
+        utils.createInteractionHub(lang.getText("exit_station"), "UI_Apply", true)
         hud.interactionHUDExit = true
     else
         if hud.interactionHUDExit then
-            utils.createInteractionHub("Exit Station", "UI_Apply", false)
+            utils.createInteractionHub(lang.getText("exit_station"), "UI_Apply", false)
         end
         hud.interactionHUDExit = false
     end
@@ -64,11 +63,11 @@ end
 function hud.drawDoor()
     if hud.doorVisible then
         hud.doorVisible = false
-        utils.createInteractionHub("Use Door", "UI_Apply", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
+        utils.createInteractionHub(lang.getText("use_door"), "UI_Apply", true) -- Spam it to make sure it really gets diplayed and not gets interrupted
         hud.interactionHUDDoor = true
     else
         if hud.interactionHUDDoor then
-            utils.createInteractionHub("Use Door", "UI_Apply", false)
+            utils.createInteractionHub(lang.getText("use_door"), "UI_Apply", false)
         end
         hud.interactionHUDDoor = false
     end
@@ -77,18 +76,18 @@ end
 function hud.drawTrain()
     if hud.trainVisible then
         hud.trainVisible = false
-        utils.createInteractionHub("Enter Train", "UI_Apply", true)
+        utils.createInteractionHub(lang.getText("enter_train"), "UI_Apply", true)
         hud.interactionHUDTrain = true
     else
         if hud.interactionHUDTrain then
-            utils.createInteractionHub("Enter Train", "UI_Apply", false)
+            utils.createInteractionHub(lang.getText("enter_train"), "UI_Apply", false)
         end
         hud.interactionHUDTrain = false
     end
 end
 
 function hud.drawDestinations(sys)
-    local text = "Next NCART Station:\n"
+    local text = lang.getText("next_station") .. "\n"
 
     for k, d in pairs(sys.pathsData) do
         if k == sys.currentPathsIndex then

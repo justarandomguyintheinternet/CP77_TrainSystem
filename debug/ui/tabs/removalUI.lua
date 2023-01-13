@@ -15,7 +15,7 @@ function rmUI.draw()
     end
 
     if ImGui.Button("Add look at") then
-        local target = Game.GetTargetingSystem():GetLookAtObject(Game.GetPlayer(), false, true)
+        local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true)
         if target then
             table.insert(rmUI.data, tostring(target:GetEntityID().hash))
             target:Dispose()
@@ -40,7 +40,7 @@ function rmUI.draw()
         end
         ImGui.PopID()
         -- if ImGui.Button("TP To") then
-        --     Game.GetTeleportationFacility():Teleport(Game.GetPlayer(), p, Game.GetPlayer():GetWorldOrientation():ToEulerAngles())
+        --     Game.GetTeleportationFacility():Teleport(GetPlayer(), p, GetPlayer():GetWorldOrientation():ToEulerAngles())
         -- end
     end
 end

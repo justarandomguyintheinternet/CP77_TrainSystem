@@ -1,6 +1,8 @@
-local object = require("modules/classes/object")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
+
+local busComponents = {"entrance_step", "v_mahir_mt28_coach__int01_window_strut_01", "interior_01", "seats", "window-console_right_04", "window-console_right_03", "window-console_right_02", "window-console_right_01", "window-console_left_01", "window-console_left_02", "window-console_left_03", "window-console_left_04", "SLIDING_WINDOW", "v_mahir_mt28_coach__ext01_body_01_shadow", "v_mahir_mt28_coach__int01_luggage_b_01", "v_mahir_mt28_coach__int01_luggage_a_01", "fx_cutout", "windowstatic_left_05", "windowstatic_left_right_05", "windowstatic_left_large_02", "windowstatic_right_01", "windowstatic_right_large_01", "windowstatic_right_large_02", "windowstatic_left_large_03", "windowstatic_left_03", "windowstatic_left_right_03", "windowstatic_left_large_01", "windowstatic_left_01", "windowstatic_left_right_02", "windowstatic_left_04", "windowstatic_left_02", "body_01", "windshield", "wipers_01", "body_lights_01", "position_lights_01", "license_plate", "windowstatic_right_4", "door", "cars_sport_fx", "ObjectCarrier", "fx_explosion", "AnimationController", "trunkBodyDisposalNpc", "trunkBodyDisposalPlayer", "VehicleAudio", "trunkBodyPickupNpc", "EngineAudioEmitter", "trunkBodyPickupPlayer", "scanning", "StatsComponent", "EffectAttachment", "StimBroadcaster", "vision", "AIComponent", "Weakspot", "entityStub", "entityStubPlacedProxy", "GeneralAudioEmitter", "RadioAudioEmitter", "CrowdMember", "TriggerActivator", "workspotMapper", "SignalHandler", "Targeting", "Inventory", "WheelAudioEmitterFL", "WheelAudioEmitterFR", "WheelAudioEmitterBL", "WheelAudioEmitterBR", "UI_slots", "influenceObstacle", "Repeller", "VehicleHoodEmitter", "VehicleTrunkEmitter"}
+local alwaysOff = {"tire_01_bl_a_shadow", "tire_01_bl_b_shadow", "tire_01_br_a_shadow", "tire_01_br_b_shadow", "tire_01_fl_a_shadow", "tire_01_fl_b_shadow", "tire_01_fr_a_shadow", "tire_01_fr_b_shadow", "chasis", "body_shadow", "Chassis", "tire_01_bl_a", "wheel_01_bl_a", "tire_01_bl_b", "wheel_01_bl_b", "tire_01_br_a", "wheel_01_br_a", "wheel_01_br_b", "tire_01_br_b", "tire_01_fl_a", "wheel_01_fl_a", "wheel_01_fl_b", "tire_01_fl_b", "wheel_01_fr_a", "tire_01_fr_a", "wheel_01_fr_b", "tire_01_fr_b",}
 
 train = {}
 
@@ -17,24 +19,31 @@ function train:new(stationSys)
 	o.pointIndex = 1
 	o.routeDir = ""
 
-	o.carName =  "Vehicle.v_sportbike3_brennan_apollo"
-	o.carApp = "brennan_apollo_basic_burnt_v_2"
-	o.carOffset = Vector4.new(0, 0, stationSys.ts.settings.tppOffset, 0)
-	o.carLayer = 2010
-	o.trainLayer = 2011
-	o.carObject = nil
-	o.trainObject = nil
+	o.trainID = nil
+	o.zAdjustment = 0.415
 
 	o.perspective = "tpp"
+	o.componentSwitchDelay = false
 	o.camDist = stationSys.ts.settings.camDist
 	o.allowSwitching = true
 	o.currentSeat = stationSys.ts.settings.defaultSeat
-	o.seats = {"seat_front_right", "seat_back_right", "seat_back_left", "seat_front_left"}
-	o.radioStation = -1
-
-	o.busObject = object:new(0)
-	o.busOffset = Vector4.new(0, 0, 1.5, 0)
-	o.busLayer = 2012
+	o.seats = {
+		{-1.6, -0.25, -0.05},
+		{-1.6, -1, -0.05},
+		{-1.6, -1.9, -0.05},
+		{-1.6, -2.75, -0.05},
+		{-1.6, -3.65, -0.05},
+		{-1.6, -4.55, -0.05},
+		{-1.6, -5.45, -0.05},
+		{-1.6, -6.55, -0.05},
+		{0.0, -6.55, -0.05},
+		{0.0, -5.45, -0.05},
+		{0.0, -4.55, -0.05},
+		{0.0, -3.65, -0.05},
+		{0.0, -2.75, -0.05},
+		{0.0, -1.9, -0.05},
+		{0.0, -1, -0.05},
+	}
 
 	o.playerMounted = false
 	o.justArrived = false
@@ -52,44 +61,30 @@ function train:new(stationSys)
    	return setmetatable(o, self)
 end
 
+function train:getEntity() -- Get train entity
+	local def = GetAllBlackboardDefs().VehicleSummonData
+	local bb = Game.GetBlackboardSystem():Get(def)
+	local object = Game.FindEntityByID(bb:GetEntityID(def.SummonedVehicleEntityID))
+	if not object then return end
+	if not LocKeyToString(object:GetRecord():DisplayName()) == "LocKey#23422" then return nil end
+	return object
+end
+
 function train:spawn()
 	local point = self.arrivalPath[#self.arrivalPath]
-	self.carObject = object:new(self.carLayer)
-	self.carObject.name = self.carName
-	self.carObject.app = self.carApp
 
-	self.carObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0))
-	self.carObject.rot = point.rot
-
-	self.trainObject = object:new(self.trainLayer, nil, "ent")
-	self.trainObject.name = "Vehicle.av_public_train_b"
-	self.trainObject.pos = utils.addVector(point.pos, Vector4.new(0, 0, self.stationSys.currentStation.spawnOffset, 0))
-	self.trainObject.rot = point.rot
+	Game.GetVehicleSystem():TogglePlayerActiveVehicle(GarageVehicleID.Resolve("Vehicle.train"), gamedataVehicleType.Car, true)
+    Game.GetVehicleSystem():SpawnPlayerVehicle(gamedataVehicleType.Car)
 
 	point = self.arrivalPath[1]
 	self.pos = point.pos
 	self.rot = point.rot
-
-	self.carObject:spawn()
-	self.trainObject:spawn()
-end
-
-function train:spawnBus()
-	self.busObject = object:new(self.busLayer)
-	self.busObject.name = "Vehicle.cs_savable_mahir_mt28_coach"
-	local point = self.arrivalPath[#self.arrivalPath]
-	local pos = utils.addVector(point.pos, Vector4.new(0, 0, -math.abs(self.stationSys.currentStation.spawnOffset*2), 0))
-	self.busObject.rot = Game.GetCameraSystem():GetActiveCameraForward():ToRotation():ToQuat()
-	self.busObject.pos = pos
-	self.busObject:spawn()
 end
 
 function train:despawn()
-	if self.carObject ~= nil then
-		self.carObject:despawn()
-	end
-	if self.trainObject ~= nil then
-		self.trainObject:despawn()
+	if self:getEntity() ~= nil then
+		Game.DespawnPlayerVehicle("Vehicle.train")
+		self:getEntity():Dispose()
 	end
 end
 
@@ -216,118 +211,127 @@ function train:update(deltaTime)
 		--print(self.activePath[self.pointIndex].rot:ToEulerAngles(), self.rot:ToEulerAngles())
 	end
 
-	if self.playerMounted then
-		if self.ts.input.toggleCam and not self.ts.settings.tppOnly then
+	if self.playerMounted then -- Input handling
+		if self.ts.input.toggleCam then -- Switch cam
 			self.ts.input.toggleCam = false
-			if self.perspective == "tpp" and self.busObject.spawned then
-				utils.unmount()
-				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
+			if self.perspective == "tpp" then
+				self.componentSwitchDelay = true
+				Cron.After(0.42, function()
+					self.componentSwitchDelay = false
+				end)
 				self.perspective = "fpp"
-				Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
 				self.ts.input.down = false
 				self.ts.input.up = false
-
-				Cron.After(0.1, function()
-					local set = self.ts.observers.radioIndex ~= -1
-					vehRadioEvent = VehicleRadioEvent.new();    vehRadioEvent.toggle = false;    vehRadioEvent.setStation = set;    vehRadioEvent.station = self.ts.observers.radioIndex;    GetPlayer():QueueEventForEntityID(GetMountedVehicle(GetPlayer()):GetEntityID(), vehRadioEvent)
-				end)
 			else
-				if self.currentSeat ~= 4 then
-					utils.unmount()
-					utils.mount(self.carObject.entID, "seat_front_left")
-					self.perspective = "tpp"
-					Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
-
-					Cron.After(0.1, function()
-						utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
-					end)
-				else
-					Game.GetPlayer():SetWarningMessage("Can't switch when in this seat!")
-				end
+				self.componentSwitchDelay = true
+				Cron.After(0.07, function()
+					self.componentSwitchDelay = false
+				end)
+				self.perspective = "tpp"
 			end
 		end
 
-		if self.perspective == "fpp" then
+		if self.perspective == "fpp" then -- Switch seat
 			if self.ts.input.down then
 				self.ts.input.down = false
 				if self.ts.observers.radioPopupActive then return end
 
 				self.currentSeat = self.currentSeat + 1
-				if self.currentSeat > 4 then self.currentSeat = 1 end
-				utils.unmount()
-				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
-
-				Cron.After(0.1, function()
-					local set = self.ts.observers.radioIndex ~= -1
-					vehRadioEvent = VehicleRadioEvent.new();    vehRadioEvent.toggle = false;    vehRadioEvent.setStation = set;    vehRadioEvent.station = self.ts.observers.radioIndex;    GetPlayer():QueueEventForEntityID(GetMountedVehicle(GetPlayer()):GetEntityID(), vehRadioEvent)
-				end)
+				if self.currentSeat > #self.seats then self.currentSeat = 1 end
+				self:setSeatPosition()
 			end
 			if self.ts.input.up then
 				self.ts.input.up = false
 				if self.ts.observers.radioPopupActive then return end
 
 				self.currentSeat = self.currentSeat - 1
-				if self.currentSeat < 1 then self.currentSeat = 4 end
-				utils.unmount()
-				utils.mount(self.busObject.entID, self.seats[self.currentSeat])
-
-				Cron.After(0.1, function()
-					local set = self.ts.observers.radioIndex ~= -1
-					vehRadioEvent = VehicleRadioEvent.new();    vehRadioEvent.toggle = false;    vehRadioEvent.setStation = set;    vehRadioEvent.station = self.ts.observers.radioIndex;    GetPlayer():QueueEventForEntityID(GetMountedVehicle(GetPlayer()):GetEntityID(), vehRadioEvent)
-				end)
+				if self.currentSeat < 1 then self.currentSeat = #self.seats end
+				self:setSeatPosition()
 			end
 		end
 	end
 
-	if self.carObject.spawned then
-		self:updateLocation("car")
-		self.carObject:update()
-		self.carObject.entity:FindComponentByName("Chassis"):Toggle(false)
-	end
-	if self.trainObject.spawned then
-		self:updateLocation("train")
-		self.trainObject:update()
-		self.trainObject.entity:FindComponentByName("Chassis"):Toggle(false)
-	end
-	if self.busObject.spawned then
-		self:updateLocation("bus")
-		self.busObject:update()
-		self.busObject.entity:FindComponentByName("Chassis"):Toggle(false)
-	end
-
-	if not self.playerMounted then Game.GetPreventionSpawnSystem():RequestDespawnPreventionLevel(self.busLayer) end
+	self:updateEntity()
 	self:updateCam()
 	self:handleAudio()
 end
 
-function train:updateLocation(obj)
-	if obj == "car" then
-		if self.perspective == "tpp" then
-			self.carOffset = Vector4.new(0, 0, self.ts.settings.tppOffset, 0)
-			self.carObject.pos = utils.addVector(self.pos, self.carOffset)
-			self.carObject.rot = self.rot
-		else
-			self.carObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 24, 0))
-		end
-	elseif obj == "train" then
-		if self.perspective == "tpp" then
-			self.trainObject.pos = self.pos
-			self.trainObject.rot = self.rot
-		else
-			self.trainObject.pos = utils.subVector(self.pos, Vector4.new(0, 0, 24, 0))
-		end
+function train:updateEntity()
+	local entity = self:getEntity()
+	if not entity then return end
+
+	Game.GetTeleportationFacility():Teleport(entity, utils.addVector(self.pos, Vector4.new(0, 0, self.zAdjustment, 0)),  self.rot:ToEulerAngles())
+
+	entity:TurnVehicleOn(false)
+	entity:GetVehicleComponent():GetVehicleController():ToggleLights(true)
+
+	if self.perspective == "tpp" then
+		self:toggleBus(false, entity)
+		self:toggleTrain(true, entity)
 	else
-		if self.perspective == "tpp" then
-			local pos = Game.GetPlayer():GetWorldPosition()
-			pos.x = pos.x - Game.GetCameraSystem():GetActiveCameraForward().x * (self.camDist + 26)
-			pos.y = pos.y - Game.GetCameraSystem():GetActiveCameraForward().y * (self.camDist + 26)
-			pos.z = pos.z - Game.GetCameraSystem():GetActiveCameraForward().z * (self.camDist + 26)
-			self.busObject.pos = pos
-		else
-			self.busObject.pos = utils.addVector(self.pos, self.busOffset)
-			self.busObject.rot = self.rot
+		self:toggleBus(true, entity)
+		self:toggleTrain(false, entity)
+	end
+end
+
+function train:toggleBus(state, entity)
+	for _, name in pairs(alwaysOff) do -- Never want these
+		component = entity:FindComponentByName(name)
+		if component then
+			component:Toggle(false)
+			if component:IsA("entIPlacedComponent") then
+				component:SetLocalPosition(Vector4.new(0, 0, -35, 0))
+			end
 		end
 	end
+
+	if self.componentSwitchDelay then state = not state end
+
+	for _, name in pairs(busComponents) do
+		component = entity:FindComponentByName(name)
+		if component then
+			component:Toggle(state)
+			if component:IsA("entIPlacedComponent") then
+				if state then
+					component:SetLocalPosition(Vector4.new(0, 0, 0, 0))
+				else
+					component:SetLocalPosition(Vector4.new(0, 0, -35, 0))
+				end
+			end
+		end
+	end
+end
+
+function train:toggleTrain(state, entity)
+	if self.componentSwitchDelay then state = not state end
+
+	local components = {"train_default", "train_e3"}
+
+	if state then
+		for _, name in pairs(components) do
+			component = entity:FindComponentByName(name)
+			if component then
+				component:Toggle((self.ts.settings.blueTrain and name == "train_e3") or (not self.ts.settings.blueTrain and name == "train_default"))
+				component:SetLocalPosition(Vector4.new(0, 0, 0, 0))
+			end
+		end
+	else
+		for _, name in pairs(components) do
+			component = entity:FindComponentByName(name)
+			if component then
+				component:Toggle(false)
+				component:SetLocalPosition(Vector4.new(0, 0, -35, 0))
+			end
+		end
+	end
+end
+
+function train:setSeatPosition()
+	local entity = self:getEntity()
+	if not entity then return end
+	local slots = entity:FindComponentByName("OccupantSlots").slots
+	slots[2].relativePosition = Vector3.new(self.seats[self.currentSeat][1], self.seats[self.currentSeat][2], self.seats[self.currentSeat][3])
+	entity:FindComponentByName("OccupantSlots").slots = slots
 end
 
 function train:handlePoint(point)
@@ -351,52 +355,62 @@ end
 function train:updateCam()
 	if self.playerMounted then
 
-		Game.GetPlayer():GetFPPCameraComponent().pitchMax = 80
-		Game.GetPlayer():GetFPPCameraComponent().pitchMin = -80
-		Game.GetPlayer():GetFPPCameraComponent().yawMaxRight = -360
-		Game.GetPlayer():GetFPPCameraComponent().yawMaxLeft = 360
+		GetPlayer():GetFPPCameraComponent().pitchMax = 80
+		GetPlayer():GetFPPCameraComponent().pitchMin = -80
+		GetPlayer():GetFPPCameraComponent().yawMaxRight = -360
+		GetPlayer():GetFPPCameraComponent().yawMaxLeft = 360
 
 		if self.perspective == "tpp" then
 			utils.switchCarCam("TPPFar")
-			Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
+			GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0, 0, 0, 0))
 		else
 			utils.switchCarCam("FPP")
-			GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0.2,0))
+			GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0, 0, 0.2, 0))
 		end
 	end
 end
 
 function train:handleAudio()
 	if self.audioTimer == nil then
-		if not self.trainObject.entity then return end
-		utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
-		utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+		local entity = self:getEntity()
+		if not entity then return end
+		utils.stopAudio(entity, "v_metro_default_traffic_01_start")
+		utils.playAudio(entity, "v_metro_default_traffic_01_start")
 
 		self.audioTimer = Cron.Every(20, function ()
-			utils.stopAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
-			utils.playAudio(self.trainObject.entity, "v_metro_default_traffic_01_start")
+			local entity = self:getEntity()
+			if not entity then return end
+			utils.stopAudio(entity, "v_metro_default_traffic_01_start")
+			utils.playAudio(entity, "v_metro_default_traffic_01_start")
 		end)
 	end
 end
 
+function train:calculateSeatIndex(setting)
+	local value = 0
+	if setting == 1 then
+		value = 15
+	elseif setting == 2 then
+		value = 11
+	elseif setting == 3 then
+		value = 6
+	elseif setting == 4 then
+		value = 2
+	end
+	return value
+end
+
 function train:mount()
 	self.perspective = "tpp"
-	self.currentSeat = self.ts.settings.defaultSeat
+	self.currentSeat = self:calculateSeatIndex(self.ts.settings.defaultSeat)
 	self.ts.input.down = false
 	self.ts.input.up = false
-	Cron.After(0.5, function ()
-		if self.ts.settings.tppOnly then return end
-		self:spawnBus()
-	end)
-	self.playerMounted = true
-	utils.mount(self.carObject.entID, "seat_front_left")
-	utils.switchCarCam("TPPFar")
-	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,-self.camDist,0,0))
-	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
 
-	Cron.After(0.1, function()
-		utils.setRadioStation(ts.stationSys.activeTrain.carObject.entity, self.ts.observers.radioIndex)
-	end)
+	self.playerMounted = true
+	utils.mount(self:getEntity():GetEntityID(), "seat_front_right")
+	utils.switchCarCam("TPPFar")
+	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
+	self:setSeatPosition()
 
 	Cron.After(0.4, function ()
 		if self.ts.settings.noHudTrain then utils.toggleHUD(false) end
@@ -409,9 +423,8 @@ function train:unmount()
 
 	self.perspective = "tpp"
 	self.playerMounted = false
-	Game.GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0,0,0,0))
+	GetPlayer():GetFPPCameraComponent():SetLocalPosition(Vector4.new(0, 0, 0, 0))
 	utils.unmount()
-	self.busObject:despawn()
 
 	local evt = DeleteInputHintBySourceEvent.new()
 	evt.source = "turret"

@@ -39,12 +39,12 @@ function objects.handleEntries()
     for _, entry in pairs(objects.entries) do
         if entry.ids == nil then entry.ids = {} end
 
-        if utils.distanceVector(Game.GetPlayer():GetWorldPosition(), entry.pos) < entry.range and #entry.ids == 0 then
+        if utils.distanceVector(GetPlayer():GetWorldPosition(), entry.pos) < entry.range and #entry.ids == 0 then
             for _, o in pairs(entry.objs) do
                 local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat())
                 table.insert(entry.ids, id)
             end
-        elseif utils.distanceVector(Game.GetPlayer():GetWorldPosition(), entry.pos) > entry.range + 2 and #entry.ids ~= 0 then
+        elseif utils.distanceVector(GetPlayer():GetWorldPosition(), entry.pos) > entry.range + 2 and #entry.ids ~= 0 then
             for _, id in pairs(entry.ids) do
                 if Game.FindEntityByID(id) then
                     exEntitySpawner.Despawn(Game.FindEntityByID(id))

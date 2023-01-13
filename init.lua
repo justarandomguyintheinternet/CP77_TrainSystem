@@ -11,18 +11,18 @@ ts = {
     defaultSettings = {
         camDist = 16,
         trainSpeed = 24,
-        defaultSeat = 2,
+        defaultSeat = 1,
         moneyPerStation = 2,
         holdMult = 1,
-        tppOnly = false,
         showImGui = false,
         elevatorTime = 7,
         uiLayout = 1, -- 1 = Vanilla, 2 = E3, 3 = Superior
-        tppOffset = 2,
         noHudTrain = false,
         unlockAllTracks = false,
         elevatorGlitch = true,
-        trainGlitch = false
+        trainGlitch = false,
+        autoCenter = false,
+        blueTrain = false
     },
 
     settings = {},
@@ -36,8 +36,8 @@ ts = {
     GameUI = require("modules/utils/GameUI"),
 
     utils = require("modules/utils/utils"),
-    config = require("modules/utils/config")
-    --debug = require("debug/logic/debug")
+    config = require("modules/utils/config"),
+    debug = require("debug/logic/debug")
 }
 
 function ts:new()
@@ -47,6 +47,9 @@ function ts:new()
             print("[MetroSystem] Error: \"trainSystem.archive\" file could not be found inside \"archive/pc/mod\". Mod has been disabled to avoid crashes.")
             return
         end
+
+        CName.add("train")
+        self.utils.addTrainVehicle()
 
         ts.config.tryCreateConfig("data/config.json", ts.defaultSettings)
         ts.config.backwardComp("data/config.json", ts.defaultSettings)
@@ -64,7 +67,7 @@ function ts:new()
 
         ts.observers.start(ts)
         ts.input.startInputObserver(ts)
-        ts.input.startListeners(Game.GetPlayer())
+        ts.input.startListeners(GetPlayer())
 
         ts.Cron.Every(1.0, function ()
             ts.utils.fixNoFastTravel()
@@ -105,9 +108,11 @@ function ts:new()
             ts.objectSys.run()
             ts.Cron.Update(deltaTime)
             ts.input.interactKey = false -- Fix "sticky" input
-            --ts.debug.baseUI.utilUI.update()
+            ts.debug.baseUI.utilUI.update()
         elseif ts.entrySys.forceRunCron and ts.archiveInstalled then
             ts.Cron.Update(deltaTime)
+        elseif ts.stationSys.activeTrain then -- Always teleport, avoid issues with popups
+            ts.stationSys.activeTrain:updateEntity()
         end
     end)
 
@@ -122,7 +127,7 @@ function ts:new()
             if ts.settings.showImGui then
                 ts.settingsUI.draw(ts)
             end
-            --ts.debug.run(ts)
+            ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)
