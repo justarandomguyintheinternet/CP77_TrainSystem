@@ -65,8 +65,8 @@ function train:getEntity() -- Get train entity
 	local def = GetAllBlackboardDefs().VehicleSummonData
 	local bb = Game.GetBlackboardSystem():Get(def)
 	local object = Game.FindEntityByID(bb:GetEntityID(def.SummonedVehicleEntityID))
-	if not object then return end
-	if not LocKeyToString(object:GetRecord():DisplayName()) == "LocKey#23422" then return nil end
+	if not object then return end --manufacturer
+	if not (LocKeyToString(object:GetRecord():DisplayName()) == "LocKey#23422") then return nil end
 	return object
 end
 
@@ -83,8 +83,13 @@ end
 
 function train:despawn()
 	if self:getEntity() ~= nil then
-		Game.DespawnPlayerVehicle("Vehicle.train")
-		self:getEntity():Dispose()
+		utils.stopAudio(self:getEntity(), "v_metro_default_traffic_01_start")
+		Cron.Halt(self.audioTimer)
+		self.pos = utils.addVector(self.pos, Vector4.new(0, 0, 125, 0))
+		self:updateEntity()
+		Cron.After(0.75, function()
+			Game.DespawnPlayerVehicle("Vehicle.train")
+		end)
 	end
 end
 
@@ -223,10 +228,7 @@ function train:update(deltaTime)
 				self.ts.input.down = false
 				self.ts.input.up = false
 			else
-				self.componentSwitchDelay = true
-				Cron.After(0.07, function()
-					self.componentSwitchDelay = false
-				end)
+				self.componentSwitchDelay = false
 				self.perspective = "tpp"
 			end
 		end
@@ -344,7 +346,7 @@ function train:handlePoint(point)
 	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
-			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 45, 0))
+			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 75, 0))
 			Cron.After(2.0, function()
 				self.stationSys:requestNewTrain()
 			end)
@@ -377,7 +379,7 @@ function train:handleAudio()
 		utils.stopAudio(entity, "v_metro_default_traffic_01_start")
 		utils.playAudio(entity, "v_metro_default_traffic_01_start")
 
-		self.audioTimer = Cron.Every(20, function ()
+		self.audioTimer = Cron.Every(12, function ()
 			local entity = self:getEntity()
 			if not entity then return end
 			utils.stopAudio(entity, "v_metro_default_traffic_01_start")
@@ -411,6 +413,11 @@ function train:mount()
 	utils.switchCarCam("TPPFar")
 	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
 	self:setSeatPosition()
+
+	if self.ts.settings.defaultFPP then
+		self.perspective = "fpp"
+		utils.switchCarCam("FPP")
+	end
 
 	Cron.After(0.4, function ()
 		if self.ts.settings.noHudTrain then utils.toggleHUD(false) end

@@ -23,6 +23,30 @@ function observers.start(ts)
 
     observers.setupMapTDB()
 
+    Observe("NameplateVisualsLogicController", "OnInitialize", function(this)
+        if observers.hudText then
+            observers.hudText:SetVisible(false)
+        end
+
+        local label = inkText.new()
+        CName.add("ncartTracker")
+        label:SetName('ncartTracker')
+        label:SetFontFamily('base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily')
+        label:SetFontStyle('Medium')
+        label:SetFontSize(22)
+        label:SetLetterCase(textLetterCase.OriginalCase)
+        label:SetAnchor(inkEAnchor.Fill)
+        label:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
+        label:SetHorizontalAlignment(textHorizontalAlignment.Center)
+        label:SetVerticalAlignment(textVerticalAlignment.Center)
+        label:SetMargin(inkMargin.new({ left = 1650.0, top = 500.0, right = 0.0, bottom = 0.0 }))
+        label:SetText("")
+        label:SetVisible(false)
+        label:Reparent(this:GetRootCompoundWidget().parentWidget.parentWidget.parentWidget.parentWidget.parentWidget, -1)
+
+        observers.hudText = label
+    end)
+
     Observe("gameuiWorldMapMenuGameController", "TryFastTravel", function(this)
         if this.selectedMappin:GetMappinVariant().value == "GetInVariant" then
             this:FastTravel()
@@ -104,28 +128,6 @@ function observers.start(ts)
         utils.showInputHint("UI_Apply", lang.getText("track_closest_station"), "WorldMapInputHints", 10)
     end)
 
-    Observe('QuestTrackerGameController', 'OnInitialize', function(self)
-        local rootWidget = self:GetRootCompoundWidget()
-
-        local label = inkText.new()
-        CName.add("ncartTracker")
-        label:SetName('ncartTracker')
-        label:SetFontFamily('base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily')
-        label:SetFontStyle('Medium')
-        label:SetFontSize(40)
-        label:SetLetterCase(textLetterCase.OriginalCase)
-        label:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
-        label:SetAnchor(inkEAnchor.Fill)
-        label:SetHorizontalAlignment(textHorizontalAlignment.Center)
-        label:SetVerticalAlignment(textVerticalAlignment.Center)
-        label:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
-        label:SetText("")
-        label:SetVisible(false)
-        label:Reparent(rootWidget, -1)
-
-        observers.hudText = label
-    end)
-
     ObserveAfter('hudCarController', 'OnMountingEvent', function(this)
         if observers.noSave then
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(false)
@@ -163,11 +165,18 @@ function observers.start(ts)
         wrapped()
     end)
 
-    Override("VehicleComponent", "OnSummonFinishedEvent", function(this, wrapped)
+    Override("VehicleComponent", "OnSummonFinishedEvent", function(this, evt, wrapped)
         if LocKeyToString(this:GetVehicle():GetRecord():DisplayName()) == "LocKey#23422" then
             return
         end
-        wrapped()
+        wrapped(evt)
+    end)
+
+    Override("VehicleObject", "ToggleHorn", function(_, toggle, isPolice, wrapped)
+        if observers.noSave then
+            toggle = false
+        end
+        wrapped(toggle, isPolice)
     end)
 
     Override("DataTerm", "OnOpenWorldMapAction", function(_, evt, wrapped)

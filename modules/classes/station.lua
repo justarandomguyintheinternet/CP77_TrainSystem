@@ -2,6 +2,7 @@ local config = require("modules/utils/config")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
 local settings = require("modules/utils/GameSettings")
+local spawnEntities = false -- For potential game updates that break sectors
 
 station = {}
 
@@ -46,15 +47,16 @@ function station:exitToGround(ts)
     local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(0, 1.1, 0, 0))
 
 	if entry.useSecondaryElevator then
-        --local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
+        local secondID = utils.spawnObject(entry.elevatorPath, entry.secondaryPosition, EulerAngles.new(0, 0, 0):ToQuat())
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
             Game.GetTeleportationFacility():Teleport(GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         end)
-        -- Cron.After(self.ts.settings.elevatorTime, function ()
-		-- 	exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
-        --     secondID = nil
-        -- end)
+        Cron.After(self.ts.settings.elevatorTime, function ()
+			if not spawnEntities then return end
+			exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
+            secondID = nil
+        end)
     else
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end
@@ -87,21 +89,25 @@ function station:exitToGround(ts)
 end
 
 function station:spawn()
-	-- for _, o in pairs(self.objects) do
-	-- 	local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat(), o.app)
-    --     table.insert(self.objectIDS, id)
-	-- end
-	-- self.loaded = true
+	if not spawnEntities then return end
+
+	for _, o in pairs(self.objects) do
+		local id = utils.spawnObject(o.path, utils.getVector(o.pos), utils.getEuler(o.rot):ToQuat(), o.app)
+        table.insert(self.objectIDS, id)
+	end
+	self.loaded = true
 end
 
 function station:despawn()
-	-- for _, id in pairs(self.objectIDS) do
-	-- 	if Game.FindEntityByID(id) ~= nil then
-	-- 		exEntitySpawner.Despawn(Game.FindEntityByID(id))
-	-- 	end
-	-- end
-	-- self.objectIDS = {}
-	-- self.loaded = false
+	if not spawnEntities then return end
+
+	for _, id in pairs(self.objectIDS) do
+		if Game.FindEntityByID(id) ~= nil then
+			exEntitySpawner.Despawn(Game.FindEntityByID(id))
+		end
+	end
+	self.objectIDS = {}
+	self.loaded = false
 end
 
 function station:update()

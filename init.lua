@@ -22,7 +22,8 @@ ts = {
         elevatorGlitch = true,
         trainGlitch = false,
         autoCenter = false,
-        blueTrain = false
+        blueTrain = false,
+        defaultFPP = false
     },
 
     settings = {},

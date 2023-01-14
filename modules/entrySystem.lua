@@ -3,6 +3,7 @@ local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
 local settings = require("modules/utils/GameSettings")
 local lang = require("modules/utils/lang")
+local spawnEntities = false
 
 entrySys = {}
 
@@ -117,15 +118,17 @@ function entrySys:enter(entry)
     local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(0, 1.1, 0, 0))
 
     if entry.useSecondaryElevator then -- Ugly af fix for too long distances
-        --local secondID = utils.spawnObject(entry.elevatorPath, playerSecondaryElevatorPos, EulerAngles.new(0, 0, 0):ToQuat())
+        local secondID = utils.spawnObject(entry.elevatorPath, playerSecondaryElevatorPos, EulerAngles.new(0, 0, 0):ToQuat())
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
             Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
         end)
-        -- Cron.After(0.5, function ()
-        --     exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
-        --     secondID = nil
-        -- end)
+        Cron.After(0.5, function ()
+            if not spawnEntities then return end
+
+            exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
+            secondID = nil
+        end)
     else
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end

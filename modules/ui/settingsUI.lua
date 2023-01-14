@@ -49,6 +49,11 @@ function settings.setupNative(ts)
         config.saveFile("data/config.json", ts.settings)
     end)
 
+    settings.nativeOptions["defaultFPP"] = nativeSettings.addSwitch("/trainSystem/train", lang.getText("settings_name_defaultFPP"), lang.getText("settings_description_defaultFPP"), ts.settings.defaultFPP, ts.defaultSettings.defaultFPP, function(state)
+        ts.settings.defaultFPP = state
+        config.saveFile("data/config.json", ts.settings)
+    end)
+
     settings.nativeOptions["noHudTrain"] = nativeSettings.addSwitch("/trainSystem/train", lang.getText("settings_name_noHudTrain"), lang.getText("settings_description_noHudTrain"), ts.settings.noHudTrain, ts.defaultSettings.noHudTrain, function(state)
         ts.settings.noHudTrain = state
         config.saveFile("data/config.json", ts.settings)
@@ -90,7 +95,6 @@ function settings.setupNative(ts)
         ts.settings.uiLayout = value
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
-            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
             ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
         end
     end)
@@ -172,6 +176,12 @@ function settings.draw(ts) -- Draw alternative ImGui window
         config.saveFile("data/config.json", ts.settings)
     end
 
+    ts.settings.defaultFPP, changed = ImGui.Checkbox(lang.getText("settings_name_defaultFPP"), ts.settings.defaultFPP)
+    if changed then
+        if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["defaultFPP"], ts.settings.defaultFPP) end
+        config.saveFile("data/config.json", ts.settings)
+    end
+
     ts.settings.noHudTrain, changed = ImGui.Checkbox(lang.getText("settings_name_noHudTrain"), ts.settings.noHudTrain)
     if changed then
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["noHudTrain"], ts.settings.noHudTrain) end
@@ -227,7 +237,6 @@ function settings.draw(ts) -- Draw alternative ImGui window
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
-            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
             ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
         end
     end
@@ -239,7 +248,6 @@ function settings.draw(ts) -- Draw alternative ImGui window
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
-            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
             ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
         end
     end
@@ -251,7 +259,6 @@ function settings.draw(ts) -- Draw alternative ImGui window
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["uiLayout"], ts.settings.uiLayout) end
         config.saveFile("data/config.json", ts.settings)
         if ts.observers.hudText then
-            ts.observers.hudText:SetMargin(utils.generateHUDMargin(ts.settings.uiLayout))
             ts.observers.hudText:SetTintColor(utils.generateHUDColor(ts.settings.uiLayout))
         end
     end

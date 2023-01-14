@@ -1,4 +1,5 @@
 local settings = require("modules/utils/GameSettings")
+local spawnEntities = false
 
 miscUtils = {}
 
@@ -222,6 +223,8 @@ function miscUtils.calcDeltaEuler(eul1, eul2)
 end
 
 function miscUtils.spawnObject(path, pos, rot, appearance)
+    if not spawnEntities then return end
+
     local app = appearance or ""
     local transform = GetPlayer():GetWorldTransform()
     transform:SetOrientation(rot)
@@ -396,16 +399,6 @@ end
 function miscUtils.playGlitchEffect(name, target)
     local bb = worldEffectBlackboard.new()
     GameObjectEffectHelper.StartEffectEvent(target, name, true, bb)
-end
-
-function miscUtils.generateHUDMargin(type)
-    if type == 1 then -- Vanilla
-        return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })
-    elseif type == 2 then -- E3
-        return inkMargin.new({ left = 355.0, top = 1750.0, right = 0.0, bottom = 0.0 })
-    elseif type == 3 then -- Superior
-        return inkMargin.new({ left = 355.0, top = 1960.0, right = 0.0, bottom = 0.0 })
-    end
 end
 
 function miscUtils.generateHUDColor(type)
