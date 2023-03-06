@@ -167,21 +167,6 @@ function station:handleFakeDoor(target)
 	end
 end
 
-function station:playAudio(clipName, length)
-	for _, o in pairs(self.objectIDS) do
-		local obj = Game.FindEntityByID(o)
-		if obj then
-			local name = obj:GetClassName().value
-			if name ~= "entEntity" and name ~= "gameObject" then
-				utils.playAudio(obj, clipName)
-				Cron.After(length, function ()
-					utils.stopAudio(obj, clipName)
-				end)
-			end
-		end
-	end
-end
-
 function station:load(path)
 	local data = config.loadFile(path)
 

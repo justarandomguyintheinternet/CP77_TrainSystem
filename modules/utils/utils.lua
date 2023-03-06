@@ -1,5 +1,6 @@
 local settings = require("modules/utils/GameSettings")
 local spawnEntities = false
+local Cron = require("modules/utils/Cron")
 
 miscUtils = {}
 
@@ -317,11 +318,11 @@ end
 
 function miscUtils.forceStop(ts)
     ts.entrySys:despawnElevators()
-    ts.objectSys.despawnAll()
     miscUtils.removeTPPTweaks()
     miscUtils.toggleHUD(true)
 
     if ts.observers.noSave then
+		Cron.Halt(ts.stationSys.audioTimer)
         ts.stationSys.currentStation:despawn()
         if ts.stationSys.previousStationID then
             ts.stationSys.stations[ts.stationSys.previousStationID]:despawn()

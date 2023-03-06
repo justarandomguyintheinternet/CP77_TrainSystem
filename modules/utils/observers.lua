@@ -94,6 +94,10 @@ function observers.start(ts)
 		observers.radioPopupActive = false
 	end)
 
+    Observe('VehicleRadioPopupGameController', 'SetupData', function()
+		observers.radioPopupActive = true
+    end)
+
     Observe('PopupsManager', 'OnPlayerAttach', function(self)
 		observers.popupManager = self
 	end)

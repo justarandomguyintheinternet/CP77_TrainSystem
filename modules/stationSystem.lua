@@ -2,6 +2,7 @@ local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
 local train = require("modules/classes/train")
+local soundObjects = require("modules/objectSystem").soundObjects
 
 stationSys = {}
 
@@ -206,7 +207,22 @@ function stationSys:handleAudio() -- Station announcement timer
 	if self.audioTimer == nil then
 		self.audioTimer = Cron.After(math.random(22, 70), function ()
 			if not self.currentStation then return end
-			self.currentStation:playAudio("amb_g_city_el_adverts_watson_01_medium_metro_f_1_01", 7)
+
+			for _, hash in pairs(soundObjects) do
+				local ent = Game.FindEntityByID(entEntityID.new({hash = hash}))
+				if ent then
+					utils.playAudio(ent, "amb_g_city_el_adverts_watson_01_medium_metro_f_1_01", 6)
+				end
+			end
+			Cron.After(7, function()
+				for _, hash in pairs(soundObjects) do
+					local ent = Game.FindEntityByID(entEntityID.new({hash = hash}))
+					if ent then
+						utils.stopAudio(ent, "amb_g_city_el_adverts_watson_01_medium_metro_f_1_01")
+					end
+				end
+			end)
+
 			self.audioTimer = nil
 		end)
 	end
