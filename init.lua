@@ -66,7 +66,7 @@ function ts:new()
         ts.stationSys = require("modules/stationSystem"):new(ts)
         ts.routingSystem = require("modules/routingSystem"):new(ts)
 
-        ts.routingSystem:load()
+        ts.routingSystem:load(self.settings.unlockAllTracks)
         ts.entrySys:load()
         ts.stationSys:load()
         ts.objectSys.initialize()
@@ -108,16 +108,16 @@ function ts:new()
         if not ts.archiveInstalled or not ts.axlInstalled then return end
 
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled and ts.axlInstalled and not observers.radioPopupActive then
+            self.hud.drawInteraction()
             ts.observers.update()
             ts.entrySys:update()
-            ts.stationSys:update(deltaTime)
+            -- ts.stationSys:update(deltaTime)
             ts.Cron.Update(deltaTime)
-            ts.input.interactKey = false -- Fix "sticky" input
             ts.debug.baseUI.utilUI.update()
         elseif ts.entrySys.forceRunCron and ts.archiveInstalled and ts.axlInstalled then
             ts.Cron.Update(deltaTime)
         elseif ts.stationSys.activeTrain and observers.radioPopupActive then -- Always teleport, avoid issues with popups
-            ts.stationSys.activeTrain:updateEntity()
+            -- ts.stationSys.activeTrain:updateEntity()
         end
     end)
 

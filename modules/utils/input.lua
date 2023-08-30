@@ -3,8 +3,18 @@ input = {
     exit = false,
     toggleCam = false,
     up = false,
-    down = false
+    down = false,
+
+    keybinds = {}
 }
+
+function input.registerKeybind(id, key, callback)
+    input.keybinds[id] = {key = key, callback = callback}
+end
+
+function input.removeKeybind(id)
+    input.keybinds[id] = nil
+end
 
 function input.startInputObserver(ts)
     Observe('PlayerPuppet', 'OnGameAttached', function(this)
@@ -14,40 +24,12 @@ function input.startInputObserver(ts)
     Observe('PlayerPuppet', 'OnAction', function(_, action)
         local actionName = Game.NameToString(action:GetName(action))
         local actionType = action:GetType(action).value
-        if actionName == 'Exit' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.exit = true
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.exit = false
-            end
-        elseif actionName == 'ToggleVehCamera' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.toggleCam = true
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.toggleCam = false
-            end
-        elseif actionName == 'NextWeapon' then
-            if actionType == 'BUTTON_PRESSED' then
-                if ts.observers.radioPopupActive then return end
-                input.down = true
-            end
-        elseif actionName == 'PreviousWeapon' then
-            if actionType == 'BUTTON_PRESSED' then
-                if ts.observers.radioPopupActive then return end
-                input.up = true
-            end
-        elseif actionName == 'dpad_left' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.down = true
-            end
-        elseif actionName == 'UI_Apply' then
-            if actionType == 'BUTTON_PRESSED' then
-                input.interactKey = true
-                if ts.observers.onMap then
-                    ts.entrySys:markClosest()
+
+        if actionType == "BUTTON_PRESSED" then
+            for _, bind in pairs(input.keybinds) do
+                if bind.key == actionName then
+                    bind.callback()
                 end
-            elseif actionType == 'BUTTON_RELEASED' then
-                input.interactKey = false
             end
         end
     end)

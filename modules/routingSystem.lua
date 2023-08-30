@@ -11,7 +11,7 @@ function routingSystem:new()
    	return setmetatable(o, self)
 end
 
-function routingSystem:load()
+function routingSystem:load(unlockAllTracks)
 	for _, file in pairs(dir("data/tracks")) do
         if file.name:match("^.+(%..+)$") == ".json" then
             local track = require("modules/classes/track"):new()
@@ -20,15 +20,15 @@ function routingSystem:load()
         end
     end
 
-	self:handleActOne()
+	self:handleActOne(unlockAllTracks)
 end
 
-function routingSystem:handleActOne()
+function routingSystem:handleActOne(unlockAllTracks)
 	local hasSentJackie = not (Game.GetQuestsSystem():GetFact("q005_jackie_to_hospital") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_to_mama") == 0 and Game.GetQuestsSystem():GetFact("q005_jackie_stay_notell") == 0)
 	local q101Done = Game.GetQuestsSystem():GetFactStr('q101_done') == 1
 	local sideContentUnlocked = Game.GetQuestsSystem():GetFactStr('q101_enable_side_content') == 1
 
-	if hasSentJackie or q101Done or sideContentUnlocked or self.ts.settings.unlockAllTracks then return end
+	if hasSentJackie or q101Done or sideContentUnlocked or unlockAllTracks then return end
 
 	-- TODO: Change this to modify lines staion information, hardcoded
 end

@@ -1,9 +1,9 @@
-local entry = require("modules/classes/entry")
 local utils = require("modules/utils/utils")
 local Cron = require("modules/utils/Cron")
-local settings = require("modules/utils/GameSettings")
 local lang = require("modules/utils/lang")
-local spawnEntities = false
+local observers = require("modules/utils/observers")
+local hud = require("modules/ui/hud")
+local input = require("modules/utils/input")
 
 entrySys = {}
 
@@ -13,6 +13,9 @@ function entrySys:new(ts)
     o.ts = ts
 	o.entries = {}
     o.maxDistToEntry = 2.6
+    o.isLookingAtEntry = false
+    o.targetEntry = nil
+
     o.elevatorIDS = {}
     o.forceRunCron = false
 
@@ -23,67 +26,74 @@ function entrySys:new(ts)
 end
 
 function entrySys:load()
+    self:registerKeybinds()
+
     for _, file in pairs(dir("data/entries")) do
         if file.name:match("^.+(%..+)$") == ".json" then
-            local e = entry:new()
-            e:load("data/entries/" .. file.name)
-            table.insert(self.entries, e)
+            local entry = require("modules/classes/entry"):new()
+            entry:load("data/entries/" .. file.name)
+            table.insert(self.entries, entry)
         end
     end
 end
 
+function entrySys:registerKeybinds()
+    input.registerKeybind("map_input", "UI_Apply", function()
+        if observers.onMap then
+            self:markClosest()
+        end
+    end)
+
+    input.registerKeybind("enter_station", "UI_Apply", function()
+        if not self.isLookingAtEntry then return end
+
+        local duration = 0
+        if ts.settings.elevatorGlitch then
+            duration = 0.6
+            utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+        end
+        Cron.After(duration, function ()
+            self:enter(self.targetEntry)
+        end)
+    end)
+end
+
 function entrySys:findEntryByID(id)
-    for _, v in pairs(self.entries) do
-        if v.stationID == id then return v end
+    for _, entry in pairs(self.entries) do
+        if entry.stationID == id then return entry end
     end
 end
 
 function entrySys:update()
-    --self:handleElevators()
     local closest = self:getClosestEntry()
-    if closest then
-        local dist = utils.distanceVector(GetPlayer():GetWorldPosition(), closest.center)
-        if dist < closest.radius then
-            if not closest.useDoors then
-                self.ts.observers.noFastTravel = true
-            end
-            if self:looksAtEntry(closest) then
-                if closest.useDoors then
-                    self.ts.hud.entryVisible = true
-                end
-                if self.ts.input.interactKey then
-                    self.ts.input.interactKey = false
-                    if self.ts.stationSys.currentStation == nil then
+    if not closest then return end
 
-                        local t = 0
-                        if ts.settings.elevatorGlitch then
-                            t = 0.6
-                            utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
-                        end
-                        Cron.After(t, function ()
-                            self:enter(closest)
-                        end)
-
-                    end
-                end
-            end
-        else
-            self.ts.observers.noFastTravel = false
-        end
-
-        if self.mappinID and utils.distanceVector(GetPlayer():GetWorldPosition(), closest.waypointPosition) < closest.radius then
-            pcall(function ()
-                Game.GetMappinSystem():UnregisterMappin(self.mappinID)
-                self.mappinID = nil
-            end)
-        end
+    if self.mappinID and GetPlayer():GetWorldPosition():Distance(closest.waypointPosition) < closest.radius then
+        Game.GetMappinSystem():UnregisterMappin(self.mappinID)
+        self.mappinID = nil
     end
+
+    self.isLookingAtEntry = false
+    observers.noFastTravel = false
+
+    if GetPlayer():GetWorldPosition():Distance(closest.center) > closest.radius then
+        hud.toggleInteraction(false, "enter_station")
+    end
+
+    if not closest.useDoors then
+        observers.noFastTravel = true
+    end
+
+    if not self:looksAtEntry(closest) then
+        hud.toggleInteraction(false, "enter_station")
+    end
+
+    hud.toggleInteraction(true, "enter_station")
+    self.isLookingAtEntry = true
+    self.targetEntry = closest
 end
 
 function entrySys:enter(entry)
-    self.ts.observers.noSave = true
-    self.ts.observers.noTrains = true
-
     if self.mappinID then
         pcall(function ()
             Game.GetMappinSystem():UnregisterMappin(self.mappinID)
@@ -102,32 +112,16 @@ function entrySys:enter(entry)
         end
 	end)
 
-    Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
-    Game.ChangeZoneIndicatorSafe()
-
     utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
-    self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")
-    settings.Set("/interface/hud/input_hints", false)
-
-    self.ts.stationSys.jobTrackerOriginal = settings.Get("/interface/hud/quest_tracker")
-    settings.Set("/interface/hud/quest_tracker", true)
-
     utils.playAudio(GetPlayer(), "dev_elevator_02_movement_start", 3)
 
     local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(0, 1.1, 0, 0))-- Adjusted to make the player stand less in front of the wall
     local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(0, 1.1, 0, 0))
 
     if entry.useSecondaryElevator then -- Ugly af fix for too long distances
-        local secondID = utils.spawnObject(entry.elevatorPath, playerSecondaryElevatorPos, EulerAngles.new(0, 0, 0):ToQuat())
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
             Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
-        end)
-        Cron.After(0.5, function ()
-            if not spawnEntities then return end
-
-            exEntitySpawner.Despawn(Game.FindEntityByID(secondID))
-            secondID = nil
         end)
     else
         Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
@@ -136,11 +130,8 @@ function entrySys:enter(entry)
     Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more
         utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
         utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
-        self.ts.stationSys:enter()
-    end)
-
-    Cron.After(self.ts.settings.elevatorTime * 0.7, function () -- Spawn station objects
-        self.ts.stationSys:loadStation(entry.stationID)
+        local targetStation = self.ts.stationSys.stations[entry.stationID]
+	    targetStation:tpTo(targetStation.portalPoint)
     end)
 
     Cron.After(self.ts.settings.elevatorTime - 0.6, function()
@@ -149,66 +140,30 @@ function entrySys:enter(entry)
     end)
 end
 
+-- Checks if player is looking at an entry
+---@param closest table
+---@return boolean
 function entrySys:looksAtEntry(closest)
-    local looksAt = false
     local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, false)
-    if target and GetPlayer():GetFastTravelSystem():IsFastTravelEnabled() then
-        if (target:GetClassName().value == "DataTerm" and not closest.useDoors) or (target:GetClassName().value == "FakeDoor" and closest.useDoors) then
-            if utils.distanceVector(target:GetWorldPosition(), GetPlayer():GetWorldPosition()) < self.maxDistToEntry then
-                looksAt = true
-                utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", true)
-            else
-                utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
-            end
-        end
-    else
-        utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
-    end
-    return looksAt
+
+    if not target or not GetPlayer():GetFastTravelSystem():IsFastTravelEnabled() then return false end
+    if not (target:GetClassName().value == "DataTerm" and not closest.useDoors) and not (target:GetClassName().value == "FakeDoor" and closest.useDoors) then return false end
+    if not (utils.distanceVector(target:GetWorldPosition(), GetPlayer():GetWorldPosition()) < self.maxDistToEntry) then return false end
+
+    return true
 end
 
 function entrySys:getClosestEntry()
     local closestEntry = nil
-    local dist = 999999999999
-    for _, v in pairs(self.entries) do
-        local x = utils.distanceVector(GetPlayer():GetWorldPosition(), v.center)
-        if x < dist then
-            dist = x
-            closestEntry = v
+    local closestDist = 999999999999
+    for _, entry in pairs(self.entries) do
+        local distance = GetPlayer():GetWorldPosition():Distance(entry.center)
+        if distance < closestDist then
+            closestDist = distance
+            closestEntry = entry
         end
     end
     return closestEntry
-end
-
-function entrySys:handleElevators()
-    for _, e in pairs(self.entries) do
-        local station = self.ts.stationSys.stations[e.stationID]
-
-        local entryDist = utils.distanceVector(GetPlayer():GetWorldPosition(), e.center)
-        local stationDist = utils.distanceVector(GetPlayer():GetWorldPosition(), station.center)
-
-        if ((entryDist < 100) or (stationDist < 100)) then
-            if self.elevatorIDS[e.stationID] == nil then
-                self.elevatorIDS[e.stationID] = utils.spawnObject(e.elevatorPath, e.elevatorPosition, EulerAngles.new(0, 0, 0):ToQuat())
-            end
-        else
-            if self.elevatorIDS[e.stationID] ~= nil then
-                if Game.FindEntityByID(self.elevatorIDS[e.stationID]) ~= nil then
-                    exEntitySpawner.Despawn(Game.FindEntityByID(self.elevatorIDS[e.stationID]))
-                    self.elevatorIDS[e.stationID] = nil
-                end
-            end
-        end
-    end
-end
-
-function entrySys:despawnElevators()
-    for _, id in pairs(self.elevatorIDS) do
-        if id and Game.FindEntityByID(id) ~= nil then
-            exEntitySpawner.Despawn(Game.FindEntityByID(id))
-        end
-    end
-    self.elevatorIDS = {}
 end
 
 function entrySys:markClosest()

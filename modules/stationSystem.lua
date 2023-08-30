@@ -47,7 +47,6 @@ function stationSys:load()
 end
 
 function stationSys:enter() -- TP to station, toggle pin
-	self.currentStation:tpTo(self.currentStation.portalPoint)
 	self.onStation = true
 	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
 	utils.setupTPPCam(self.ts.settings.camDist, self.ts.settings.autoCenter)

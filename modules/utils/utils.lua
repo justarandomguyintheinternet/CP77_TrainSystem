@@ -315,7 +315,6 @@ function miscUtils.hideCustomHints()
 end
 
 function miscUtils.forceStop(ts)
-    ts.entrySys:despawnElevators()
     miscUtils.removeTPPTweaks()
     miscUtils.toggleHUD(true)
 
@@ -348,7 +347,7 @@ function miscUtils.forceStop(ts)
             ts.stationSys = require("modules/stationSystem"):new(ts)
             ts.routingSystem = require("modules/routingSystem"):new(ts)
 
-            ts.routingSystem:load()
+            ts.routingSystem:load(ts.settings.unlockAllTracks)
             ts.entrySys:load()
             ts.stationSys:load()
             ts.objectSys.initialize()
