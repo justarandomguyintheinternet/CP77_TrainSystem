@@ -97,9 +97,9 @@ end
 function loadedUI.track(data)
     ImGui.Text("ID: " .. data.id)
     ImGui.Text("Num points: " .. #data.points)
-    ImGui.Text("Connected tracks (FIRST): next=" .. data.connectedID.first.next .. " | last=" .. data.connectedID.first.last)
-    ImGui.Text("Connected tracks (SECOND): next=" .. data.connectedID.second.next .. " | last=" .. data.connectedID.second.last)
-    ImGui.Text("Connected station: next=" .. data.hasStation.next .. " | last=" .. data.hasStation.last)
+    ImGui.Text("Connected tracks (FIRST): back=" .. data.connectedID.first.back .. " | front=" .. data.connectedID.first.front)
+    ImGui.Text("Connected tracks (SECOND): back=" .. data.connectedID.second.back .. " | front=" .. data.connectedID.second.front)
+    ImGui.Text("Connected station: back=" .. data.station.back .. " | front=" .. data.station.front)
 end
 
 return loadedUI

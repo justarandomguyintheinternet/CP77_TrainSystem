@@ -19,6 +19,18 @@ function miscUtils.deepcopy(origin)
     return copy
 end
 
+-- Joins the two tables, in order
+---@param a table
+---@param b table
+---@return table
+function miscUtils.join(a, b)
+    for _, v in pairs(b) do
+        table.insert(a, #a, v)
+    end
+
+    return a
+end
+
 function miscUtils.distanceVector(from, to)
     return math.sqrt((to.x - from.x)^2 + (to.y - from.y)^2 + (to.z - from.z)^2)
 end
@@ -161,6 +173,7 @@ end
 
 function miscUtils.reversePoint(point)
     local p = require("modules/classes/point") -- Clone the point, dont wanna change the original points rot
+
     local newPoint = p:new()
     newPoint.dir = point.dir
     newPoint.unloadStation = point.unloadStation
@@ -172,21 +185,6 @@ function miscUtils.reversePoint(point)
     rot.pitch = rot.pitch * -1
     rot.yaw = rot.yaw + 180
 
-    newPoint.rot = rot:ToQuat()
-    return newPoint
-end
-
-function miscUtils.reversePointPitch(point)
-    local p = require("modules/classes/point") -- Clone the point, dont wanna change the original points rot
-    local newPoint = p:new()
-    newPoint.dir = point.dir
-    newPoint.unloadStation = point.unloadStation
-    newPoint.loadStation = point.loadStation
-    newPoint.pos = point.pos
-
-    local rot = point.rot:ToEulerAngles()
-    rot.roll = rot.roll * -1
-    rot.pitch = rot.pitch * -1
     newPoint.rot = rot:ToQuat()
     return newPoint
 end
@@ -348,9 +346,9 @@ function miscUtils.forceStop(ts)
 
             ts.entrySys = require("modules/entrySystem"):new(ts)
             ts.stationSys = require("modules/stationSystem"):new(ts)
-            ts.trackSys = require("modules/trackSystem"):new(ts)
+            ts.routingSystem = require("modules/routingSystem"):new(ts)
 
-            ts.trackSys:load()
+            ts.routingSystem:load()
             ts.entrySys:load()
             ts.stationSys:load()
             ts.objectSys.initialize()

@@ -131,7 +131,7 @@ function train:getRemainingExitLength()
 	local length = 0
 	length = length + utils.distanceVector(self.pos, self.activePath[self.pointIndex + 1].pos)
 	for i = self.pointIndex + 2, #self.activePath, 1 do
-		if not (self.activePath[i].dir == "next" and self.activePath[i].unloadStation.next or self.activePath[i].dir == "last" and self.activePath[i].unloadStation.last) then
+		if not (self.activePath[i].dir == "back" and self.activePath[i].unloadStation.back or self.activePath[i].dir == "front" and self.activePath[i].unloadStation.front) then
 			length = length + utils.distanceVector(self.activePath[i].pos, self.activePath[i - 1].pos)
 		else
 			break
@@ -337,13 +337,13 @@ function train:setSeatPosition()
 end
 
 function train:handlePoint(point)
-	if self.pointIndex == 1 and self.playerMounted and self.speed == 0 then -- Spawn next station when the driving starts with player mounted, speed not 0 makes sure it only gets called once
+	if self.pointIndex == 1 and self.playerMounted and self.speed == 0 then -- Spawn back station when the driving starts with player mounted, speed not 0 makes sure it only gets called once
 		self.stationSys.previousStationID = self.stationSys.currentStation.id
 		self.stationSys.currentStation = self.stationSys.stations[self.targetID]
 		self.stationSys.currentStation:spawn()
 	end
 
-	if point.dir == "next" and point.unloadStation.next or point.dir == "last" and point.unloadStation.last then -- No player mounted, new arrival
+	if point.dir == "back" and point.unloadStation.back or point.dir == "front" and point.unloadStation.front then -- No player mounted, new arrival
 		if not self.playerMounted then
 			self.driving = false
 			self.pos = utils.subVector(self.stationSys.currentStation.center, Vector4.new(0, 0, 75, 0))

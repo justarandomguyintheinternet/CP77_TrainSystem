@@ -60,26 +60,26 @@ function stationSys:loadStation(id) -- Load station objects, start train spawnin
 end
 
 function stationSys:requestPaths()
-	self.pathsData = self.ts.trackSys:mainGeneratePathData(self.currentStation)
+	self.pathsData = self.ts.routingSystem:mainGeneratePathData(self.currentStation)
 	self.currentPathsIndex = 0
 	self.totalPaths = #self.pathsData
 
-	local last = {}
-	local next = {}
+	local front = {}
+	local back = {}
 	local ordered = {}
 	for _, v in pairs(self.pathsData) do
-		if v.dir == "next" then
-			table.insert(next, v)
+		if v.dir == "back" then
+			table.insert(back, v)
 		else
-			table.insert(last, v)
+			table.insert(front, v)
 		end
 	end
 
 	if self.previousStationID == nil then
-		local num = math.max(#next, #last)
+		local num = math.max(#back, #front)
 		for i = 1, num do
-			if #next >= i then table.insert(ordered, next[i]) end
-			if #last >= i then table.insert(ordered, last[i]) end
+			if #back >= i then table.insert(ordered, back[i]) end
+			if #front >= i then table.insert(ordered, front[i]) end
 		end
 		self.pathsData = ordered
 	else
@@ -90,19 +90,19 @@ function stationSys:requestPaths()
 				prevPath = v
 			end
 		end
-		if prevPath.dir == "next" then
-			for _, p in pairs(last) do
+		if prevPath.dir == "back" then
+			for _, p in pairs(front) do
 				table.insert(ordered, p)
 			end
-			for _, p in pairs(next) do
+			for _, p in pairs(back) do
 				if p ~= prevPath then table.insert(ordered, p) end
 			end
 			table.insert(ordered, prevPath)
 		else
-			for _, p in pairs(next) do
+			for _, p in pairs(back) do
 				table.insert(ordered, p)
 			end
-			for _, p in pairs(last) do
+			for _, p in pairs(front) do
 				if p ~= prevPath then table.insert(ordered, p) end
 			end
 			table.insert(ordered, prevPath)

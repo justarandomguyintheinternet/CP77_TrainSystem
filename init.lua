@@ -64,9 +64,9 @@ function ts:new()
 
         ts.entrySys = require("modules/entrySystem"):new(ts)
         ts.stationSys = require("modules/stationSystem"):new(ts)
-        ts.trackSys = require("modules/trackSystem"):new(ts)
+        ts.routingSystem = require("modules/routingSystem"):new(ts)
 
-        ts.trackSys:load()
+        ts.routingSystem:load()
         ts.entrySys:load()
         ts.stationSys:load()
         ts.objectSys.initialize()
@@ -85,7 +85,7 @@ function ts:new()
 
         ts.GameUI.OnSessionStart(function()
             ts.runtimeData.inGame = true
-            ts.trackSys:load() -- Load again to handle Act 1
+            ts.routingSystem:load() -- Load again to handle Act 1
         end)
 
         ts.GameUI.OnSessionEnd(function()
@@ -107,11 +107,10 @@ function ts:new()
     registerForEvent("onUpdate", function(deltaTime)
         if not ts.archiveInstalled or not ts.axlInstalled then return end
 
-        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled and ts.axlInstalled then
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled and ts.axlInstalled and not observers.radioPopupActive then
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
-            ts.objectSys.run()
             ts.Cron.Update(deltaTime)
             ts.input.interactKey = false -- Fix "sticky" input
             ts.debug.baseUI.utilUI.update()
@@ -153,3 +152,5 @@ function ts:new()
 end
 
 return ts:new()
+
+-- Add TP out of bounds glitch

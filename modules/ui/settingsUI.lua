@@ -101,7 +101,7 @@ function settings.setupNative(ts)
 
     settings.nativeOptions["unlockAllTracks"] = nativeSettings.addSwitch("/trainSystem/misc", lang.getText("settings_name_unlockAllTracks"), lang.getText("settings_description_unlockAllTracks"), ts.settings.unlockAllTracks, ts.defaultSettings.unlockAllTracks, function(state)
         ts.settings.unlockAllTracks = state
-        ts.trackSys:load()
+        ts.routingSystem:load()
         config.saveFile("data/config.json", ts.settings)
     end)
 
@@ -265,7 +265,7 @@ function settings.draw(ts) -- Draw alternative ImGui window
 
     ts.settings.unlockAllTracks, changed = ImGui.Checkbox(lang.getText("settings_name_unlockAllTracks"), ts.settings.unlockAllTracks)
     if changed then
-        ts.trackSys:load()
+        ts.routingSystem:load()
         if settings.nativeSettings then settings.nativeSettings.setOption(settings.nativeOptions["unlockAllTracks"], ts.settings.unlockAllTracks) end
         config.saveFile("data/config.json", ts.settings)
     end
