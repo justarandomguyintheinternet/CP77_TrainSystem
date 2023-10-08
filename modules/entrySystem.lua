@@ -112,7 +112,7 @@ function entrySys:enter(entry)
         end
 	end)
 
-    utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
+    hud.toggleInteraction(false, "enter_station")
     utils.playAudio(GetPlayer(), "dev_elevator_02_movement_start", 3)
 
     local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(0, 1.1, 0, 0))-- Adjusted to make the player stand less in front of the wall
