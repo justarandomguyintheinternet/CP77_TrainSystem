@@ -7,3 +7,4 @@ todo
 .vscode/settings.json
 data/config.json
 test.json
+temp.lua

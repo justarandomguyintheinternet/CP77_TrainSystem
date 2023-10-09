@@ -88,7 +88,7 @@ function train:despawn()
 		self.pos = utils.addVector(self.pos, Vector4.new(0, 0, 125, 0))
 		self:updateEntity()
 		Cron.After(0.75, function()
-			Game.DespawnPlayerVehicle("Vehicle.train")
+  			Game.GetVehicleSystem():DespawnPlayerVehicle(GarageVehicleID.Resolve("Vehicle.train"));
 		end)
 	end
 end
@@ -411,7 +411,7 @@ function train:mount()
 	self.playerMounted = true
 	utils.mount(self:getEntity():GetEntityID(), "seat_front_right")
 	utils.switchCarCam("TPPFar")
-	Game.ApplyEffectOnPlayer("GameplayRestriction.NoDriving")
+	utils.applyStatus("GameplayRestriction.NoDriving")
 	self:setSeatPosition()
 
 	if self.ts.settings.defaultFPP then

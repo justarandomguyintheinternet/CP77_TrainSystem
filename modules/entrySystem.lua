@@ -102,8 +102,8 @@ function entrySys:enter(entry)
         end
 	end)
 
-    Game.ApplyEffectOnPlayer("GameplayRestriction.NoCombat")
-    Game.ChangeZoneIndicatorSafe()
+    utils.applyStatus("GameplayRestriction.NoCombat")
+    utils.changeZoneIndicatorSafe()
 
     utils.createInteractionHub(lang.getText("enter_station"), "UI_Apply", false)
     self.ts.stationSys.inputHintsOriginal = settings.Get("/interface/hud/input_hints")

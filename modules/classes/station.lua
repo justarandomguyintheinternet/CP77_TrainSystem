@@ -69,10 +69,9 @@ function station:exitToGround(ts)
     Cron.After(self.ts.settings.elevatorTime, function ()
         ts.observers.noSave = false
 		ts.observers.noTrains = false
-		local rmStatus = Game['StatusEffectHelper::RemoveStatusEffect;GameObjectTweakDBID']
-		rmStatus(GetPlayer(), "GameplayRestriction.NoCombat")
+		utils.removeStatus("GameplayRestriction.NoCombat")
 
-		Game.ChangeZoneIndicatorPublic()
+		utils.changeZoneIndicatorPublic()
 		Game.GetTeleportationFacility():Teleport(GetPlayer(), self.groundPoint.pos,  self.groundPoint.rot:ToEulerAngles())
 
 		utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")

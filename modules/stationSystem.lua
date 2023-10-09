@@ -296,9 +296,9 @@ function stationSys:update(deltaTime)
 		end
 
 		if self.activeTrain.playerMounted and not self.trainInStation then
-			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
+			utils.applyStatus("GameplayRestriction.VehicleBlockExit")
 		else
-			StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+			utils.removeStatus("GameplayRestriction.VehicleBlockExit")
 		end
 
 		self:handleExitTrain()
@@ -324,8 +324,8 @@ function stationSys:update(deltaTime)
 	end
 
 	if self.ts.observers.noSave then -- Mod is active
-		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
-		Game.ChangeZoneIndicatorSafe()
+		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):OnSetWantedLevel(SetWantedLevel.new({wantedLevel =EPreventionHeatStage.Heat_0 }))
+		utils.changeZoneIndicatorSafe()
 
 		local gtaTravel = GetMod("gtaTravel") -- Disable gtaTravel
 		if gtaTravel then

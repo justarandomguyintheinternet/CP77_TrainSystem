@@ -133,7 +133,7 @@ function ts:new()
             if ts.settings.showImGui then
                 ts.settingsUI.draw(ts)
             end
-            --ts.debug.run(ts)
+            ts.debug.run(ts)
         end
         if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame then
             ts.hud.draw(ts)

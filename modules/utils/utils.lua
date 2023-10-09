@@ -316,6 +316,32 @@ function miscUtils.hideCustomHints()
     Game.GetUISystem():QueueEvent(evt)
 end
 
+function miscUtils.applyStatus(effect)
+    Game.GetStatusEffectSystem():ApplyStatusEffect(GetPlayer():GetEntityID(), effect, GetPlayer():GetRecordID(), GetPlayer():GetEntityID())
+end
+
+function miscUtils.removeStatus(effect)
+    Game.GetStatusEffectSystem():RemoveStatusEffect(GetPlayer():GetEntityID(), effect)
+end
+
+function miscUtils.changeZoneIndicatorSafe()
+    local SecurityData = SecurityAreaData.new()
+    SecurityData.securityAreaType = ESecurityAreaType.SAFE
+    local Blackboard = Game.GetBlackboardSystem():GetLocalInstanced(GetPlayer():GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine)
+
+    Blackboard:SetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData, ToVariant(SecurityData))
+    Blackboard:SignalVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData)
+end
+
+function miscUtils.changeZoneIndicatorPublic()
+    local SecurityData = SecurityAreaData.new()
+    SecurityData.securityAreaType = ESecurityAreaType.DISABLED
+    local Blackboard = Game.GetBlackboardSystem():GetLocalInstanced(GetPlayer():GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine)
+
+    Blackboard:SetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData, ToVariant(SecurityData))
+    Blackboard:SignalVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData)
+end
+
 function miscUtils.forceStop(ts)
     ts.entrySys:despawnElevators()
     miscUtils.removeTPPTweaks()
@@ -339,7 +365,7 @@ function miscUtils.forceStop(ts)
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoDriving")
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoCombat")
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
-            Game.ChangeZoneIndicatorPublic()
+            miscUtils.changeZoneIndicatorPublic()
             settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
             settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
