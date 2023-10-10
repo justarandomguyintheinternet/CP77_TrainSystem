@@ -26,7 +26,7 @@ jobs:
           sudo cp -r init.lua /trainSystemPacked/bin/x64/plugins/cyber_engine_tweaks/mods/trainSystem/
           sudo cp -r trainSystem.archive /trainSystemPacked/archive/pc/mod/
           sudo cp -r trainSystem_2.archive /trainSystemPacked/archive/pc/mod/
-          sudo cp -r trainSystem_2.archive.xl /trainSystemPacked/archive/pc/mod/
+          sudo cp -r trainSystem_2.xl /trainSystemPacked/archive/pc/mod/
       - name: Upload zip
         uses: actions/upload-artifact@v2
         with:
