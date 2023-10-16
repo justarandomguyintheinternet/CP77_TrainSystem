@@ -136,12 +136,10 @@ function observers.start(ts)
         if observers.noSave then
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(false)
         else
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(true)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(true)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(true)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(true)
         end
     end)
@@ -203,41 +201,6 @@ function observers.start(ts)
         else
             return this.currentTimeToDepart
         end
-    end)
-
-    -- All credits for the following two Overrides go to psiberx from the CP2077 Modding Community Server
-    Override('WarningMessageGameController', 'UpdateWidgets', function(self)
-        if self.simpleMessage.isShown and self.simpleMessage.message ~= '' then
-            self.root:StopAllAnimations()
-
-            inkTextRef.SetLetterCase(self.mainTextWidget, textLetterCase.UpperCase)
-            inkTextRef.SetText(self.mainTextWidget, self.simpleMessage.message)
-
-            Game.GetAudioSystem():Play('ui_jingle_chip_malfunction')
-
-            self.animProxyShow = self:PlayLibraryAnimation('warning')
-
-            local fakeAnim = inkAnimTransparency.new()
-            fakeAnim:SetStartTransparency(1.00)
-            fakeAnim:SetEndTransparency(1.00)
-            fakeAnim:SetDuration(3.2)
-
-            local fakeAnimDef = inkAnimDef.new()
-            fakeAnimDef:AddInterpolator(fakeAnim)
-
-            self.animProxyTimeout = self.root:PlayAnimation(fakeAnimDef)
-            self.animProxyTimeout:RegisterToCallback(inkanimEventType.OnFinish, self, 'OnShown')
-
-            self.root:SetVisible(true)
-        elseif self.animProxyShow then
-            self.animProxyShow:RegisterToCallback(inkanimEventType.OnFinish, self, 'OnHidden')
-            self.animProxyShow:Resume()
-        end
-    end)
-
-    Override('WarningMessageGameController', 'OnShown', function(self)
-        self.animProxyShow:Pause()
-        self:SetTimeout(self.simpleMessage.duration)
     end)
 end
 

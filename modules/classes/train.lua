@@ -62,19 +62,21 @@ function train:new(stationSys)
 end
 
 function train:getEntity() -- Get train entity
-	local def = GetAllBlackboardDefs().VehicleSummonData
-	local bb = Game.GetBlackboardSystem():Get(def)
-	local object = Game.FindEntityByID(bb:GetEntityID(def.SummonedVehicleEntityID))
-	if not object then return end --manufacturer
-	if not (LocKeyToString(object:GetRecord():DisplayName()) == "LocKey#23422") then return nil end
+	local object = Game.FindEntityByID(self.trainID)
+	if not object then return end
 	return object
 end
 
 function train:spawn()
 	local point = self.arrivalPath[#self.arrivalPath]
 
-	Game.GetVehicleSystem():TogglePlayerActiveVehicle(GarageVehicleID.Resolve("Vehicle.train"), gamedataVehicleType.Car, true)
-    Game.GetVehicleSystem():SpawnPlayerVehicle(gamedataVehicleType.Car)
+	local spec = DynamicEntitySpec.new()
+
+	spec.recordID = "Vehicle.train"
+	spec.position = point.pos
+	spec.orientation = point.rot
+	spec.alwaysSpawned = true
+	self.trainID = Game.GetDynamicEntitySystem():CreateEntity(spec)
 
 	point = self.arrivalPath[1]
 	self.pos = point.pos
@@ -85,14 +87,14 @@ function train:despawn()
 	if self:getEntity() ~= nil then
 		utils.stopAudio(self:getEntity(), "v_metro_default_traffic_01_start")
 		Cron.Halt(self.audioTimer)
-		self.pos = utils.addVector(self.pos, Vector4.new(0, 0, 125, 0))
+		self.pos = utils.addVector(self.pos, Vector4.new(0, 0, 500, 0))
 		self:updateEntity()
-		Cron.After(0.75, function()
-  			Game.GetVehicleSystem():DespawnPlayerVehicle(GarageVehicleID.Resolve("Vehicle.train"));
+		Cron.After(0.75, function ()
+			Game.GetDynamicEntitySystem():DeleteEntity(self.trainID)
 		end)
 	end
 end
-
+--Game.GetDynamicEntitySystem():CreateEntity(DynamicEntitySpec.new({recordID = "Vehicle.train", position = GetPlayer():GetWorldPosition()}))
 function train:loadRoute(route)
 	self.pointIndex = 1
 	self.arrivalPath = route.arrivalPath
@@ -255,7 +257,7 @@ function train:update(deltaTime)
 
 	self:updateEntity()
 	self:updateCam()
-	self:handleAudio()
+	-- self:handleAudio()
 end
 
 function train:updateEntity()

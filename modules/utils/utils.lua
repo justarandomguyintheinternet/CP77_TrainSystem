@@ -438,15 +438,16 @@ function miscUtils.generateHUDColor(type)
     end
 end
 
+-- Now disables it
 function miscUtils.addTrainVehicle()
     TweakDB:CloneRecord("Vehicle.train", "Vehicle.cs_savable_mahir_mt28_coach")
-    TweakDB:SetFlat("Vehicle.train.entityTemplatePath", "base\\vehicles\\special\\custom_coach.ent")
+    TweakDB:SetFlat("Vehicle.train.entityTemplatePath", "base\\vehicles\\special\\custom_coach_new.ent") -- Use new ent, lets hope this despawns any leftovers
 
     local vehicles = TweakDB:GetFlat('Vehicle.vehicle_list.list')
 	table.insert(vehicles, "Vehicle.train")
 	TweakDB:SetFlat('Vehicle.vehicle_list.list', vehicles)
 
-    Game.GetVehicleSystem():EnablePlayerVehicle("Vehicle.train", true, false)
+    Game.GetVehicleSystem():EnablePlayerVehicle("Vehicle.train", false, false) -- Disable it, to remove from list
 end
 
 return miscUtils

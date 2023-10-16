@@ -44,6 +44,7 @@ function ts:new()
     registerForEvent("onInit", function()
         ts.archiveInstalled = ModArchiveExists("trainSystem.archive") and ModArchiveExists("trainSystem_2.archive")
         ts.axlInstalled = ArchiveXL ~= nil
+        ts.cwInstalled = Codeware ~= nil
 
         if not ts.archiveInstalled then
             print("[MetroSystem] Error: \"trainSystem.archive\" or \"trainSystem_2.archive\" file could not be found inside \"archive/pc/mod\". Mod has been disabled to avoid crashes.")
@@ -51,6 +52,10 @@ function ts:new()
         end
         if not ts.axlInstalled then
             print("[MetroSystem] Error: ArchiveXL is not installed. Mod has been disabled to avoid crashes.")
+            return
+        end
+        if not ts.cwInstalled then
+            print("[MetroSystem] Error: Codeware is not installed. Mod has been disabled to avoid crashes.")
             return
         end
 
@@ -105,9 +110,9 @@ function ts:new()
     end)
 
     registerForEvent("onUpdate", function(deltaTime)
-        if not ts.archiveInstalled or not ts.axlInstalled then return end
+        if not ts.archiveInstalled or not ts.axlInstalled or not ts.cwInstalled then return end
 
-        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled and ts.axlInstalled then
+        if (not ts.runtimeData.inMenu) and ts.runtimeData.inGame and (math.floor(observers.timeDilation) ~= 0) and ts.archiveInstalled and ts.axlInstalled and ts.cwInstalled then
             ts.observers.update()
             ts.entrySys:update()
             ts.stationSys:update(deltaTime)
@@ -115,7 +120,7 @@ function ts:new()
             ts.Cron.Update(deltaTime)
             ts.input.interactKey = false -- Fix "sticky" input
             ts.debug.baseUI.utilUI.update()
-        elseif ts.entrySys.forceRunCron and ts.archiveInstalled and ts.axlInstalled then
+        elseif ts.entrySys.forceRunCron and ts.archiveInstalled and ts.axlInstalled and ts.cwInstalled then
             ts.Cron.Update(deltaTime)
         elseif ts.stationSys.activeTrain and observers.radioPopupActive then -- Always teleport, avoid issues with popups
             ts.stationSys.activeTrain:updateEntity()
@@ -127,7 +132,7 @@ function ts:new()
     end)
 
     registerForEvent("onDraw", function()
-        if not ts.archiveInstalled or not ts.axlInstalled then return end
+        if not ts.archiveInstalled or not ts.axlInstalled or not ts.cwInstalled then return end
 
         if ts.runtimeData.cetOpen then
             if ts.settings.showImGui then
