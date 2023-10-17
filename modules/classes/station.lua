@@ -77,9 +77,6 @@ function station:exitToGround(ts)
 
 		utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
         utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
-
-		settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
-		settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
     end)
 
 	Cron.After(self.ts.settings.elevatorTime - 0.6, function()

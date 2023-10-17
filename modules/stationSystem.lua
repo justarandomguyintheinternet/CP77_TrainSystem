@@ -27,9 +27,6 @@ function stationSys:new(ts)
 
 	o.cronStopID = nil
 
-	o.inputHintsOriginal = nil
-	o.jobTrackerOriginal = nil
-
 	o.audioTimer = nil
 
 	self.__index = self

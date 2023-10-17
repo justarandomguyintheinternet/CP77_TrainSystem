@@ -1,0 +1,3 @@
+streaming:
+  blocks:
+    - base\metro\block.streamingblock

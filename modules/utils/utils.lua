@@ -337,8 +337,6 @@ function miscUtils.forceStop(ts)
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoCombat")
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
             Game.ChangeZoneIndicatorPublic()
-            settings.Set("/interface/hud/input_hints", ts.stationSys.inputHintsOriginal)
-            settings.Set("/interface/hud/quest_tracker", ts.stationSys.jobTrackerOriginal)
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
             miscUtils.togglePin(ts.stationSys, "exit", false)
             Game.GetTeleportationFacility():Teleport(GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
@@ -418,6 +416,13 @@ function miscUtils.addTrainVehicle()
 	TweakDB:SetFlat('Vehicle.vehicle_list.list', vehicles)
 
     Game.GetVehicleSystem():EnablePlayerVehicle("Vehicle.train", true, false)
+end
+
+function miscUtils.tp(object, pos, rot)
+    if rot.i then
+        rot = rot:ToEulerAngles()
+    end
+    Game.GetTeleportationFacility():Teleport(object, pos, rot)
 end
 
 return miscUtils

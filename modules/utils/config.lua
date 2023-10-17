@@ -11,6 +11,20 @@ function config.tryCreateConfig(path, data)
         local jconfig = json.encode(data)
         file:write(jconfig)
         file:close()
+    else
+        local success = pcall(function ()
+            config.loadFile(path)
+        end)
+
+        if not success then
+            os.remove(path)
+            local file = io.open(path, "w")
+            local jconfig = json.encode(data)
+            file:write(jconfig)
+            file:close()
+
+            print("[Config] Error while trying to parse \"" .. path .. "\", reverted settings to default")
+        end
     end
 end
 

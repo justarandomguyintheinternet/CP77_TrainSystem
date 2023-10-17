@@ -30,7 +30,7 @@ function routingSystem:handleActOne(unlockAllTracks)
 
 	if hasSentJackie or q101Done or sideContentUnlocked or unlockAllTracks then return end
 
-	-- TODO: Change this to modify lines staion information, hardcoded
+	-- TODO: Change this to modify lines station information, hardcoded
 end
 
 -- Checks if the id is in the tracks front connections

@@ -12,14 +12,12 @@ function entrySys:new(ts)
 
     o.ts = ts
 	o.entries = {}
-    o.maxDistToEntry = 2.6
-    o.isLookingAtEntry = false
-    o.targetEntry = nil
+    o.stations = {}
 
-    o.elevatorIDS = {}
-    o.forceRunCron = false
-
-    o.mappinID = nil
+    o.maxDistToPortal = 2.65
+    o.isLookingAtPortal = false
+    o.portalData = nil
+    o.isMoving = false
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -35,6 +33,14 @@ function entrySys:load()
             table.insert(self.entries, entry)
         end
     end
+
+    for _, file in pairs(dir("data/stations")) do
+        if file.name:match("^.+(%..+)$") == ".json" then
+            local s = require("modules/classes/station"):new(self.ts)
+            s:load("data/stations/" .. file.name)
+            self.stations[s.id] = s
+        end
+    end
 end
 
 function entrySys:registerKeybinds()
@@ -45,7 +51,7 @@ function entrySys:registerKeybinds()
     end)
 
     input.registerKeybind("enter_station", "UI_Apply", function()
-        if not self.isLookingAtEntry then return end
+        if not self.isLookingAtPortal then return end
 
         local duration = 0
         if ts.settings.elevatorGlitch then
@@ -53,7 +59,7 @@ function entrySys:registerKeybinds()
             utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
         end
         Cron.After(duration, function ()
-            self:enter(self.targetEntry)
+            self:usePortal()
         end)
     end)
 end
@@ -64,75 +70,96 @@ function entrySys:findEntryByID(id)
     end
 end
 
-function entrySys:update()
-    local closest = self:getClosestEntry()
+function entrySys:checkEntry()
+    local closest = self:getClosest(self.entries)
     if not closest then return end
 
-    if self.mappinID and GetPlayer():GetWorldPosition():Distance(closest.waypointPosition) < closest.radius then
-        Game.GetMappinSystem():UnregisterMappin(self.mappinID)
-        self.mappinID = nil
-    end
-
-    self.isLookingAtEntry = false
-    observers.noFastTravel = false
-
-    if GetPlayer():GetWorldPosition():Distance(closest.center) > closest.radius then
-        hud.toggleInteraction(false, "enter_station")
-    end
-
-    if not closest.useDoors then
+    if self:looksAtEntry(closest) then
         observers.noFastTravel = true
+        self.isLookingAtPortal = true
+        self.portalData = {entry = closest, action = "enter"}
+        return true
+    else
+        observers.noFastTravel = false
+        return false
     end
-
-    if not self:looksAtEntry(closest) then
-        hud.toggleInteraction(false, "enter_station")
-    end
-
-    hud.toggleInteraction(true, "enter_station")
-    self.isLookingAtEntry = true
-    self.targetEntry = closest
 end
 
-function entrySys:enter(entry)
-    if self.mappinID then
-        pcall(function ()
-            Game.GetMappinSystem():UnregisterMappin(self.mappinID)
-        end)
-    end
-    self.mappinID = nil
+function entrySys:checkExit()
+    local closest = self:getClosest(self.stations)
+    if not closest then return end
 
-    self.forceRunCron = true
-    Cron.Every(0.05, {tick = 0}, function(timer)
-        if timer.tick < 1 then
-            timer.tick = timer.tick + 0.05
-            Game.GetUISystem():QueueEvent(ForceCloseHubMenuEvent.new())
-        else
-            self.forceRunCron = false
-            timer:Halt()
+    if self:looksAtExit(closest) then
+        self.isLookingAtPortal = true
+        self.portalData = {entry = self:findEntryByID(closest.id), action = "exit"}
+        return true
+    else
+        return false
+    end
+end
+
+function entrySys:update()
+    self.isLookingAtPortal = false
+    observers.noFastTravel = false
+
+    if self.isMoving then return end
+
+    local hasEntry = self:checkEntry()
+    local hasExit = self:checkExit()
+
+    if hasEntry then
+        hud.toggleInteraction(true, "enter_station")
+    elseif hasExit then
+        hud.toggleInteraction(true, "exit_station")
+    else
+        hud.toggleInteraction(false, "exit_station")
+        hud.toggleInteraction(false, "enter_station")
+        self.portalData = nil
+    end
+end
+
+function entrySys:usePortal()
+    if not self.portalData then return end
+
+    local entry = self.portalData.entry
+    self.isMoving = true
+
+    Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more, run this first as this unsets the isMoving, and if anything else fails this at least runs
+        self.isMoving = false
+        utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
+        utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
+
+        local target = self.stations[entry.stationID].portalPoint
+        if self.portalData.action == "exit" then
+            target = self.stations[entry.stationID].groundPoint
         end
-	end)
+
+        utils.tp(GetPlayer(), target.pos, target.rot)
+    end)
 
     hud.toggleInteraction(false, "enter_station")
+    hud.toggleInteraction(false, "exit_station")
     utils.playAudio(GetPlayer(), "dev_elevator_02_movement_start", 3)
 
-    local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(0, 1.1, 0, 0))-- Adjusted to make the player stand less in front of the wall
+    local playerElevatorPos = utils.subVector(entry.elevatorPosition, Vector4.new(0, 1.1, 0, 0)) -- Adjusted to make the player stand less in front of the wall
     local playerSecondaryElevatorPos = utils.subVector(entry.secondaryPosition, Vector4.new(0, 1.1, 0, 0))
 
     if entry.useSecondaryElevator then -- Ugly af fix for too long distances
-        Game.GetTeleportationFacility():Teleport(GetPlayer(), playerSecondaryElevatorPos, entry.elevatorPlayerRotation)
+        local pos1 = playerSecondaryElevatorPos
+        local pos2 = playerElevatorPos
+
+        if self.portalData.action == "exit" then
+            pos1 = playerElevatorPos
+            pos2 = playerSecondaryElevatorPos
+        end
+
+        utils.tp(GetPlayer(), pos1, entry.elevatorPlayerRotation)
         Cron.After(0.25, function ()
-            Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
+            utils.tp(GetPlayer(), pos2, entry.elevatorPlayerRotation)
         end)
     else
-        Game.GetTeleportationFacility():Teleport(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
+        utils.tp(GetPlayer(), playerElevatorPos, entry.elevatorPlayerRotation)
     end
-
-    Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more
-        utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
-        utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
-        local targetStation = self.ts.stationSys.stations[entry.stationID]
-	    targetStation:tpTo(targetStation.portalPoint)
-    end)
 
     Cron.After(self.ts.settings.elevatorTime - 0.6, function()
         if not self.ts.settings.elevatorGlitch then return end
@@ -140,30 +167,62 @@ function entrySys:enter(entry)
     end)
 end
 
--- Checks if player is looking at an entry
+-- Checks if player is looking at an exit, and is in range of station
+---@param closest table
+---@return boolean
+function entrySys:looksAtExit(closest)
+    local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true)
+
+    if not target then return false end
+    if GetPlayer():GetWorldPosition():Distance(closest.center) > closest.radius then return false end
+    if utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1 then return false end -- Ugly hardcoded workaround for the force open door at rep way north :(
+
+    if target:GetClassName().value == "Door" then
+        local targetPS = target:GetDevicePS()
+        if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+        if targetPS:IsOpen() then targetPS:ToggleOpenOnDoor() end
+    end
+
+    if not utils.isVector(target:GetWorldPosition(), closest.exitDoorPosition) then return false end
+
+    if closest.exitDoorSealed then
+        pcall(function ()
+            local targetPS = target:GetDevicePS()
+            if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+        end)
+    end
+
+    if Vector4.Distance(GetPlayer():GetWorldPosition(), target:GetWorldPosition()) > self.maxDistToPortal then return false end
+
+	return true
+end
+
+-- Checks if player is looking at an entry, and is in range of entry
 ---@param closest table
 ---@return boolean
 function entrySys:looksAtEntry(closest)
     local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, false)
 
+    if not target then return false end
+    if not (utils.distanceVector(target:GetWorldPosition(), GetPlayer():GetWorldPosition()) < self.maxDistToPortal) then return false end
     if not target or not GetPlayer():GetFastTravelSystem():IsFastTravelEnabled() then return false end
     if not (target:GetClassName().value == "DataTerm" and not closest.useDoors) and not (target:GetClassName().value == "FakeDoor" and closest.useDoors) then return false end
-    if not (utils.distanceVector(target:GetWorldPosition(), GetPlayer():GetWorldPosition()) < self.maxDistToEntry) then return false end
 
     return true
 end
 
-function entrySys:getClosestEntry()
-    local closestEntry = nil
+function entrySys:getClosest(data)
+    local closest = nil
     local closestDist = 999999999999
-    for _, entry in pairs(self.entries) do
-        local distance = GetPlayer():GetWorldPosition():Distance(entry.center)
+
+    for _, location in pairs(data) do
+        local distance = GetPlayer():GetWorldPosition():Distance(location.center)
         if distance < closestDist then
             closestDist = distance
-            closestEntry = entry
+            closest = location
         end
     end
-    return closestEntry
+    return closest
 end
 
 function entrySys:markClosest()
@@ -172,8 +231,8 @@ function entrySys:markClosest()
     self.ts.observers.worldMap:UntrackMappin()
     self.ts.observers.worldMap:SetCustomFilter(gamedataWorldMapFilter.FastTravel)
 
-    local closest = self:getClosestEntry()
-    self.mappinID = Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), closest.waypointPosition)
+    local closest = self:getClosest(self.entries)
+    Game.GetMappinSystem():RegisterMappin(MappinData.new({ mappinType = 'Mappins.DefaultStaticMappin', variant = 'CustomPositionVariant', visibleThroughWalls = true }), closest.waypointPosition)
 end
 
 return entrySys
