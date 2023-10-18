@@ -2,9 +2,27 @@ local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
 local train = require("modules/classes/train")
-local soundObjects = require("modules/objectSystem").soundObjects
 
 stationSys = {}
+
+-- check "big" range to closest station:
+	-- activate arrival logic
+-- check "small" range to closest:
+	-- apply restrictions
+	-- play audio
+-- API:
+	-- active station
+	-- current station information (For time table UI)
+
+-- get in big range
+	-- spawn metro
+	-- set station
+	-- turn on arrival mode
+	-- subscribe to change events
+		-- goes to UI and tables, maybe audio too
+-- leave big range
+	-- check metro has player
+		-- despawn / not despawn
 
 function stationSys:new(ts)
 	local o = {}

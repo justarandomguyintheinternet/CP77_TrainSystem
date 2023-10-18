@@ -1,9 +1,10 @@
 loadedUI = {
-    boxSize = {entry = {x = 530, y = 85}, station = {x = 530, y = 100}, track = {x = 530, y = 154}},
-	colors = {entry = {0, 50, 255}, station = {0, 255, 0}, track = {255, 0, 0}},
+    boxSize = {entry = {x = 530, y = 110}, station = {x = 530, y = 130}, track = {x = 530, y = 190}, line = {x = 530, y = 120}},
+	colors = {entry = {0, 50, 255}, station = {0, 255, 0}, track = {255, 0, 0}, line = {255, 255, 0}},
     entries = {},
     stations = {},
     tracks = {},
+    lines = {},
     CPS = require("CPStyling")
 }
 
@@ -20,6 +21,10 @@ function loadedUI.draw(debug)
     end
 
     for k, v in pairs(loadedUI.tracks) do
+        loadedUI.drawData(v, k, debug)
+    end
+
+    for k, v in pairs(loadedUI.lines) do
         loadedUI.drawData(v, k, debug)
     end
 end
@@ -41,6 +46,10 @@ function loadedUI.drawData(data, id, debug)
         color = loadedUI.colors.track
         size = loadedUI.boxSize.track
         type = "tracks"
+    elseif data.stations ~= nil then
+        color = loadedUI.colors.line
+        size = loadedUI.boxSize.line
+        type = "lines"
     end
     loadedUI.CPS.colorBegin("Border", color)
     loadedUI.CPS.colorBegin("Separator", color)
@@ -59,6 +68,8 @@ function loadedUI.drawData(data, id, debug)
         loadedUI.station(data)
     elseif type == "tracks" then
         loadedUI.track(data)
+    elseif type == "lines" then
+        loadedUI.line(data)
     end
 
     ImGui.Separator()
@@ -100,6 +111,10 @@ function loadedUI.track(data)
     ImGui.Text("Connected tracks (FIRST): back=" .. data.connectedID.first.back .. " | front=" .. data.connectedID.first.front)
     ImGui.Text("Connected tracks (SECOND): back=" .. data.connectedID.second.back .. " | front=" .. data.connectedID.second.front)
     ImGui.Text("Connected station: back=" .. data.station.back .. " | front=" .. data.station.front)
+end
+
+function loadedUI.line(data)
+    ImGui.Text("Stations: " .. #data.stations)
 end
 
 return loadedUI

@@ -6,8 +6,9 @@ fileUI = {
     entries = {},
     stations = {},
     tracks = {},
-    boxSize = {entries = {x = 530, y = 75}, stations = {x = 530, y = 90}, tracks = {x = 530, y = 145}},
-	colors = {entries = {0, 50, 255}, stations = {0, 255, 0}, tracks = {255, 0, 0}},
+    lines = {},
+    boxSize = {entries = {x = 530, y = 90}, stations = {x = 530, y = 110}, tracks = {x = 530, y = 165}, lines = {x = 530, y = 100}},
+	colors = {entries = {0, 50, 255}, stations = {0, 255, 0}, tracks = {255, 0, 0}, lines = {255, 255, 0}},
     filter = ""
 }
 
@@ -33,6 +34,8 @@ function fileUI.drawFile(file, type, debug)
         fileUI.station(fileUI[type][name])
     elseif type == "tracks" then
         fileUI.track(fileUI[type][name])
+    elseif type == "lines" then
+        fileUI.line(fileUI[type][name])
     end
 
     -- End type specific details
@@ -46,6 +49,9 @@ function fileUI.drawFile(file, type, debug)
             class:load("data/" .. type .. "/" .. name .. ".json")
         elseif type == "tracks" then
             class = require("modules/classes/track"):new()
+            class:load("data/" .. type .. "/" .. name .. ".json")
+        elseif type == "lines" then
+            class = require("modules/classes/line"):new()
             class:load("data/" .. type .. "/" .. name .. ".json")
         end
         class.name = name
@@ -77,6 +83,10 @@ function fileUI.track(data)
     ImGui.Text("Connected tracks (FIRST): back=" .. data.connectedID.first.back .. " | front=" .. data.connectedID.first.front)
     ImGui.Text("Connected tracks (SECOND): back=" .. data.connectedID.second.back .. " | front=" .. data.connectedID.second.front)
     ImGui.Text("Connected station: back=" .. data.station.back .. " | front=" .. data.station.front)
+end
+
+function fileUI.line(data)
+    ImGui.Text("Stations: " .. #data.stations)
 end
 
 function fileUI.draw(debug)
@@ -122,6 +132,19 @@ function fileUI.draw(debug)
             if file.name:match("^.+(%..+)$") == ".json" then
                 if (file.name:lower():match(fileUI.filter:lower())) ~= nil then
                     fileUI.drawFile(file, "tracks", debug)
+                end
+            end
+        end
+        ImGui.PopID()
+    end
+
+    state = ImGui.CollapsingHeader("Lines")
+    if state then
+        ImGui.PushID("headerLines")
+        for _, file in pairs(dir("data/lines")) do
+            if file.name:match("^.+(%..+)$") == ".json" then
+                if (file.name:lower():match(fileUI.filter:lower())) ~= nil then
+                    fileUI.drawFile(file, "lines", debug)
                 end
             end
         end

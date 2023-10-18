@@ -40,7 +40,7 @@ end
 --- Checks if there is any station on this track
 ---@return boolean
 function track:hasAnyStation()
-    return self.station.front ~= -1 and self.station.back ~= -1
+    return self.station.front ~= -1 or self.station.back ~= -1
 end
 
 function track:load(path)

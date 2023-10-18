@@ -68,7 +68,7 @@ end
 local function isConnectionSameDirection(track, connection, previous)
 	if isInFront(track, connection) and getDirection(track, previous) == "forward" then
 		return true
-	elseif isInBack(track, connection) and getDirection(track, previous) == "backwards" then
+	elseif isInBack(track, connection) and getDirection(track, previous) == "backward" then
 		return true
 	end
 	return false
@@ -81,7 +81,7 @@ local function reversePoints(points)
 	local reversed = {}
 
 	for i = #points, 1, -1 do
-		table.insert(reversed, utils.reversePoint(path.points[i]))
+		table.insert(reversed, utils.reversePoint(points[i]))
 	end
 
 	return reversed
@@ -95,12 +95,12 @@ end
 local function getLastMile(track, direction, target)
 	if track.station.front == target and direction == "forward" then
 		return {track.points[1]}
-	elseif track.station.front == target and direction == "backwards" then
+	elseif track.station.front == target and direction == "backward" then
 		return reversePoints(track.points)
 	elseif track.station.back == target and direction == "forward" then
 		return track.points
-	elseif track.station.back == target and direction == "backwards" then
-		return reversePoints({track.point[#track.point]})
+	elseif track.station.back == target and direction == "backward" then
+		return reversePoints({track.points[#track.points]})
 	end
 	return {}
 end
@@ -136,7 +136,7 @@ function routingSystem:dfs(track, previous, target)
 		return path -- Return empty path, shows that this is a dead end
 	end
 
-	for connection in pairs(track.connections) do
+	for _, connection in pairs(track.connections) do
 		if not isConnectionSameDirection(track, connection, previous) and connection ~= -1 then -- Dont go back the same way we came from
 			local result = self:dfs(self.tracks[connection], track.id, target)
 

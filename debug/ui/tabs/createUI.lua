@@ -4,7 +4,7 @@ createUI = {
 }
 
 function createUI.draw(debug)
-    createUI.selectedData = ImGui.Combo("Data Type", createUI.selectedData, {"Entry", "Station", "Track"}, 3)
+    createUI.selectedData = ImGui.Combo("Data Type", createUI.selectedData, {"Entry", "Station", "Track", "Line"}, 4)
     createUI.name =  ImGui.InputTextWithHint("Data Name", "Name...", createUI.name, 100)
     if ImGui.Button("Create") then
         local data = nil
@@ -23,6 +23,11 @@ function createUI.draw(debug)
             data.name = createUI.name
             debug.baseUI.loadedUI.tracks[math.random(1, 100000000)] = data
             data:save("data/tracks/" .. data.name .. ".json")
+        elseif createUI.selectedData == 3 then
+            data = require("modules/classes/line"):new()
+            data.name = createUI.name
+            debug.baseUI.loadedUI.lines[math.random(1, 100000000)] = data
+            data:save("data/lines/" .. data.name .. ".json")
         end
         createUI.name = ""
     end

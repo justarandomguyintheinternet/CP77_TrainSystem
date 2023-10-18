@@ -1,5 +1,4 @@
 local utils = require("modules/utils/utils")
-local object = require("modules/classes/object")
 local point = require("modules/classes/point")
 local CPS = require("CPStyling")
 local Cron = require("modules/utils/Cron")
@@ -30,7 +29,33 @@ function editUI.draw(debug)
         elseif editUI.currentData.points ~= nil then
             editUI.type = "track"
             editUI.drawTrack()
+        elseif editUI.currentData.stations ~= nil then
+            editUI.type = "line"
+            editUI.drawLine()
         end
+    end
+end
+
+function editUI.drawLine()
+    local line = editUI.currentData
+
+    line.audio =  ImGui.InputTextWithHint("Line Name Audio File", "Path...", line.audio, 100)
+
+    ImGui.Separator()
+
+    if ImGui.Button("Add Station") then
+        table.insert(line.stations, -1)
+    end
+
+    for key, value in pairs(line.stations) do
+        ImGui.PushID(key)
+        line.stations[key] = ImGui.InputInt('ID', line.stations[key])
+
+        ImGui.SameLine()
+        if ImGui.Button("X") then
+            table.remove(line.stations, key)
+        end
+        ImGui.PopID()
     end
 end
 
