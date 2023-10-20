@@ -27,15 +27,15 @@ function utilUI.draw()
     utilUI.speedUp, changed = ImGui.Checkbox("Speed up time", utilUI.speedUp)
     if changed then
         if utilUI.speedUp then
-            Game.SetTimeDilation(utilUI.speed)
+            Game.GetTimeSystem():SetTimeDilation("console", utilUI.speed)
         else
-            Game.SetTimeDilation(0)
+            Game.GetTimeSystem():SetTimeDilation("console", 0.000000001)
         end
     end
     ImGui.SameLine()
     utilUI.speed, changed = ImGui.InputInt("Speed Mult.", utilUI.speed)
     if changed and utilUI.speedUp then
-        Game.SetTimeDilation(utilUI.speed)
+        Game.GetTimeSystem():SetTimeDilation("console", utilUI.speed)
     end
 
     utilUI.busOffset, changed = ImGui.DragFloat("Bus offset", utilUI.busOffset, 0.02, -9999, 9999, "%.2f")

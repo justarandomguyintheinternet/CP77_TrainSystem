@@ -135,6 +135,7 @@ function editUI.drawStation()
     station.id = ImGui.InputInt('ID', station.id)
 -- Radius
     station.radius = ImGui.InputFloat('Radius', station.radius, 0, 100, "%.2f")
+    station.bigRange = ImGui.InputFloat('Big Radius', station.bigRange, 0, 500, "%.2f")
     local dist = utils.distanceVector(station.center, GetPlayer():GetWorldPosition())
     ImGui.Text("Current distance to center: " .. tonumber(string.format("%.2f", dist)))
 
@@ -262,10 +263,10 @@ function editUI.drawTrack()
     if changed then
         if editUI.timeStop then
             Game.GetTimeSystem():SetIgnoreTimeDilationOnLocalPlayerZero(true)
-            Game.SetTimeDilation(0.0000000000001)
+            Game.GetTimeSystem():SetTimeDilation("console", 0.000000001)
         else
             Game.GetTimeSystem():SetIgnoreTimeDilationOnLocalPlayerZero(false)
-            Game.SetTimeDilation(0)
+            Game.GetTimeSystem():UnsetTimeDilation("console")
         end
     end
     ImGui.SameLine()
@@ -275,9 +276,9 @@ function editUI.drawTrack()
     end
 
     if ImGui.Button("Skip") then
-        Game.SetTimeDilation(0)
+        Game.GetTimeSystem():SetTimeDilation("console", 0.000000001)
         Cron.After(editUI.skipAmount, function ()
-            Game.SetTimeDilation(0.0000000000001)
+            Game.GetTimeSystem():SetTimeDilation("console", 0.000000001)
             if editUI.autoPlace then
                 if track.target ~= nil then
                     local p = point:new()

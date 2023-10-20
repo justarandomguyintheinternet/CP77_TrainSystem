@@ -13,36 +13,8 @@ stationSys = {}
 		-- Current target
 		-- Has player
 
--- small range change:
-	-- leaving small range: Just disable restrictions
-	-- entering small range: Enable restrictions and fluff
-
 -- Player in metro loop:
 	-- Apply restricitions, disable trains
-
--- big range change:
-	-- to nothing
-		-- disable train removal (Would get overriden by train, if player is mounted)
-		-- if active metro has no player: despawn metro
-
-	-- to station
-		-- disable trains
-		-- has metro
-			-- metro has no player
-				-- check if new station is the same as metro target
-					-- then dont despawn
-				-- if station is different than metro target
-					-- respawn metro to new station
-			-- metro has player
-				-- do nothing
-		-- has no metro
-			-- spawn metro
-			-- activate arrival
-
--- session end:
-	-- remove all restriction
-	-- set ranges false
-	-- despawn metro
 
 function stationSys:new(ts)
 	local o = {}
@@ -53,6 +25,7 @@ function stationSys:new(ts)
 
 	o.inSmallRange = false
 	o.inBigRange = false
+	o.bigRangeStation = nil
 	o.fakeDoor = nil
 
 	self.__index = self
@@ -169,7 +142,35 @@ end
 
 -- Handle logic related to the "big" range of a station, responsible for activating metro arrivals
 function stationSys:handleBigRange()
+	local inRange = self:getInRange("big")
+	local closest = self:getClosest(inRange)
 
+	if not closest and self.inBigRange then
+		self.inBigRange = false
+		self.bigRangeStation = nil
+		observers.noTrains = false
+		if self.metro and not self.metro:playerBoarded() then
+			self.metro:despawn()
+			self.metro = nil
+		end
+	end
+
+	-- Station has changed from none to one, or from one to another
+	if closest and (not self.inBigRange or closest.id ~= self.bigRangeStation.id) then
+		if self.metro then
+			if not self.metro:playerBoarded() and self.metro.targetStationID ~= closest.id then
+				-- respawn metro to closest station
+				-- maybe let it exit first, then change spawn location
+			end
+		else
+			-- spawn
+			-- activate arrival
+		end
+
+		self.bigRangeStation = closest
+		self.inBigRange = true
+		observers.noTrains = true
+	end
 end
 
 -- Handle logic related to "small" range (Player is on station), such as updating timetables, playing audio, applying restrictions
@@ -221,6 +222,7 @@ end
 
 function stationSys:update()
 	self:handleSmallRange()
+	self:handleBigRange()
 	self:handleFakeDoors()
 	-- if self.currentStation then
 	-- 	self.currentStation:update()

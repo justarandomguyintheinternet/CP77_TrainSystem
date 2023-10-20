@@ -152,10 +152,8 @@ function observers.start(ts)
     end)
 
     Observe("VehicleComponent", "OnGameAttach", function(self)
-        if observers.noTrains then
-            if self:FindComponentByName("public_train_a") then
-                table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
-            end
+        if self:FindComponentByName("public_train_a") then
+            table.insert(observers.trainIDS, self:GetVehicle():GetEntityID())
         end
     end)
 
