@@ -115,6 +115,13 @@ function Cron.Halt(timerId)
 	end
 end
 
+---@return void
+function Cron.HaltAll()
+	for i, _ in ipairs(timers) do
+		table.remove(timers, i)
+	end
+end
+
 ---@param timerId any
 ---@return void
 function Cron.Pause(timerId)

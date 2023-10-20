@@ -1,51 +1,59 @@
 local station = require("modules/classes/station")
 local Cron = require("modules/utils/Cron")
 local utils = require("modules/utils/utils")
-local train = require("modules/classes/train")
+local hud = require("modules/ui/hud")
 
 stationSys = {}
 
--- check "big" range to closest station:
-	-- activate arrival logic
--- check "small" range to closest:
-	-- apply restrictions
-	-- play audio
 -- API:
-	-- active station
-	-- current station information (For time table UI)
+	-- metro has API for
+		-- Current line
+		-- Audio Events
+		-- Or just target / line change event
+		-- Current target
+		-- Has player
 
--- get in big range
-	-- spawn metro
-	-- set station
-	-- turn on arrival mode
-	-- subscribe to change events
-		-- goes to UI and tables, maybe audio too
--- leave big range
-	-- check metro has player
-		-- despawn / not despawn
+-- small range change:
+	-- leaving small range: Just disable restrictions
+	-- entering small range: Enable restrictions and fluff
+
+-- Player in metro loop:
+	-- Apply restricitions, disable trains
+
+-- big range change:
+	-- to nothing
+		-- disable train removal (Would get overriden by train, if player is mounted)
+		-- if active metro has no player: despawn metro
+
+	-- to station
+		-- disable trains
+		-- has metro
+			-- metro has no player
+				-- check if new station is the same as metro target
+					-- then dont despawn
+				-- if station is different than metro target
+					-- respawn metro to new station
+			-- metro has player
+				-- do nothing
+		-- has no metro
+			-- spawn metro
+			-- activate arrival
+
+-- session end:
+	-- remove all restriction
+	-- set ranges false
+	-- despawn metro
 
 function stationSys:new(ts)
 	local o = {}
 
 	o.ts = ts
 	o.stations = {}
-	o.onStation = false
-	o.currentStation = nil
-	o.mountLocked = false
+	o.metro = nil
 
-	o.holdTime = 10
-	o.activeTrain = nil
-	o.trainInStation = false
-
-	o.pathsData = {}
-	o.currentPathsIndex = 0
-	o.totalPaths = nil
-
-	o.previousStationID = nil
-
-	o.cronStopID = nil
-
-	o.audioTimer = nil
+	o.inSmallRange = false
+	o.inBigRange = false
+	o.fakeDoor = nil
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -59,161 +67,124 @@ function stationSys:load()
             self.stations[s.id] = s
         end
     end
+
+	self:registerKeybinds()
 end
 
-function stationSys:enter() -- TP to station, toggle pin
-	self.onStation = true
-	utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-	utils.setupTPPCam(self.ts.settings.camDist, self.ts.settings.autoCenter)
+function stationSys:registerKeybinds()
+    input.registerKeybind("use_door", "UI_Apply", function()
+		if not self.fakeDoor then return end
+
+		self:useFakeDoor(self.fakeDoor)
+    end)
 end
 
-function stationSys:loadStation(id) -- Load station objects, start train spawning
-	self.currentStation = self.stations[id]
-	self.currentStation:spawn()
-	self:activateArrival()
+---Get the closest object (.center) to the player
+---@param data table
+---@return table|nil
+function stationSys:getClosest(data)
+    local closest = nil
+    local closestDist = 999999999999
+
+    for _, location in pairs(data) do
+        local distance = GetPlayer():GetWorldPosition():Distance(location.center)
+        if distance < closestDist then
+            closestDist = distance
+            closest = location
+        end
+    end
+
+    return closest
 end
 
-function stationSys:requestPaths()
-	self.pathsData = self.ts.routingSystem:mainGeneratePathData(self.currentStation)
-	self.currentPathsIndex = 0
-	self.totalPaths = #self.pathsData
-
-	local front = {}
-	local back = {}
-	local ordered = {}
-	for _, v in pairs(self.pathsData) do
-		if v.dir == "back" then
-			table.insert(back, v)
-		else
-			table.insert(front, v)
+---Get a table of the stations within the specified range
+---@param range "small"|"big"
+---@return table
+function stationSys:getInRange(range)
+	local inRange = {}
+	for _, station in pairs(self.stations) do
+		local dist = station.radius
+		if range == "big" then dist = station.bigRange end
+		if GetPlayer():GetWorldPosition():Distance(station.center) <= dist then
+			table.insert(inRange, station)
 		end
 	end
 
-	if self.previousStationID == nil then
-		local num = math.max(#back, #front)
-		for i = 1, num do
-			if #back >= i then table.insert(ordered, back[i]) end
-			if #front >= i then table.insert(ordered, front[i]) end
-		end
-		self.pathsData = ordered
+	return inRange
+end
+
+---Handle the interactions and logic for fake doors, if on a station
+function stationSys:handleFakeDoors()
+	self.fakeDoor = self:getFakeDoor()
+
+	if not self.fakeDoor then
+		hud.toggleInteraction(false, "use_door")
 	else
-		local prevPath = nil
-		for _, v in pairs(self.pathsData) do
-			--print(v.targetID, self.previousStationID)
-			if v.targetID == self.previousStationID then
-				prevPath = v
-			end
-		end
-		if prevPath.dir == "back" then
-			for _, p in pairs(front) do
-				table.insert(ordered, p)
-			end
-			for _, p in pairs(back) do
-				if p ~= prevPath then table.insert(ordered, p) end
-			end
-			table.insert(ordered, prevPath)
-		else
-			for _, p in pairs(back) do
-				table.insert(ordered, p)
-			end
-			for _, p in pairs(front) do
-				if p ~= prevPath then table.insert(ordered, p) end
-			end
-			table.insert(ordered, prevPath)
-		end
-		self.pathsData = ordered
+		utils.lockDoor(self.fakeDoor)
+		hud.toggleInteraction(true, "use_door")
 	end
 end
 
-function stationSys:activateArrival()
-	self:requestPaths()
-	if self.activeTrain == nil then
-		self.activeTrain = train:new(self)
-		self.activeTrain.spawnStationID = self.currentStation.id
-		self.currentPathsIndex = self.currentPathsIndex + 1
-		if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
-		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
-		self.activeTrain:spawn()
-		self.activeTrain:startDrive("arrive")
-		self:startArriveTimer()
+---Returns the door object of a targeted fake door, if its a valid door
+---@return gameObject|nil
+function stationSys:getFakeDoor()
+	if not self.inSmallRange then return end
+
+	local target = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true)
+
+	if not target then return end
+	if target:GetClassName().value ~= "FakeDoor" and target:GetClassName().value ~= "Door" then return end
+	if Vector4.Distance(GetPlayer():GetWorldPosition(), target:GetWorldPosition()) > 2.7 then return end
+	if target:GetWorldPosition():Distance(Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1 then return end -- Ugly hardcoded workaround for the force open door at rep way north :(
+
+	local station = self:getClosest(self.stations)
+
+	if not station.useDoors then return end
+	if utils.isVector(target:GetWorldPosition(), station.exitDoorPosition) then return end
+
+	return target
+end
+
+---Uses the given object as a door
+---@param door gameObject
+function stationSys:useFakeDoor(door)
+	local pos1 = utils.addVector(door:GetWorldPosition(), door:GetWorldForward())
+	local pos2 = utils.subVector(door:GetWorldPosition(), door:GetWorldForward())
+
+	if GetPlayer():GetWorldPosition():Distance(pos1) > GetPlayer():GetWorldPosition():Distance(pos2) then
+		utils.tp(GetPlayer(), pos1, GetPlayer():GetWorldOrientation())
+	else
+		utils.tp(GetPlayer(), pos2, GetPlayer():GetWorldOrientation())
 	end
 end
 
-function stationSys:requestNewTrain()
-	self.currentPathsIndex = self.currentPathsIndex + 1
-	if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
-	self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
-	self.activeTrain:startDrive("arrive")
+function stationSys:sessionEnd()
+	self.inSmallRange = false
+	self.inBigRange = false
+
+	if self.metro then
+		-- Despawn
+	end
 end
 
-function stationSys:leave() -- Leave to ground level
-	local t = 0
-	if self.ts.settings.elevatorGlitch then
-		t = 0.6
-		utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+-- Handle logic related to the "big" range of a station, responsible for activating metro arrivals
+function stationSys:handleBigRange()
+
+end
+
+-- Handle logic related to "small" range (Player is on station), such as updating timetables, playing audio, applying restrictions
+function stationSys:handleSmallRange()
+	local inRange = self:getInRange("small")
+	local closest = self:getClosest(inRange)
+
+	if not closest and self.inSmallRange then
+		self.inSmallRange = false
+		utils.applyGeneralRestrictions(false)
 	end
 
-	Cron.After(t, function ()
-		utils.togglePin(self, "exit", false)
-		self.currentStation:exitToGround(self.ts)
-		self.currentStation = nil
-		self.onStation = false
-		Cron.Halt(self.audioTimer)
-		self.audioTimer = nil
-		self.trainInStation = false
-		self.previousStationID = nil
-		if self.activeTrain ~= nil then
-			self.activeTrain:despawn()
-			self.activeTrain = nil
-		end
-		utils.removeTPPTweaks()
-		Game.GetVehicleSystem():TogglePlayerActiveVehicle(GarageVehicleID.Resolve("Vehicle.v_standard2_archer_hella_player"), gamedataVehicleType.Car, true)
-	end)
-end
-
-function stationSys:nearTrain()
-	local train = self.activeTrain:getEntity()
-	if not train then return end
-	local maxDiff = 45
-	local near = false
-
-	local offset = utils.multVector(train:GetWorldForward(), 2)
-	local diff1 = Vector4.GetAngleBetween(utils.subVector(self.activeTrain.pos, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
-	local pos2 = utils.addVector(self.activeTrain.pos, offset)
-	local diff2 = Vector4.GetAngleBetween(utils.subVector(pos2, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
-	local pos3 = utils.subVector(self.activeTrain.pos, offset)
-	local diff3 = Vector4.GetAngleBetween(utils.subVector(pos3, utils.addVector(Game.GetCameraSystem():GetActiveCameraForward(), GetPlayer():GetWorldPosition())), Game.GetCameraSystem():GetActiveCameraForward())
-
-	if diff1 < maxDiff or diff2 < maxDiff or diff3 < maxDiff then
-		if utils.distanceVector(self.activeTrain.pos, GetPlayer():GetWorldPosition()) < 6 then
-			near = true
-		end
-	end
-	return near
-end
-
-function stationSys:handleExitTrain()
-	if self.ts.input.exit then
-		if self.activeTrain.playerMounted and self.trainInStation then
-			local t = 0
-			if self.ts.settings.trainGlitch then
-				t = 0.6
-				utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
-			end
-
-			Cron.After(t, function()
-				self.activeTrain:unmount()
-				utils.togglePin(self, "exit", true, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-				self.mountLocked = true
-				Cron.After(0.25, function ()
-					self.mountLocked = false
-				end)
-				self.currentStation:tpTo(self.currentStation.trainExit)
-			end)
-
-		elseif self.activeTrain.playerMounted and not self.trainInStation then
-			GetPlayer():SetWarningMessage(GetLocalizedText("LocKey#49538"))
-		end
+	if closest and not self.inSmallRange then
+		self.inSmallRange = true
+		utils.applyGeneralRestrictions(true)
 	end
 end
 
@@ -248,171 +219,108 @@ function stationSys:handleAudio() -- Station announcement timer
 	end
 end
 
-function stationSys:update(deltaTime)
-	if self.currentStation then
-		self.currentStation:update()
-		if not self.currentStation:inStation() and not self.activeTrain.playerMounted and self.onStation then -- Wandered off
-			self.currentStation:tpTo(self.currentStation.portalPoint)
-		end
-		if self.currentStation:nearExit() then
-			self.ts.hud.exitVisible = true
-			if self.ts.input.interactKey then
-                self.ts.input.interactKey = false
-				pcall(function ()
-					for _, timer in pairs(Cron.timers) do
-						if timer.id == self.cronStopID then
-							Cron.Halt(timer.id)
-						end
-					end
-				end)
-				self:leave()
-            end
-		end
+function stationSys:update()
+	self:handleSmallRange()
+	self:handleFakeDoors()
+	-- if self.currentStation then
+	-- 	self.currentStation:update()
+	-- 	if not self.currentStation:inStation() and not self.activeTrain.playerMounted and self.onStation then -- Wandered off
+	-- 	end
+	-- 	if self.currentStation:nearExit() then
+	-- 		self.ts.hud.exitVisible = true
+	-- 		if self.ts.input.interactKey then
+    --             self.ts.input.interactKey = false
+	-- 			pcall(function ()
+	-- 				for _, timer in pairs(Cron.timers) do
+	-- 					if timer.id == self.cronStopID then
+	-- 						Cron.Halt(timer.id)
+	-- 					end
+	-- 				end
+	-- 			end)
+	-- 			self:leave()
+    --         end
+	-- 	end
 
-		self:handleAudio()
-	end
+	-- 	self:handleAudio()
+	-- end
 
-	if self.onStation then
-		self.ts.hud.destVisible = true
-	end
+	-- if self.onStation then
+	-- 	self.ts.hud.destVisible = true
+	-- end
 
-	if self.activeTrain then
-		self.activeTrain:update(deltaTime)
-		if self.activeTrain.justArrived then
-			self.activeTrain.justArrived = false
-			self.trainInStation = true
+	-- if self.activeTrain then
+	-- 	self.activeTrain:update(deltaTime)
+	-- 	if self.activeTrain.justArrived then
+	-- 		self.activeTrain.justArrived = false
+	-- 		self.trainInStation = true
 
-			if self.activeTrain.playerMounted then
-				Game.GetTransactionSystem():RemoveItem(GetPlayer(), gameItemID.FromTDBID(TweakDBID.new("Items.money")), self.ts.settings.moneyPerStation)
-			end
+	-- 		if self.activeTrain.playerMounted then
+	-- 			Game.GetTransactionSystem():RemoveItem(GetPlayer(), gameItemID.FromTDBID(TweakDBID.new("Items.money")), self.ts.settings.moneyPerStation)
+	-- 		end
 
-			if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
-				self.onStation = true
-				self:requestPaths()
-				self.previousStationID = self.currentStation.id
-				self.currentPathsIndex = self.currentPathsIndex + 1
-				if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
-				self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
-			end
+	-- 		if self.currentStation.id ~= self.previousStationID and self.previousStationID ~= nil then
+	-- 			self.onStation = true
+	-- 			self:requestPaths()
+	-- 			self.previousStationID = self.currentStation.id
+	-- 			self.currentPathsIndex = self.currentPathsIndex + 1
+	-- 			if self.currentPathsIndex > self.totalPaths then self.currentPathsIndex = 1 end
+	-- 			self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+	-- 		end
 
-			self.cronStopID = Cron.After(self.currentStation.holdTime * self.ts.settings.holdMult, function ()
-				if not self.activeTrain then return end
-				self.trainInStation = false
-				if self.activeTrain.playerMounted then
-					self.onStation = false
-				end
-				--self.activeTrain:startDrive("exit") --is done inside startExitTimer, calling it twice is bad
-				--self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
-				self:startExitTimer()
-			end)
+	-- 		self.cronStopID = Cron.After(self.currentStation.holdTime * self.ts.settings.holdMult, function ()
+	-- 			if not self.activeTrain then return end
+	-- 			self.trainInStation = false
+	-- 			if self.activeTrain.playerMounted then
+	-- 				self.onStation = false
+	-- 			end
+	-- 			--self.activeTrain:startDrive("exit") --is done inside startExitTimer, calling it twice is bad
+	-- 			--self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
+	-- 			self:startExitTimer()
+	-- 		end)
 
-			self:startHoldTimer()
-		end
+	-- 		self:startHoldTimer()
+	-- 	end
 
-		if self.activeTrain.playerMounted and not self.trainInStation then
-			Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
-		else
-			StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
-		end
+	-- 	if self.activeTrain.playerMounted and not self.trainInStation then
+	-- 		Game.ApplyEffectOnPlayer("GameplayRestriction.VehicleBlockExit")
+	-- 	else
+	-- 		StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
+	-- 	end
 
-		self:handleExitTrain()
-	end
+	-- 	self:handleExitTrain()
+	-- end
 
-	if self.trainInStation and self.activeTrain ~= nil then
-		if self:nearTrain() and (not self.activeTrain.playerMounted) then
-			self.ts.hud.trainVisible = true
-			if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
-				local t = 0
-				if self.ts.settings.trainGlitch then
-					t = 0.6
-					utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
-				end
+	-- if self.trainInStation and self.activeTrain ~= nil then
+	-- 	if self:nearTrain() and (not self.activeTrain.playerMounted) then
+	-- 		self.ts.hud.trainVisible = true
+	-- 		if self.ts.input.interactKey and not self.mountLocked and not self.activeTrain.justArrived then
+	-- 			local t = 0
+	-- 			if self.ts.settings.trainGlitch then
+	-- 				t = 0.6
+	-- 				utils.playGlitchEffect("fast_travel_glitch", GetPlayer())
+	-- 			end
 
-				Cron.After(t, function()
-					self.ts.input.interactKey = false
-					self.activeTrain:mount()
-					utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
-				end)
-			end
-		end
-	end
+	-- 			Cron.After(t, function()
+	-- 				self.ts.input.interactKey = false
+	-- 				self.activeTrain:mount()
+	-- 				utils.togglePin(self, "exit", false, Vector4.new(self.currentStation.portalPoint.pos.x, self.currentStation.portalPoint.pos.y, self.currentStation.portalPoint.pos.z + 1, 0), "GetInVariant") --DistractVariant
+	-- 			end)
+	-- 		end
+	-- 	end
+	-- end
 
-	if self.ts.observers.noSave then -- Mod is active
-		Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
-		Game.ChangeZoneIndicatorSafe()
+	-- if self.ts.observers.noSave then -- Mod is active
+	-- 	Game.GetScriptableSystemsContainer():Get("PreventionSystem"):SetHeatStage(EPreventionHeatStage.Heat_0)
+	-- 	Game.ChangeZoneIndicatorSafe()
 
-		local gtaTravel = GetMod("gtaTravel") -- Disable gtaTravel
-		if gtaTravel then
-			if gtaTravel.flyPath then
-				gtaTravel.flyPath = false
-				gtaTravel.resetPitch = true
-			end
-		end
-	end
-end
-
-function stationSys:startHoldTimer()
-	self.ts.observers.timetableValue = self.currentStation.holdTime * self.ts.settings.holdMult
-	Cron.Every(1, {tick = 0}, function(timer)
-		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
-		if self.activeTrain == nil then
-			timer:Halt()
-			return
-		end
-		if self.ts.observers.timetableValue <= 0 then
-			timer:Halt()
-		end
-		if self.activeTrain.driving then
-			timer:Halt()
-		end
-	end)
-end
-
-function stationSys:startExitTimer()
-	self.activeTrain:startDrive("aaa") -- Sets pointIndex and pos properly for remainingLength calcs
-	local exitTime = math.floor((self.activeTrain:getRemainingExitLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
-
-	if self.currentPathsIndex + 1 > self.totalPaths then
-		self.activeTrain:loadRoute(self.pathsData[1])
-	else
-		self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex + 1])
-	end
-	self.activeTrain:startDrive("arrive")
-
-	local arriveTime = math.floor((self.activeTrain:getRemainingLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
-
-	self.activeTrain:loadRoute(self.pathsData[self.currentPathsIndex])
-	self.activeTrain:startDrive("exit")
-
-	self.ts.observers.timetableValue = exitTime + arriveTime + 2 -- 2 for the time where the train dissapears
-
-	Cron.Every(1, {tick = 0}, function(timer)
-		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
-		if self.ts.observers.timetableValue <= 0 then
-			timer:Halt()
-		end
-		if self.activeTrain == nil then
-			timer:Halt()
-			return
-		end
-	end)
-end
-
-function stationSys:startArriveTimer()
-	self.ts.observers.timetableValue = math.floor((self.activeTrain:getRemainingLength() / self.activeTrain.originalSpeed) + 1.5 + 35 / self.activeTrain.originalSpeed)
-	Cron.Every(1, {tick = 0}, function(timer)
-		self.ts.observers.timetableValue = self.ts.observers.timetableValue - 1
-		if self.ts.observers.timetableValue <= 0 then
-			timer:Halt()
-		end
-		if self.activeTrain == nil then
-			timer:Halt()
-			return
-		end
-		if not self.activeTrain.driving then
-			timer:Halt()
-		end
-	end)
+	-- 	local gtaTravel = GetMod("gtaTravel") -- Disable gtaTravel
+	-- 	if gtaTravel then
+	-- 		if gtaTravel.flyPath then
+	-- 			gtaTravel.flyPath = false
+	-- 			gtaTravel.resetPitch = true
+	-- 		end
+	-- 	end
+	-- end
 end
 
 return stationSys

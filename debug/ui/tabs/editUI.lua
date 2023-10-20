@@ -208,14 +208,6 @@ function editUI.drawStation()
         station.exitDoorPosition = Game.GetTargetingSystem():GetLookAtObject(GetPlayer(), false, true):GetWorldPosition()
     end
     station.exitDoorSealed = ImGui.Checkbox("Exit Door Sealed", station.exitDoorSealed)
-
-    if ImGui.Button("Spawn") then
-        station:spawn()
-    end
-    ImGui.SameLine()
-    if ImGui.Button("Despawn") then
-        station:despawn()
-    end
 end
 
 function editUI.drawTrack()

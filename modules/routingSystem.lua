@@ -11,7 +11,7 @@ function routingSystem:new()
    	return setmetatable(o, self)
 end
 
-function routingSystem:load(unlockAllTracks)
+function routingSystem:load()
 	for _, file in pairs(dir("data/tracks")) do
         if file.name:match("^.+(%..+)$") == ".json" then
             local track = require("modules/classes/track"):new()
@@ -19,8 +19,6 @@ function routingSystem:load(unlockAllTracks)
             self.tracks[track.id] = track
         end
     end
-
-	self:handleActOne(unlockAllTracks)
 end
 
 function routingSystem:handleActOne(unlockAllTracks)
@@ -30,7 +28,7 @@ function routingSystem:handleActOne(unlockAllTracks)
 
 	if hasSentJackie or q101Done or sideContentUnlocked or unlockAllTracks then return end
 
-	-- TODO: Change this to modify lines station information, hardcoded
+	-- TODO: Change this to lock portals, with warning
 end
 
 -- Checks if the id is in the tracks front connections

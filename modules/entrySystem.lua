@@ -19,6 +19,8 @@ function entrySys:new(ts)
     o.portalData = nil
     o.isMoving = false
 
+    o.mappin = nil
+
 	self.__index = self
    	return setmetatable(o, self)
 end
@@ -40,6 +42,13 @@ function entrySys:load()
             s:load("data/stations/" .. file.name)
             self.stations[s.id] = s
         end
+    end
+end
+
+function entrySys:sessionEnd()
+    if self.mappin then
+        Game.GetMappinSystem():UnregisterMappin(self.mappin)
+        self.mappin = nil
     end
 end
 
@@ -85,9 +94,26 @@ function entrySys:checkEntry()
     end
 end
 
+function entrySys:handleWaypoint(closest)
+    local inRange = GetPlayer():GetWorldPosition():Distance(closest.portalPoint.pos) < 14
+
+    if inRange and not self.mappin then
+        local mappinData = gamemappinsMappinData.new()
+        mappinData.mappinType = TweakDBID.new('Mappins.DefaultStaticMappin')
+        mappinData.variant = gamedataMappinVariant.GetInVariant
+        mappinData.visibleThroughWalls = true
+        self.mappin = Game.GetMappinSystem():RegisterMappin(mappinData, Vector4.new(closest.portalPoint.pos.x, closest.portalPoint.pos.y, closest.portalPoint.pos.z + 1, 0))
+    elseif not inRange and self.mappin then
+        Game.GetMappinSystem():UnregisterMappin(self.mappin)
+        self.mappin = nil
+    end
+end
+
 function entrySys:checkExit()
     local closest = self:getClosest(self.stations)
     if not closest then return end
+
+    self:handleWaypoint(closest)
 
     if self:looksAtExit(closest) then
         self.isLookingAtPortal = true
@@ -102,10 +128,10 @@ function entrySys:update()
     self.isLookingAtPortal = false
     observers.noFastTravel = false
 
-    if self.isMoving then return end
-
     local hasEntry = self:checkEntry()
     local hasExit = self:checkExit()
+
+    if self.isMoving then return end
 
     if hasEntry then
         hud.toggleInteraction(true, "enter_station")
@@ -124,7 +150,11 @@ function entrySys:usePortal()
     local entry = self.portalData.entry
     self.isMoving = true
 
-    Cron.After(self.ts.settings.elevatorTime, function () -- Tp to station and more, run this first as this unsets the isMoving, and if anything else fails this at least runs
+    Cron.After(0.1, function () -- Avoid getting overriden by the station's noSave zone being exited
+        observers.noSave = true
+    end)
+
+    Cron.After(self.ts.settings.elevatorTime, function () -- Run this first as this unsets the isMoving, and if anything else fails this at least runs
         self.isMoving = false
         utils.stopAudio(GetPlayer(), "dev_elevator_02_movement_start")
         utils.playAudio(GetPlayer(), "dev_elevator_02_movement_stop", 3)
@@ -132,9 +162,11 @@ function entrySys:usePortal()
         local target = self.stations[entry.stationID].portalPoint
         if self.portalData.action == "exit" then
             target = self.stations[entry.stationID].groundPoint
+            observers.noSave = false
         end
 
         utils.tp(GetPlayer(), target.pos, target.rot)
+        Game.GetScriptableSystemsContainer():Get("PreventionSystem"):OnSetWantedLevel(SetWantedLevel.new({wantedLevel =EPreventionHeatStage.Heat_0 }))
     end)
 
     hud.toggleInteraction(false, "enter_station")
@@ -175,20 +207,11 @@ function entrySys:looksAtExit(closest)
 
     if not target then return false end
     if GetPlayer():GetWorldPosition():Distance(closest.center) > closest.radius then return false end
-    if utils.distanceVector(target:GetWorldPosition(), Vector4.new(-1430.782, 458.094, 51.818, 0)) < 0.1 then return false end -- Ugly hardcoded workaround for the force open door at rep way north :(
-
-    if target:GetClassName().value == "Door" then
-        local targetPS = target:GetDevicePS()
-        if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
-        if targetPS:IsOpen() then targetPS:ToggleOpenOnDoor() end
-    end
-
     if not utils.isVector(target:GetWorldPosition(), closest.exitDoorPosition) then return false end
 
     if closest.exitDoorSealed then
         pcall(function ()
-            local targetPS = target:GetDevicePS()
-            if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+            utils.lockDoor(target)
         end)
     end
 

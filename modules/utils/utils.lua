@@ -1,6 +1,4 @@
-local settings = require("modules/utils/GameSettings")
 local spawnEntities = false
-local Cron = require("modules/utils/Cron")
 
 miscUtils = {}
 
@@ -102,34 +100,6 @@ function miscUtils.looksAtDoor(dist)
         end
     end
     return looksAt
-end
-
-function miscUtils.togglePin(data, name, state, pos, variant)
-    local variant = variant or 'FastTravelVariant'
-    if data.pins == nil then -- Create field to store state and id of pins, to make disabling them per data easy
-        data.pins = {}
-    end
-    if data.pins[name] == nil then
-        data.pins[name] = false
-    end
-    if data.pinIDs == nil then
-        data.pinIDs = {}
-    end
-
-    data.pins[name] = state
-
-    if data.pins[name] then
-        local mappinData = NewObject('gamemappinsMappinData')
-        mappinData.mappinType = TweakDBID.new('Mappins.DefaultStaticMappin')
-        mappinData.variant = Enum.new('gamedataMappinVariant', variant)
-        mappinData.visibleThroughWalls = true
-        local id = Game.GetMappinSystem():RegisterMappin(mappinData, pos)
-        data.pinIDs[name] = id
-        data.pins[name] = false
-    else
-        Game.GetMappinSystem():UnregisterMappin(data.pinIDs[name])
-        data.pins[name] = true
-    end
 end
 
 function miscUtils.mount(entID, seat)
@@ -273,6 +243,7 @@ function miscUtils.createInteractionHub(titel, action, active)
 end
 -- ^^^^ All this code has been created by psiberx ^^^^
 
+-- TODO: Change those to just use cloned records
 function miscUtils.setupTPPCam(dist, autoCenter)
     TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_High_Far.boomLength", dist)
     TweakDB:SetFlat("Camera.VehicleTPP_v_utility4_militech_behemoth_Preset_Low_Far.boomLength", dist)
@@ -319,12 +290,6 @@ function miscUtils.forceStop(ts)
     miscUtils.toggleHUD(true)
 
     if ts.observers.noSave then
-		Cron.Halt(ts.stationSys.audioTimer)
-        ts.stationSys.currentStation:despawn()
-        if ts.stationSys.previousStationID then
-            ts.stationSys.stations[ts.stationSys.previousStationID]:despawn()
-        end
-
         if ts.stationSys.activeTrain then
             ts.observers.noSave = false
             ts.observers.noFastTravel = false
@@ -332,20 +297,18 @@ function miscUtils.forceStop(ts)
             pcall(function()
                 ts.stationSys.activeTrain:unmount()
             end)
-            ts.stationSys.activeTrain:despawn()
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoDriving")
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoCombat")
             StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.VehicleBlockExit")
             Game.ChangeZoneIndicatorPublic()
             if ts.observers.hudText then ts.observers.hudText:SetVisible(false) end
-            miscUtils.togglePin(ts.stationSys, "exit", false)
             Game.GetTeleportationFacility():Teleport(GetPlayer(), ts.stationSys.currentStation.groundPoint.pos,  (ts.stationSys.currentStation.groundPoint.rot):ToEulerAngles())
 
             ts.entrySys = require("modules/entrySystem"):new(ts)
             ts.stationSys = require("modules/stationSystem"):new(ts)
-            ts.routingSystem = require("modules/routingSystem"):new(ts)
+            ts.routingSystem = require("modules/routingSystem"):new()
 
-            ts.routingSystem:load(ts.settings.unlockAllTracks)
+            ts.routingSystem:load()
             ts.entrySys:load()
             ts.stationSys:load()
             ts.objectSys.initialize()
@@ -423,6 +386,41 @@ function miscUtils.tp(object, pos, rot)
         rot = rot:ToEulerAngles()
     end
     Game.GetTeleportationFacility():Teleport(object, pos, rot)
+end
+
+function miscUtils.applyStatus(effect)
+    Game.GetStatusEffectSystem():ApplyStatusEffect(GetPlayer():GetEntityID(), effect, GetPlayer():GetRecordID(), GetPlayer():GetEntityID())
+end
+
+function miscUtils.changeZoneIndicator(state)
+    local SecurityData = SecurityAreaData.new()
+    SecurityData.securityAreaType = state
+    local Blackboard = Game.GetBlackboardSystem():GetLocalInstanced(GetPlayer():GetEntityID(), GetAllBlackboardDefs().PlayerStateMachine)
+
+    Blackboard:SetVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData, ToVariant(SecurityData))
+    Blackboard:SignalVariant(GetAllBlackboardDefs().PlayerStateMachine.SecurityZoneData)
+end
+
+-- Base restrictions for both station and in metro
+function miscUtils.applyGeneralRestrictions(state)
+    observers.noSave = state
+    observers.noTrains = state
+
+    if state then
+        miscUtils.changeZoneIndicator(ESecurityAreaType.SAFE)
+        miscUtils.applyStatus("GameplayRestriction.NoCombat")
+    else
+        miscUtils.changeZoneIndicator(ESecurityAreaType.DISABLED)
+        StatusEffectHelper.RemoveStatusEffect(GetPlayer(), "GameplayRestriction.NoCombat")
+    end
+end
+
+function miscUtils.lockDoor(door)
+    if not door or door:GetClassName().value ~= "Door" then return end
+
+    local targetPS = door:GetDevicePS()
+    if not targetPS:IsLocked() then targetPS:ToggleLockOnDoor() end
+    if targetPS:IsOpen() then targetPS:ToggleOpenOnDoor() end
 end
 
 return miscUtils

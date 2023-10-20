@@ -118,11 +118,6 @@ function observers.start(ts)
         observers.timeDilation = 1
     end)
 
-    Override("FakeDoor", "CreateFakeDoorChoice", function(_, wrapped)
-        if observers.noSave then return end
-        wrapped()
-    end)
-
     Observe("WorldMapMenuGameController", "OnInitialize", function (this)
         observers.onMap = true
         observers.worldMap = this
@@ -140,12 +135,10 @@ function observers.start(ts)
         if observers.noSave then
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(false)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(false)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(false)
         else
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'maindashcontainer'})):SetVisible(true)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'holder_code'})):SetVisible(true)
-            this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'flufftext'})):SetVisible(true)
             this:GetRootWidget():GetWidgetByPath(BuildWidgetPath({'speed_fluff'})):SetVisible(true)
         end
     end)
@@ -276,15 +269,19 @@ end
 
 function observers.update()
     if observers.noTrains then
-        for _, id in pairs(observers.trainIDS) do
-            local ent = Game.FindEntityByID(id)
+        for key, entID in pairs(observers.trainIDS) do
+            local ent = Game.FindEntityByID(entID)
             if ent ~= nil then
                 ent:Dispose()
             else
-                utils.removeItem(observers.trainIDS, id)
+                table.remove(observers.trainIDS, key)
             end
         end
     end
+end
+
+function observers.sessionEnd()
+    observers.trainIDS = {}
 end
 
 return observers

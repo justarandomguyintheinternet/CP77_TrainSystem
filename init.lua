@@ -74,18 +74,13 @@ function ts:new()
         self.entrySys:load()
 
         self.routingSystem = require("modules/routingSystem"):new()
-        self.routingSystem:load(self.settings.unlockAllTracks)
+        self.routingSystem:load()
 
-        -- self.stationSys = require("modules/stationSystem"):new(ts)
-        -- self.stationSys:load()
+        self.stationSys = require("modules/stationSystem"):new(self)
+        self.stationSys:load()
 
-        self.objectSys.initialize()
         self.observers.start(self)
         self.input.startInputObserver()
-
-        self.Cron.Every(1.0, function ()
-            self.utils.fixNoFastTravel()
-        end)
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             self.runtimeData.inMenu = isInMenu
@@ -93,12 +88,19 @@ function ts:new()
 
         self.GameUI.OnSessionStart(function()
             self.runtimeData.inGame = true
-            self.routingSystem:load() -- Load again to handle Act 1
+
+            self.objectSys.initialize()
+            self.Cron.Every(1.0, function ()
+                self.utils.fixNoFastTravel()
+            end)
         end)
 
         self.GameUI.OnSessionEnd(function()
             self.runtimeData.inGame = false
             self.utils.forceStop(self)
+            self.entrySys:sessionEnd()
+            self.observers.sessionEnd()
+            self.Cron.HaltAll()
         end)
 
         self.GameUI.OnPhotoModeOpen(function()
@@ -119,7 +121,7 @@ function ts:new()
             self.hud.drawInteraction()
             self.observers.update()
             self.entrySys:update()
-            -- self.stationSys:update(deltaTime)
+            self.stationSys:update()
             self.Cron.Update(deltaTime)
             self.debug.baseUI.utilUI.update()
         elseif self.entrySys.forceRunCron then
@@ -131,6 +133,7 @@ function ts:new()
 
     registerForEvent("onShutdown", function ()
         self.utils.forceStop(ts)
+        self.entrySys:sessionEnd()
     end)
 
     registerForEvent("onDraw", function()

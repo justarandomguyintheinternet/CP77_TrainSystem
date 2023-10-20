@@ -4,18 +4,19 @@ local observers = require("modules/utils/observers")
 
 hud = {
     destVisible = false,
-
-    interactionActive = false,
-    locKey = ""
+    interactions = {}
 }
 
 function hud.toggleInteraction(state, locKey)
-    if not state then
-        utils.createInteractionHub(lang.getText(hud.locKey), "UI_Apply", false)
+    if not state and not hud.interactions[locKey] then return end
+
+    if not state and hud.interactions[locKey] then
+        hud.interactions[locKey] = nil
+        utils.createInteractionHub(lang.getText(locKey), "UI_Apply", false)
+        return
     end
 
-    hud.interactionActive = state
-    hud.locKey = locKey
+    hud.interactions[locKey] = true
 end
 
 function hud.draw()
@@ -31,8 +32,8 @@ function hud.draw()
 end
 
 function hud.drawInteraction()
-    if hud.interactionActive then
-        utils.createInteractionHub(lang.getText(hud.locKey), "UI_Apply", true)
+    for key, _ in pairs(hud.interactions) do
+        utils.createInteractionHub(lang.getText(key), "UI_Apply", true)
     end
 end
 
