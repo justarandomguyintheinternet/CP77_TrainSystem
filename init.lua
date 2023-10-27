@@ -82,6 +82,17 @@ function ts:new()
         self.observers.start(self)
         self.input.startInputObserver()
 
+        local points = self.routingSystem:findPath(4, 8)
+
+        self.interpolator = require("modules/classes/positionProvider"):new()
+        self.interpolator:setupArrival(points, 80)
+        self.interpolator:setOffsets(3, 8)
+        -- self.utils.tp(GetPlayer(), self.interpolator.points[1].pos, self.interpolator.points[1].rot)
+        -- print(self.interpolator.points[#self.interpolator.points].distance)
+        -- self.Cron.After(10, function ()
+        --     self.interpolator:start()
+        -- end)
+
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             self.runtimeData.inMenu = isInMenu
         end)
@@ -99,6 +110,7 @@ function ts:new()
             self.runtimeData.inGame = false
             self.utils.forceStop(self)
             self.entrySys:sessionEnd()
+            self.stationSys:sessionEnd()
             self.observers.sessionEnd()
             self.Cron.HaltAll()
         end)
@@ -113,7 +125,7 @@ function ts:new()
 
         self.runtimeData.inGame = not self.GameUI.IsDetached() -- Required to check if ingame after reloading all mods
     end)
-
+    --Game.GetDynamicEntitySystem():CreateEntity(DynamicEntitySpec.new({recordID = "Vehicle.train", position = GetPlayer():GetWorldPosition()}))
     registerForEvent("onUpdate", function(deltaTime)
         if not dependenciesInstalled then return end
 
@@ -121,9 +133,16 @@ function ts:new()
             self.hud.drawInteraction()
             self.observers.update()
             self.entrySys:update()
-            self.stationSys:update()
+            self.stationSys:update(deltaTime)
             self.Cron.Update(deltaTime)
             self.debug.baseUI.utilUI.update()
+
+            self.interpolator:update(deltaTime)
+            if self.interpolator.active then
+                local point = self.interpolator:getCarriagePosition(1)
+                self.utils.tp(GetPlayer(), point.pos, point.rot)
+                print(point.pos, point.rot)
+            end
         elseif self.entrySys.forceRunCron then
             self.Cron.Update(deltaTime)
         -- elseif self.stationSys.activeTrain and observers.radioPopupActive then -- Always teleport, avoid issues with popups
@@ -134,6 +153,7 @@ function ts:new()
     registerForEvent("onShutdown", function ()
         self.utils.forceStop(ts)
         self.entrySys:sessionEnd()
+        self.stationSys:sessionEnd()
     end)
 
     registerForEvent("onDraw", function()

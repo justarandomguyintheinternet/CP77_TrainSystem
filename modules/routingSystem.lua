@@ -6,9 +6,35 @@ function routingSystem:new()
 	local o = {}
 
 	o.tracks = {}
+	o.lines = {}
 
 	self.__index = self
    	return setmetatable(o, self)
+end
+
+--- Loads all lines into a list containing the directional lines in a simple table format
+---@return table
+local function getUnpackedLines()
+	local unpacked = {}
+
+	for _, file in pairs(dir("data/lines")) do
+        if file.name:match("^.+(%..+)$") == ".json" then
+            local first = require("modules/classes/line"):new()
+            first:load("data/lines/" .. file.name)
+            first.towards = first.stations[1]
+			first.id = #unpacked + 1
+
+			local last = require("modules/classes/line"):new()
+            last:load("data/lines/" .. file.name)
+            last.towards = last.stations[#last.stations]
+			last.id = #unpacked + 2
+
+			table.insert(unpacked, first)
+			table.insert(unpacked, last)
+        end
+    end
+
+	return unpacked
 end
 
 function routingSystem:load()
@@ -19,6 +45,8 @@ function routingSystem:load()
             self.tracks[track.id] = track
         end
     end
+
+	self.lines = getUnpackedLines()
 end
 
 function routingSystem:handleActOne(unlockAllTracks)
@@ -30,6 +58,75 @@ function routingSystem:handleActOne(unlockAllTracks)
 
 	-- TODO: Change this to lock portals, with warning
 end
+
+--- ### Lines Code ###
+
+--- Returns the index of a line inside a table of lines, given the lineID
+---@param lines table
+---@param lineID number
+---@return number
+local function getIndexByLineID(lines, lineID)
+	for key, line in pairs(lines) do
+		if line.id == lineID then return key end
+	end
+
+	return 0 -- Handling the -1 ID, indicating initial startup of metro
+end
+
+--- Gets the next line for a station, based on the previously used line
+---@param lineID number
+---@param station number
+function routingSystem:getNextLineIndex(lineID, station)
+	local lines = self:getLines(station)
+
+	local newIndex = getIndexByLineID(lines, lineID) + 1
+
+	if newIndex > #lines then
+		newIndex = 1
+	end
+
+	return newIndex
+end
+
+--- Gets the stationID of the next station along the line, based on the current station
+---@param line table
+---@param station number
+---@return number
+function routingSystem:getNextStationID(line, station)
+	local step = 1
+	if line.towards == line.stations[1] then
+		step = -1
+	end
+	return line.stations[utils.getIndex(line.stations, station) + step]
+end
+
+--- Gets the stationID of the previous station along the line, based on the current station
+---@param line table
+---@param station number
+---@return number
+function routingSystem:getPreviousStationID(line, station)
+	local step = -1
+	if line.towards == line.stations[#line.stations] then
+		step = 1
+	end
+	return line.stations[utils.getIndex(line.stations, station) + step]
+end
+
+--- Get a list of tables of all the lines that go through the station. Double tables for both directions, certain lines removed for end stations
+---@param stationID number
+function routingSystem:getLines(stationID)
+	local lines = {}
+
+	for _, line in pairs(self.lines) do
+		if utils.has_value(line.stations, stationID) and not (line.towards == stationID) then
+			table.insert(lines, line)
+		end
+	end
+
+	return lines
+end
+
+--- ### Routing Code ###
 
 -- Checks if the id is in the tracks front connections
 ---@param track table
@@ -150,10 +247,10 @@ function routingSystem:dfs(track, previous, target)
 	return path
 end
 
---- Returns the table of points that leads from the origin station's id to the target station
+--- No distance buffered yet
 ---@param originID any
 ---@param target any
-function routingSystem:findPath(originID, target)
+function routingSystem:findPathRaw(originID, target)
 	local track = self:getTrackByStationID(originID)
 
 	if track.station.front == target then
@@ -187,18 +284,33 @@ function routingSystem:findPath(originID, target)
 	end
 end
 
--- Returns a value from 0-1, given a distance that should be walked along an array of points
----@param points table
----@param distance number
----@return number
-function routingSystem:getValueByDistance(points, distance)
-	local length = 0
-	for i = 1, #points.length - 1 do
-		length = length + points[i].pos:Distance(points[i + 1].pos)
+--- Returns a deep copy of the path
+---@param path table
+---@return table
+local function deepCopyPath(path)
+	local copied = {}
+
+	for _, point in pairs(path) do
+		local p = require("modules/classes/point"):new()
+		p.pos = point.pos
+		p.rot = point.rot
+		p.distance = point.distance
+		table.insert(copied, p)
 	end
 
-	distance = math.min(distance, length)
-	return distance / length
+	return copied
+end
+
+--- Returns the table of points that leads from the origin station's id to the target station, with buffered distances
+---@param originID any
+---@param target any
+function routingSystem:findPath(originID, target)
+	local path = self:findPathRaw(originID, target)
+
+	path = deepCopyPath(path)
+	utils.bufferPathDistance(path)
+
+	return path
 end
 
 return routingSystem

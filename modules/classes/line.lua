@@ -8,6 +8,10 @@ function line:new()
     o.stations = {}
     o.name = ""
     o.audio = ""
+    o.color = {}
+
+    o.towards = 0 -- Used for directional lines at runtime
+    o.id = 0
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -19,6 +23,7 @@ function line:load(path)
     self.stations = data.stations
     self.name = data.name
     self.audio = data.audio
+    self.color = data.color
 end
 
 function line:save(path)
@@ -27,6 +32,7 @@ function line:save(path)
     data.stations = self.stations
     data.name = self.name
     data.audio = self.audio
+    data.color = self.color
 
     config.saveFile(path, data)
 end

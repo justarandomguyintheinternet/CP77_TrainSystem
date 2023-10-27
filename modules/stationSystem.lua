@@ -125,18 +125,20 @@ function stationSys:useFakeDoor(door)
 	local pos2 = utils.subVector(door:GetWorldPosition(), door:GetWorldForward())
 
 	if GetPlayer():GetWorldPosition():Distance(pos1) > GetPlayer():GetWorldPosition():Distance(pos2) then
-		utils.tp(GetPlayer(), pos1, GetPlayer():GetWorldOrientation())
+		utils.tp(GetPlayer(), pos1, door:GetWorldOrientation())
 	else
-		utils.tp(GetPlayer(), pos2, GetPlayer():GetWorldOrientation())
+		utils.tp(GetPlayer(), pos2, EulerAngles.new(0, 0, door:GetWorldOrientation():ToEulerAngles().yaw + 180))
 	end
 end
 
 function stationSys:sessionEnd()
 	self.inSmallRange = false
 	self.inBigRange = false
+	self.bigRangeStation = nil
 
 	if self.metro then
-		-- Despawn
+		self.metro:despawn()
+		self.metro = nil
 	end
 end
 
@@ -152,19 +154,23 @@ function stationSys:handleBigRange()
 		if self.metro and not self.metro:playerBoarded() then
 			self.metro:despawn()
 			self.metro = nil
+			print("stop arrival")
 		end
 	end
 
 	-- Station has changed from none to one, or from one to another
 	if closest and (not self.inBigRange or closest.id ~= self.bigRangeStation.id) then
 		if self.metro then
-			if not self.metro:playerBoarded() and self.metro.targetStationID ~= closest.id then
+			if not self.metro:playerBoarded() and self.metro.activeLine.targetStationID ~= closest.id then
 				-- respawn metro to closest station
 				-- maybe let it exit first, then change spawn location
+				print("relocate metro")
 			end
 		else
-			-- spawn
-			-- activate arrival
+			print("start arrival", closest.id)
+			self.metro = require("modules/classes/train"):new(self)
+			self.metro:startArrival(closest.id, -1)
+			self.metro:spawn(self.metro.path[1])
 		end
 
 		self.bigRangeStation = closest
@@ -220,7 +226,11 @@ function stationSys:handleAudio() -- Station announcement timer
 	end
 end
 
-function stationSys:update()
+function stationSys:update(deltaTime)
+	if self.metro then
+		self.metro:update(deltaTime)
+	end
+
 	self:handleSmallRange()
 	self:handleBigRange()
 	self:handleFakeDoors()

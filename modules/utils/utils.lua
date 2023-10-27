@@ -23,7 +23,7 @@ end
 ---@return table
 function miscUtils.join(a, b)
     for _, v in pairs(b) do
-        table.insert(a, #a, v)
+        table.insert(a, v)
     end
 
     return a
@@ -157,6 +157,15 @@ function miscUtils.reversePoint(point)
 
     newPoint.rot = rot:ToQuat()
     return newPoint
+    -- return point
+end
+
+function miscUtils.bufferPathDistance(path)
+    local length = 0
+	for i = 2, #path do
+		length = length + path[i].pos:Distance(path[i - 1].pos)
+		path[i].distance = length
+	end
 end
 
 function miscUtils.addVector(v1, v2)
@@ -181,6 +190,18 @@ end
 
 function miscUtils.multEuler(e1, factor)
     return EulerAngles.new(e1.roll * factor, e1.pitch * factor, e1.yaw * factor)
+end
+
+function miscUtils.addQuat(q1, q2)
+    return Quaternion.new(q1.i + q2.i, q1.j + q2.j, q1.k + q2.k, q1.r + q2.r)
+end
+
+function miscUtils.subQuat(q1, q2)
+    return Quaternion.new(q1.i - q2.i, q1.j - q2.j, q1.k - q2.k, q1.r - q2.r)
+end
+
+function miscUtils.multQuat(q1, factor)
+    return Quaternion.new(q1.i * factor, q1.j * factor, q1.k * factor, q1.r * factor)
 end
 
 function miscUtils.isVector(v1, v2) -- Returns true if two vectors are the same
@@ -372,7 +393,7 @@ end
 
 function miscUtils.addTrainVehicle()
     TweakDB:CloneRecord("Vehicle.train", "Vehicle.cs_savable_mahir_mt28_coach")
-    TweakDB:SetFlat("Vehicle.train.entityTemplatePath", "base\\vehicles\\special\\custom_coach.ent")
+    TweakDB:SetFlat("Vehicle.train.entityTemplatePath", "base\\metro\\cart\\cart.ent")
 
     local vehicles = TweakDB:GetFlat('Vehicle.vehicle_list.list')
 	table.insert(vehicles, "Vehicle.train")

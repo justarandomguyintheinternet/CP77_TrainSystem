@@ -7,6 +7,7 @@ function point:new()
 
     o.pos = Vector4.new(0, 0, 0, 0)
     o.rot = Quaternion.new(0, 0, 0, 0)
+    o.distance = 0
     o.loadStation = {back = false, front = false}
     o.unloadStation = {back = false, front = false}
     o.dir = ""
