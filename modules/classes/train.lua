@@ -66,13 +66,13 @@ function train:startArrival(station, previousLine)
 	self.interpolator:setOffsets(self.numCarriages, self.offset)
 	self.interpolator:start(false)
 
-	self.interpolator:registerDistanceCallback(250, function ()
-		print("Distance 250 callback fired!")
+	self.interpolator:registerProgressCallback(1, function ()
+		self:arrivalDone()
 	end)
 
 	self.path = self.interpolator.points
 
-	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, #path)
+	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, line.towards, #path)
 
 	-- figure out arrival path
 	-- path is always: LineID + NextStationID + PreviousStationID
@@ -89,6 +89,11 @@ function train:startArrival(station, previousLine)
 
 	-- whenever route is done / station arrived:
 		-- buffer not yet done path, and t values?
+end
+
+function train:arrivalDone()
+	local nextID = self.routingSystem:getNextStationID(self.activeLine.data, self.activeLine.nextStationID)
+	print("Done driving, next stationID: ", nextID, self.activeLine.data.towards)
 end
 
 function train:activateDrive()
