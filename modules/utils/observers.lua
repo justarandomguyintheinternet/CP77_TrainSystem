@@ -2,6 +2,7 @@ local utils = require("modules/utils/utils")
 local lang = require("modules/utils/lang")
 
 observers = {
+    context = nil,
     noFastTravel = false,
     noTrains = false,
     activatedGate = false,
@@ -18,10 +19,19 @@ observers = {
     ftKeys = {}
 }
 
+function observers.toggleForceWalk(state)
+    if not observers.context then return end
+    observers.context:SetPermanentBoolParameter("ForceWalk", state, true)
+end
+
 function observers.start(ts)
     observers.ts = ts
 
     observers.setupMapTDB()
+
+    Observe("LocomotionEventsTransition", "OnUpdate", function(_, _, context, _)
+        observers.context = context
+    end)
 
     Observe("NameplateVisualsLogicController", "OnInitialize", function(this)
         if observers.hudText then

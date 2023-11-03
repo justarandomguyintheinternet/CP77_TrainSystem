@@ -62,9 +62,9 @@ function train:startArrival(station, previousLine)
 
 	local path = self.routingSystem:findPath(self.activeLine.previousStationID, station)
 
-	self.interpolator:setupArrival(path, 500)
+	self.interpolator:setupArrival(path, 5000)
 	self.interpolator:setOffsets(self.numCarriages, self.offset)
-	self.interpolator:start()
+	self.interpolator:start(false)
 
 	self.path = self.interpolator.points
 

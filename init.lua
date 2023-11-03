@@ -89,9 +89,9 @@ function ts:new()
         self.interpolator:setOffsets(3, 8)
         -- self.utils.tp(GetPlayer(), self.interpolator.points[1].pos, self.interpolator.points[1].rot)
         -- print(self.interpolator.points[#self.interpolator.points].distance)
-        -- self.Cron.After(10, function ()
-        --     self.interpolator:start()
-        -- end)
+        self.Cron.After(10, function ()
+            self.interpolator:start()
+        end)
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
             self.runtimeData.inMenu = isInMenu
@@ -139,9 +139,9 @@ function ts:new()
 
             self.interpolator:update(deltaTime)
             if self.interpolator.active then
-                local point = self.interpolator:getCarriagePosition(1)
-                self.utils.tp(GetPlayer(), point.pos, point.rot)
-                print(point.pos, point.rot)
+                -- local point = self.interpolator:getCarriagePosition(1)
+                -- self.utils.tp(GetPlayer(), point.pos, point.rot)
+                -- print(self.interpolator:fastStartSmoothEnd(self.interpolator.progress, 10), self.interpolator.progress)
             end
         elseif self.entrySys.forceRunCron then
             self.Cron.Update(deltaTime)

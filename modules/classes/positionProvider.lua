@@ -9,19 +9,21 @@ function interpolator:new()
     o.points = {}
     o.progress = 0
     o.multiplier = 0
+    o.interpolationFunction = nil
 
     o.metroLength = 0 -- Measured in 0-1
     o.offset = 0 -- Measured in 0-1
 
     o.accelerationDistance = 200
     o.speed = 16
+    o.nonNormalizedSpeedDivisor = 250 -- Used for the constant duration of e.g. arrival paths, lower means faster
 
 	self.__index = self
    	return setmetatable(o, self)
 end
 
 -- https://www.desmos.com/calculator/qdqi9mgvts
-function interpolator:smoothStartEnd(x, smoothDistance)
+local function smoothStartEnd(x, smoothDistance)
     smoothDistance = math.min(smoothDistance, 0.5)
     x = math.min(x, 1)
 
@@ -35,6 +37,13 @@ function interpolator:smoothStartEnd(x, smoothDistance)
     else
         return (-t * math.pow((x - 1), 2)) + 1
     end
+end
+
+-- https://www.desmos.com/calculator/q57lrplhal
+local function fastStartSmoothEnd(x, slope)
+    local offset = - (math.pow(slope, 4 / 6) / slope)
+
+    return slope * math.pow((x + offset), 3) + 1
 end
 
 --- Returns the buffered length of a path
@@ -85,19 +94,32 @@ local function getPointByProgress(points, progress)
 end
 
 function interpolator:update(deltaTime)
-    -- if started
     if not self.active then return end
     self.progress = self.progress + deltaTime * self.multiplier
 
     if self.progress >= 1 then
+        self.progress = 1
         self.active = false
     end
 end
 
-function interpolator:start()
+--- Get the multiplied speed, normalized meaning the longer the path, the longer it takes. Non normalized will always take the same time to complete, e.g. for arrival
+---@param normalized boolean
+---@return number
+function interpolator:getNormalizedSpeed(normalized)
+    -- For the arrival paths, always the same time needed, no matter the distance
+    if not normalized and not (getPathLength(self.points) < 150) then
+        return self.speed / self.nonNormalizedSpeedDivisor
+    else
+        -- Normalized, so that it takes proportionally long, also do this for short paths
+        return (1 / getPathLength(self.points)) * self.speed
+    end
+end
+
+function interpolator:start(speedNormalized)
     self.progress = 0
-    self.multiplier = (1 / getPathLength(self.points)) * self.speed
     self.active = true
+    self.multiplier = self:getNormalizedSpeed(speedNormalized)
 end
 
 function interpolator:loadMainPath(points)
@@ -173,6 +195,11 @@ function interpolator:setupArrival(path, distance)
     local _, split = self:splitPathByProgress(path, 1 - self:getProgressByDistance(path, distance))
 
     self.points = split
+    self.interpolationFunction = function (progress)
+        return fastStartSmoothEnd(progress, 1)
+    end
+
+    --return self:smoothStartEnd(self.progress, self.accelerationDistance / getPathLength(self.points))
 end
 
 --- Sets up the interpolator to drive the path, using the previously used path to determine the shared part
@@ -182,8 +209,16 @@ function interpolator:setupDrive(path)
 end
 
 function interpolator:getCarriagePosition(index)
+    local y = self.interpolationFunction(self.progress)
+
+    if y >= 1 then
+        y = 1
+        self.active = false
+        self.progress = 1
+    end
+
     local offset = self.offset * (math.floor(self.metroLength / self.offset) + 1 - index)
-    local t = self:smoothStartEnd(self.progress, self.accelerationDistance / getPathLength(self.points)) * (1 - self.metroLength) + offset
+    local t = y * (1 - self.metroLength) + offset
     local point, _ = getPointByProgress(self.points, t)
 
     return point
