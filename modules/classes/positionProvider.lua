@@ -8,15 +8,18 @@ function interpolator:new()
     o.active = false
     o.points = {}
     o.progress = 0
-    o.multiplier = 0
+    o.multiplier = 0 -- Speed normalized
     o.interpolationFunction = nil
 
+    -- Those two get set with setOffsets
     o.metroLength = 0 -- Measured in 0-1
     o.offset = 0 -- Measured in 0-1
 
-    o.accelerationDistance = 200
+    o.accelerationDistance = 200 -- Used for smoothStartEnd
     o.speed = 16
     o.nonNormalizedSpeedDivisor = 250 -- Used for the constant duration of e.g. arrival paths, lower means faster
+
+    o.callbacks = {}
 
 	self.__index = self
    	return setmetatable(o, self)
@@ -93,35 +96,6 @@ local function getPointByProgress(points, progress)
     return point, closestIndex
 end
 
-function interpolator:update(deltaTime)
-    if not self.active then return end
-    self.progress = self.progress + deltaTime * self.multiplier
-
-    if self.progress >= 1 then
-        self.progress = 1
-        self.active = false
-    end
-end
-
---- Get the multiplied speed, normalized meaning the longer the path, the longer it takes. Non normalized will always take the same time to complete, e.g. for arrival
----@param normalized boolean
----@return number
-function interpolator:getNormalizedSpeed(normalized)
-    -- For the arrival paths, always the same time needed, no matter the distance
-    if not normalized and not (getPathLength(self.points) < 150) then
-        return self.speed / self.nonNormalizedSpeedDivisor
-    else
-        -- Normalized, so that it takes proportionally long, also do this for short paths
-        return (1 / getPathLength(self.points)) * self.speed
-    end
-end
-
-function interpolator:start(speedNormalized)
-    self.progress = 0
-    self.active = true
-    self.multiplier = self:getNormalizedSpeed(speedNormalized)
-end
-
 function interpolator:loadMainPath(points)
     -- cache them
     -- should get list of combined points
@@ -177,15 +151,25 @@ function interpolator:getProgressByDistance(points, distance)
 	return distance / points[#points].distance
 end
 
---- Sets the offsets for the amount of carts, needs to be called after path has been set
----@param carts integer
----@param offset number
-function interpolator:setOffsets(carts, offset)
-    if #self.points == 0 then return end
-
-    self.offset = offset / getPathLength(self.points)
-    self.metroLength = (carts - 1) * self.offset
+--- Get the multiplied speed, normalized meaning the longer the path, the longer it takes. Non normalized will always take the same time to complete, e.g. for arrival
+---@param normalized boolean
+---@return number
+function interpolator:getNormalizedSpeed(normalized)
+    -- For the arrival paths, always the same time needed, no matter the distance
+    if not normalized and not (getPathLength(self.points) < 150) then
+        return self.speed / self.nonNormalizedSpeedDivisor
+    else
+        -- Normalized, so that it takes proportionally long, also do this for short paths
+        return (1 / getPathLength(self.points)) * self.speed
+    end
 end
+
+--- Functions should be called in the following order:
+--- 1) setupXXX(), e.g. setupArrival for an arrival path
+--- 2) setOffsets(), buffers the normalized offsets
+--- 3) start(), buffers the optionally normalized speed and actually starts off the interpolator
+--- 4) update()
+--- 5) getCarriagePosition() to retrieve the point of a carriage, also checks for any callbacks
 
 --- Sets up the interpolator to arrive from a path, splitting it etc. Distance is distance of path that should be driven
 ---@param path table
@@ -202,12 +186,86 @@ function interpolator:setupArrival(path, distance)
     --return self:smoothStartEnd(self.progress, self.accelerationDistance / getPathLength(self.points))
 end
 
+--- Sets the offsets for the amount of carts, needs to be called after path has been set
+---@param carts integer
+---@param offset number
+function interpolator:setOffsets(carts, offset)
+    if #self.points == 0 then return end
+
+    self.offset = offset / getPathLength(self.points)
+    self.metroLength = (carts - 1) * self.offset
+end
+
+function interpolator:start(speedNormalized)
+    self.progress = 0
+    self.active = true
+    self.multiplier = self:getNormalizedSpeed(speedNormalized)
+end
+
+function interpolator:update(deltaTime)
+    if not self.active then return end
+    self.progress = self.progress + deltaTime * self.multiplier
+
+    if self.progress >= 1 then
+        self.progress = 1
+        self.active = false
+    end
+end
+
 --- Sets up the interpolator to drive the path, using the previously used path to determine the shared part
 ---@param path table
 function interpolator:setupDrive(path)
 
 end
 
+--- Registers a single use callback that gets triggered when the specified progress along the track / Y (Not the internal progress) has been reached
+---@param progress any
+---@param callback any
+function interpolator:registerProgressCallback(progress, callback)
+    local data = {
+        index = utils.getNextFreeIndex(self.callbacks),
+        fn = callback,
+        trigger = "progress",
+        triggerValue = progress
+    }
+
+    self.callbacks[data.index] = data
+end
+
+--- Registers a single use callback that gets triggered when the specified distance has been reached
+function interpolator:registerDistanceCallback(distance, callback)
+    local data = {
+        index = utils.getNextFreeIndex(self.callbacks),
+        fn = callback,
+        trigger = "distance",
+        triggerValue = distance
+    }
+
+    self.callbacks[data.index] = data
+end
+
+--- Checks and fires any callback that should be fired
+---@param y number
+---@param distance number
+function interpolator:checkCallbacks(y, distance)
+    for key, data in pairs(self.callbacks) do
+        if data.trigger == "progress" then
+            if y >= data.triggerValue then
+                data.fn()
+                self.callbacks[key] = nil
+            end
+        elseif data.trigger == "distance" then
+            if distance >= data.triggerValue then
+                data.fn()
+                self.callbacks[key] = nil
+            end
+        end
+    end
+end
+
+--- Returns the finalized point along the path, based on the carriage index. Uses the interpolationFunction which has been set previously. Also checks for any callbacks
+---@param index number
+---@return table
 function interpolator:getCarriagePosition(index)
     local y = self.interpolationFunction(self.progress)
 
@@ -220,6 +278,8 @@ function interpolator:getCarriagePosition(index)
     local offset = self.offset * (math.floor(self.metroLength / self.offset) + 1 - index)
     local t = y * (1 - self.metroLength) + offset
     local point, _ = getPointByProgress(self.points, t)
+
+    self:checkCallbacks(y, point.distance)
 
     return point
 end

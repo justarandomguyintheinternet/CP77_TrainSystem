@@ -66,6 +66,10 @@ function train:startArrival(station, previousLine)
 	self.interpolator:setOffsets(self.numCarriages, self.offset)
 	self.interpolator:start(false)
 
+	self.interpolator:registerDistanceCallback(250, function ()
+		print("Distance 250 callback fired!")
+	end)
+
 	self.path = self.interpolator.points
 
 	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, #path)
