@@ -33,9 +33,13 @@ function carriage:despawn()
 	self.entityID = nil
 end
 
-function carriage:setPosition(data)
+function carriage:setPosition(data, flipped)
 	local ent = self:getEntity()
 	if not ent then return end
+
+	if flipped then
+		data = utils.reversePoint(data)
+	end
 
 	utils.tp(ent, utils.addVector(data.pos, Vector4.new(0, 0, 0.5, 0)), data.rot)
 end

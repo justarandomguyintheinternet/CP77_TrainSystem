@@ -170,7 +170,7 @@ function stationSys:handleBigRange()
 			print("start arrival", closest.id)
 			self.metro = require("modules/classes/train"):new(self)
 			self.metro:startArrival(closest.id, -1)
-			self.metro:spawn(self.metro.path[1])
+			self.metro:spawn()
 		end
 
 		self.bigRangeStation = closest

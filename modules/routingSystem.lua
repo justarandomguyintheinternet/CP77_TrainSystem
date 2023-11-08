@@ -109,6 +109,15 @@ function routingSystem:getPreviousStationID(line, station)
 	if line.towards == line.stations[#line.stations] then
 		step = -1
 	end
+
+	if station == line.stations[1] then
+		return self:getNextStationID(line, station)
+	end
+
+	if station == line.stations[#line.stations] then
+		step = -1
+	end
+
 	return line.stations[utils.getIndex(line.stations, station) + step]
 end
 
@@ -252,7 +261,6 @@ end
 ---@param target any
 function routingSystem:findPathRaw(originID, target)
 	local track = self:getTrackByStationID(originID)
-	print("track", track.station)
 
 	if track.station.front == target then
 		return getLastMile(track, "backward", target)

@@ -8,27 +8,27 @@ function train:new(stationSys)
 
 	o.routingSystem = stationSys.ts.routingSystem
 	o.stationSys = stationSys
-	o.numCarriages = 3
+	o.numCarriages = 1
 	o.offset = 10
 
 	o.spawned = false
 
 	o.activeLine = {}
-	o.path = {}
 	o.carriages = {}
+	o.reverse = false
 
 	self.__index = self
    	return setmetatable(o, self)
 end
 
-function train:spawn(spawnPoint)
+function train:spawn()
 	if self.spawned then return end
 
 	self.spawned = true
 
 	for i = 1, self.numCarriages do
 		self.carriages[i] = require("modules/classes/carriage"):new(self)
-		self.carriages[i]:spawn(spawnPoint)
+		self.carriages[i]:spawn(self.interpolator.points[1])
 	end
 end
 
@@ -70,8 +70,6 @@ function train:startArrival(station, previousLine)
 		self:arrivalDone()
 	end)
 
-	self.path = self.interpolator.points
-
 	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, line.towards, #path)
 
 	-- figure out arrival path
@@ -92,12 +90,47 @@ function train:startArrival(station, previousLine)
 end
 
 function train:arrivalDone()
-	local nextID = self.routingSystem:getNextStationID(self.activeLine.data, self.activeLine.nextStationID)
-	print("Done driving, next stationID: ", nextID, self.activeLine.data.towards)
-end
+	local currentStation = self.activeLine.nextStationID
+	local nextID = self.routingSystem:getNextStationID(self.activeLine.data, currentStation)
 
-function train:activateDrive()
+	local flip = false
+	if self.activeLine.data.stations[1] == currentStation or self.activeLine.data.stations[#self.activeLine.data.stations] == currentStation then
+		self.reverse = not self.reverse
+		flip = true
+	end
 
+	self.activeLine = {
+		data = self.activeLine.data,
+		nextStationID = nextID,
+		previousStationID = currentStation
+	}
+
+	local path = self.routingSystem:findPath(self.activeLine.previousStationID, nextID)
+	print("Done driving, next stationID: ", self.activeLine.previousStationID, nextID, #path)
+
+	self.interpolator:setupExit(path, flip)
+	self.interpolator:setOffsets(self.numCarriages, self.offset)
+	self.interpolator.progress = 0
+
+	-- for _, p in pairs(self.interpolator.points) do
+	-- 	print(p.pos, p.rot, p.distance)
+	-- end
+
+	Cron.After(4, function ()
+		self.interpolator:start(true)
+	end)
+
+	if flip then
+		local flipped = {}
+		for key, cart in pairs(self.carriages) do
+			flipped[#self.carriages + 1 - key] = cart
+		end
+		self.carriages = flipped
+	end
+
+	-- self.interpolator:registerProgressCallback(1, function ()
+	-- 	self:arrivalDone()
+	-- end)
 end
 
 function train:getRemainingLength()
@@ -110,20 +143,17 @@ function train:getRemainingLength()
 end
 
 function train:update(deltaTime)
-	-- self:updateEntity()
-	-- self:updateCam()
-	-- self:handleAudio()
 	if self.interpolator and self.interpolator.active then
 		self.interpolator:update(deltaTime)
 	end
 
 	for key, cart in pairs(self.carriages) do
-		cart:setPosition(self.interpolator:getCarriagePosition(key))
+		cart:setPosition(self.interpolator:getCarriagePosition(key), self.reverse)
 	end
-end
 
-function train:updateEntity()
-
+	-- Only trigger callbacks after having set all carriages positions, as callbacks might involve loading new track data
+	local point, progress = self.interpolator:getCarriagePosition(1)
+	self.interpolator:checkCallbacks(progress, point.distance)
 end
 
 function train:updateCam()

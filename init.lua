@@ -85,12 +85,12 @@ function ts:new()
         local points = self.routingSystem:findPath(4, 8)
 
         self.interpolator = require("modules/classes/positionProvider"):new()
-        self.interpolator:setupArrival(points, 80)
-        self.interpolator:setOffsets(3, 8)
+        -- self.interpolator:setupArrival(points, 80)
+        -- self.interpolator:setOffsets(3, 8)
         -- self.utils.tp(GetPlayer(), self.interpolator.points[1].pos, self.interpolator.points[1].rot)
         -- print(self.interpolator.points[#self.interpolator.points].distance)
         self.Cron.After(10, function ()
-            self.interpolator:start()
+            -- self.interpolator:start()
         end)
 
         Observe('RadialWheelController', 'OnIsInMenuChanged', function(_, isInMenu) -- Setup observer and GameUI to detect inGame / inMenu
@@ -137,7 +137,7 @@ function ts:new()
             self.Cron.Update(deltaTime)
             self.debug.baseUI.utilUI.update()
 
-            self.interpolator:update(deltaTime)
+            -- self.interpolator:update(deltaTime)
             if self.interpolator.active then
                 -- local point = self.interpolator:getCarriagePosition(1)
                 -- self.utils.tp(GetPlayer(), point.pos, point.rot)

@@ -63,12 +63,28 @@ end
 ---@param progress number
 ---@return table
 local function tweenPoint(a, b, progress)
+    if progress ~= progress then return a end
+
     local pos = utils.addVector(a.pos, utils.multVector(utils.subVector(b.pos, a.pos), progress))
-    local rot = utils.addQuat(a.rot, utils.multQuat(utils.subQuat(b.rot, a.rot), progress))
+
+    local aRot = a.rot:ToEulerAngles()
+    local bRot = b.rot:ToEulerAngles()
+    local yawDiff = bRot.yaw - aRot.yaw
+    local yawDiffAbs = 180 - math.abs(bRot.yaw) + 180 - math.abs(aRot.yaw)
+
+    if yawDiffAbs < math.abs(yawDiff) then -- Go over 180
+        if bRot.yaw > aRot.yaw then
+            yawDiff = - yawDiffAbs
+        else
+            yawDiff = yawDiffAbs
+        end
+    end
+
+    local rot = utils.addEuler(a.rot:ToEulerAngles(), EulerAngles.new(0, (bRot.pitch - aRot.pitch) * progress, yawDiff * progress))
 
     local point = require("modules/classes/point"):new()
     point.pos = pos
-    point.rot = rot
+    point.rot = rot:ToQuat()
 
     return point
 end
@@ -94,20 +110,6 @@ local function getPointByProgress(points, progress)
     point.distance = distance
 
     return point, closestIndex
-end
-
-function interpolator:loadMainPath(points)
-    -- cache them
-    -- should get list of combined points
-end
-
-function interpolator:loadBufferedPath(points)
-
-end
-
--- Returns the points after the first offset, i.e. the part of the track that must be remembered for the next time
-function interpolator:getSharedPath()
-    -- get all the path in front of the last offset value
 end
 
 -- WARNING : WARNING : WARNING : WARNING : WARNING : WARNING : WARNING --
@@ -182,8 +184,21 @@ function interpolator:setupArrival(path, distance)
     self.interpolationFunction = function (progress)
         return fastStartSmoothEnd(progress, 1)
     end
+end
 
-    --return self:smoothStartEnd(self.progress, self.accelerationDistance / getPathLength(self.points))
+function interpolator:setupExit(path, flip)
+    if not flip then
+        local _, split = self:splitPathByProgress(self.points, 1 - self.metroLength) -- Not yet done distance of previous track
+        self.points = utils.join(split, path)
+
+        utils.bufferPathDistance(self.points)
+    else
+        self.points = path
+    end
+
+    self.interpolationFunction = function (progress)
+        return smoothStartEnd(progress, self.accelerationDistance / getPathLength(self.points))
+    end
 end
 
 --- Sets the offsets for the amount of carts, needs to be called after path has been set
@@ -210,12 +225,6 @@ function interpolator:update(deltaTime)
         self.progress = 1
         self.active = false
     end
-end
-
---- Sets up the interpolator to drive the path, using the previously used path to determine the shared part
----@param path table
-function interpolator:setupDrive(path)
-
 end
 
 --- Registers a single use callback that gets triggered when the specified progress along the track / Y (Not the internal progress) has been reached
@@ -263,9 +272,10 @@ function interpolator:checkCallbacks(y, distance)
     end
 end
 
---- Returns the finalized point along the path, based on the carriage index. Uses the interpolationFunction which has been set previously. Also checks for any callbacks
+--- Returns the finalized point along the path as well as the 0-1 progress, based on the carriage index. Uses the interpolationFunction which has been set previously.
 ---@param index number
 ---@return table
+---@return number
 function interpolator:getCarriagePosition(index)
     local y = self.interpolationFunction(self.progress)
 
@@ -279,9 +289,7 @@ function interpolator:getCarriagePosition(index)
     local t = y * (1 - self.metroLength) + offset
     local point, _ = getPointByProgress(self.points, t)
 
-    self:checkCallbacks(y, point.distance)
-
-    return point
+    return point, t
 end
 
 return interpolator

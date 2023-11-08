@@ -171,6 +171,10 @@ function miscUtils.reversePoint(point)
 end
 
 function miscUtils.bufferPathDistance(path)
+    if #path == 0 then return end
+
+    path[1].distance = 0
+
     local length = 0
 	for i = 2, #path do
 		length = length + path[i].pos:Distance(path[i - 1].pos)
