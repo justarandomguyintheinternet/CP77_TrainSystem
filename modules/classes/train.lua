@@ -45,12 +45,12 @@ function train:despawn()
 end
 
 function train:playerBoarded()
-	return false
+	return self.carriages[1]:getEntity():GetWorldPosition():Distance(GetPlayer():GetWorldPosition()) < 15
 end
 
-function train:startArrival(station, previousLine)
+function train:startArrival(station, previousLineID)
 	local lines = self.routingSystem:getLines(station)
-	local line = lines[self.routingSystem:getNextLineIndex(previousLine, station)]
+	local line = lines[self.routingSystem:getNextLineIndex(previousLineID, station)]
 
 	self.activeLine = {
 		data = line,
@@ -71,33 +71,33 @@ function train:startArrival(station, previousLine)
 	end)
 
 	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, line.towards, #path)
-
-	-- figure out arrival path
-	-- path is always: LineID + NextStationID + PreviousStationID
-	-- start arrival drive, with custom interpolator for faster arrival
-	-- when drive is done, check line + nextID to figure out what path to use next
-		-- check if line is also line of new station
-		-- if yes continue using that line
-		-- otherwise load new reverse line? aka next line?
-	-- load path again, leave
-	-- when distance done and not player:
-		-- use interpolator
-		-- wait for distance
-		-- use lineID + prevID to figure out next
-
-	-- whenever route is done / station arrived:
-		-- buffer not yet done path, and t values?
 end
 
 function train:arrivalDone()
 	local currentStation = self.activeLine.nextStationID
-	local nextID = self.routingSystem:getNextStationID(self.activeLine.data, currentStation)
 
-	local flip = false
-	if self.activeLine.data.stations[1] == currentStation or self.activeLine.data.stations[#self.activeLine.data.stations] == currentStation then
+	if self.activeLine.data.stations[1] == currentStation or self.activeLine.data.stations[#self.activeLine.data.stations] == currentStation then -- End station reached, needs to reverse drive
+		-- Make carriages be rotated by 180
 		self.reverse = not self.reverse
-		flip = true
+
+		-- Reverse order, to reverse offsets and positions being calculated
+		local flipped = {}
+		for key, cart in pairs(self.carriages) do
+			flipped[#self.carriages + 1 - key] = cart
+		end
+		self.carriages = flipped
+
+		-- Since the previously used line wont be going through the end station, we need to use the new line going in the reverse direction
+		if self.activeLine.data.towards == currentStation then
+			local start = self.activeLine.data.stations[1]
+			if start == currentStation then
+				start = self.activeLine.data.stations[#self.activeLine.data.stations]
+			end
+			self.activeLine.data = self.routingSystem:getLineByStartEnd(currentStation, start)
+		end
 	end
+
+	local nextID = self.routingSystem:getNextStationID(self.activeLine.data, currentStation)
 
 	self.activeLine = {
 		data = self.activeLine.data,
@@ -106,31 +106,27 @@ function train:arrivalDone()
 	}
 
 	local path = self.routingSystem:findPath(self.activeLine.previousStationID, nextID)
-	print("Done driving, next stationID: ", self.activeLine.previousStationID, nextID, #path)
-
 	self.interpolator:setupExit(path, flip)
 	self.interpolator:setOffsets(self.numCarriages, self.offset)
 	self.interpolator.progress = 0
 
-	-- for _, p in pairs(self.interpolator.points) do
-	-- 	print(p.pos, p.rot, p.distance)
-	-- end
-
-	Cron.After(4, function ()
+	Cron.After(1, function ()
 		self.interpolator:start(true)
+
+		-- TODO Change this to use station specific distances and hold time
+		self.interpolator:registerDistanceCallback(45, function ()
+			if not self:playerBoarded() then -- player not on board
+				self.interpolator:setInterpolationFunctionLeave()
+				self.interpolator:registerProgressCallback(1, function ()
+					self:startArrival(self.activeLine.previousStationID, self.activeLine.data.id)
+				end)
+			else
+				self.interpolator:registerProgressCallback(1, function ()
+					self:arrivalDone()
+				end)
+			end
+		end)
 	end)
-
-	if flip then
-		local flipped = {}
-		for key, cart in pairs(self.carriages) do
-			flipped[#self.carriages + 1 - key] = cart
-		end
-		self.carriages = flipped
-	end
-
-	-- self.interpolator:registerProgressCallback(1, function ()
-	-- 	self:arrivalDone()
-	-- end)
 end
 
 function train:getRemainingLength()

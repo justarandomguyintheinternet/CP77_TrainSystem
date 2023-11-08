@@ -15,8 +15,8 @@ function interpolator:new()
     o.metroLength = 0 -- Measured in 0-1
     o.offset = 0 -- Measured in 0-1
 
-    o.accelerationDistance = 200 -- Used for smoothStartEnd
-    o.speed = 16
+    o.accelerationDistance = 100 -- Used for smoothStartEnd
+    o.speed = 35
     o.nonNormalizedSpeedDivisor = 250 -- Used for the constant duration of e.g. arrival paths, lower means faster
 
     o.callbacks = {}
@@ -40,6 +40,14 @@ local function smoothStartEnd(x, smoothDistance)
     else
         return (-t * math.pow((x - 1), 2)) + 1
     end
+end
+
+local function smoothStartFastEnd(x, smoothDistance, speedUpX)
+    local y = smoothStartEnd(x, smoothDistance)
+    if x > speedUpX then
+        y = y * math.pow((1 + (x - speedUpX) * 2.5), 4)
+    end
+    return y
 end
 
 -- https://www.desmos.com/calculator/q57lrplhal
@@ -198,6 +206,13 @@ function interpolator:setupExit(path, flip)
 
     self.interpolationFunction = function (progress)
         return smoothStartEnd(progress, self.accelerationDistance / getPathLength(self.points))
+    end
+end
+
+function interpolator:setInterpolationFunctionLeave()
+    local speedUpX = self.progress
+    self.interpolationFunction = function (progress)
+        return smoothStartFastEnd(progress, self.accelerationDistance / getPathLength(self.points), speedUpX)
     end
 end
 

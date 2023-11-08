@@ -73,6 +73,14 @@ local function getIndexByLineID(lines, lineID)
 	return 0 -- Handling the -1 ID, indicating initial startup of metro
 end
 
+function routingSystem:getLineByStartEnd(start, towards)
+	for _, line in pairs(self.lines) do
+		if line.towards == towards and (line.stations[1] == start or line.stations[#line.stations] == start) then
+			return line
+		end
+	end
+end
+
 --- Gets the next line for a station, based on the previously used line
 ---@param lineID number
 ---@param station number

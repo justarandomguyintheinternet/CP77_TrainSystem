@@ -92,11 +92,11 @@ end
 function miscUtils.getNextFreeIndex(tab)
     if #tab == 0 then return 1 end
 
-    for i = 1, tab[#tab] do
+    for i = 1, #tab do
         if tab[i] == nil then return i end
     end
 
-    return tab[#tab] + 1
+    return #tab + 1
 end
 
 function miscUtils.looksAtDoor(dist)
