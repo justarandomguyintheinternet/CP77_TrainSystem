@@ -8,7 +8,7 @@ function train:new(stationSys)
 
 	o.routingSystem = stationSys.ts.routingSystem
 	o.stationSys = stationSys
-	o.numCarriages = 1
+	o.numCarriages = 3
 	o.offset = 10
 
 	o.spawned = false
@@ -45,7 +45,7 @@ function train:despawn()
 end
 
 function train:playerBoarded()
-	return self.carriages[1]:getEntity():GetWorldPosition():Distance(GetPlayer():GetWorldPosition()) < 15
+	return self.carriages[2]:getEntity():GetWorldPosition():Distance(GetPlayer():GetWorldPosition()) < 15
 end
 
 function train:startArrival(station, previousLineID)
@@ -69,23 +69,14 @@ function train:startArrival(station, previousLineID)
 	self.interpolator:registerProgressCallback(1, function ()
 		self:arrivalDone()
 	end)
-
-	print("Start metro arrival: ", self.activeLine.previousStationID, self.activeLine.nextStationID, line.name, line.towards, #path)
 end
 
 function train:arrivalDone()
 	local currentStation = self.activeLine.nextStationID
 
-	if self.activeLine.data.stations[1] == currentStation or self.activeLine.data.stations[#self.activeLine.data.stations] == currentStation then -- End station reached, needs to reverse drive
-		-- Make carriages be rotated by 180
+	local flip = self.activeLine.data.stations[1] == currentStation or self.activeLine.data.stations[#self.activeLine.data.stations] == currentStation
+	if flip then
 		self.reverse = not self.reverse
-
-		-- Reverse order, to reverse offsets and positions being calculated
-		local flipped = {}
-		for key, cart in pairs(self.carriages) do
-			flipped[#self.carriages + 1 - key] = cart
-		end
-		self.carriages = flipped
 
 		-- Since the previously used line wont be going through the end station, we need to use the new line going in the reverse direction
 		if self.activeLine.data.towards == currentStation then
@@ -127,6 +118,15 @@ function train:arrivalDone()
 			end
 		end)
 	end)
+
+	if flip then
+		-- Reverse order, to reverse offsets and positions being calculated
+		local flipped = {}
+		for key, cart in pairs(self.carriages) do
+			flipped[#self.carriages + 1 - key] = cart
+		end
+		self.carriages = flipped
+	end
 end
 
 function train:getRemainingLength()
