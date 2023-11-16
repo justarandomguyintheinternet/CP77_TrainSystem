@@ -145,6 +145,23 @@ end
 
 --- ### Routing Code ###
 
+--- Returns a deep copy of the path
+---@param path table
+---@return table
+local function deepCopyPath(path)
+	local copied = {}
+
+	for _, point in pairs(path) do
+		local p = require("modules/classes/point"):new()
+		p.pos = point.pos
+		p.rot = point.rot
+		p.distance = point.distance
+		table.insert(copied, p)
+	end
+
+	return copied
+end
+
 -- Checks if the id is in the tracks front connections
 ---@param track table
 ---@param id number
@@ -299,23 +316,6 @@ function routingSystem:findPathRaw(originID, target)
 	if #secondFront ~= 0 then
 		return utils.join(reversePoints(getLastMile(track, "forward", originID)), secondFront)
 	end
-end
-
---- Returns a deep copy of the path
----@param path table
----@return table
-local function deepCopyPath(path)
-	local copied = {}
-
-	for _, point in pairs(path) do
-		local p = require("modules/classes/point"):new()
-		p.pos = point.pos
-		p.rot = point.rot
-		p.distance = point.distance
-		table.insert(copied, p)
-	end
-
-	return copied
 end
 
 --- Returns the table of points that leads from the origin station's id to the target station, with buffered distances

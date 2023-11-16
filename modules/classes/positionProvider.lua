@@ -16,8 +16,8 @@ function interpolator:new()
     o.offset = 0 -- Measured in 0-1
 
     o.accelerationDistance = 100 -- Used for smoothStartEnd
-    o.speed = 20
-    o.nonNormalizedSpeedDivisor = 250 -- Used for the constant duration of e.g. arrival paths, lower means faster
+    o.speed = 18
+    o.nonNormalizedSpeedDivisor = 100 -- Used for the constant duration of e.g. arrival paths, lower means faster
 
     o.callbacks = {}
 

@@ -82,7 +82,7 @@ function ts:new()
         self.observers.start(self)
         self.input.startInputObserver()
 
-        local points = self.routingSystem:findPath(4, 8)
+        local points = self.routingSystem:findPath(15, 16)
 
         self.interpolator = require("modules/classes/positionProvider"):new()
         -- self.interpolator:setupArrival(points, 80)

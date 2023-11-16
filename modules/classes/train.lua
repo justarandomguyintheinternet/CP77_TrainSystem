@@ -107,6 +107,7 @@ function train:arrivalDone()
 		-- TODO Change this to use station specific distances and hold time
 		self.interpolator:registerDistanceCallback(45, function ()
 			if not self:playerBoarded() then -- player not on board
+				print("leaving, no player on board")
 				self.interpolator:setInterpolationFunctionLeave()
 				self.interpolator:registerProgressCallback(1, function ()
 					self:startArrival(self.activeLine.previousStationID, self.activeLine.data.id)

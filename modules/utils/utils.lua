@@ -22,11 +22,16 @@ end
 ---@param b table
 ---@return table
 function miscUtils.join(a, b)
+    local joined = {}
+
+    for _, v in pairs(a) do
+        table.insert(joined, v)
+    end
     for _, v in pairs(b) do
-        table.insert(a, v)
+        table.insert(joined, v)
     end
 
-    return a
+    return joined
 end
 
 function miscUtils.distanceVector(from, to)
